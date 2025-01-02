@@ -52,7 +52,7 @@ shinyUI(fluidPage(
                                  "Multiple-period cluster cross-over",
                                  "Stepped-wedge",
                                  "Individually randomized group treatment",
-                                 "Parallel two-level heterogeneous CRT",
+                                 "Parallel two-level CRT (sample size and ICC heterogeneous by arm)",
                                  "Upload custom design"),
                    choiceValues = c("parallel", "three_level","parallel_m","crossover_2","crossover_m","SWD", "irgt", "het_two","upload")),#can also add help alt/hover text later using helpText()
       
@@ -80,6 +80,14 @@ shinyUI(fluidPage(
       conditionalPanel(
         condition = "input.trial == 'SWD'",
         helpText("A stepped-wedge CRT randomizes clusters of individuals to the time at which the cluster initiates the intervention. All clusters begin on the control condition and, as time progresses, batches of clusters are transitioned to the intervention.", style="margin-top:-0.5em; margin-bottom:1em;")
+      ),
+      conditionalPanel(
+        condition = "input.trial == 'het_two'",
+        helpText("A parallel two-level CRT randomizes clusters of individuals to either receive the control or intervention condition, with allowance for sample size (number of clusters, cluster size) and ICCs to vary by study arm.", style="margin-top:-0.5em; margin-bottom:1em;")
+      ),
+      conditionalPanel(
+        condition = "input.trial == 'irgt'",
+        helpText("A parallelt two-level CRT randomizes individuals to either receive treatment or intervention condition, but treatment conditions are administered in a clustered or grouped way (e.g., group instruction).", style="margin-top:-0.5em; margin-bottom:1em;")
       ),
       conditionalPanel(
         condition = "input.trial == 'upload'",
@@ -133,7 +141,7 @@ shinyUI(fluidPage(
         conditionalPanel(
           condition = "input.plot_display == 'm_v_power'",
           numericInput(inputId="n",
-                       label="Number of clusters (n)",
+                       label="Total number of clusters (n)",
                        10, min=1, max=9999999999)
         ),
         # m range #
@@ -304,13 +312,13 @@ shinyUI(fluidPage(
         ## sample size ##
         # ns numeric #
         numericInput(inputId="ns",
-                     label=withMathJax("Number of subclusters (\\(n_s\\))"),
+                     label=withMathJax("Number of subclusters per cluster (\\(n_s\\))"),
                      10, min=1, max=9999999999),
         #nc numeric #
         conditionalPanel(
           condition = "input.plot_display == 'm_v_power'",
           numericInput(inputId="nc",
-                       label=withMathJax("Number of clusters (\\(n_c\\))"),
+                       label=withMathJax("Total number of clusters (\\(n_c\\))"),
                        10, min=1, max=9999999999)
         ),
         
@@ -319,7 +327,7 @@ shinyUI(fluidPage(
         conditionalPanel(
           condition = "input.plot_display == 'nc_v_power'",
           numericInput(inputId="m_three",
-                       label="Individuals (m)",
+                       label="Individuals per subcluster (m)",
                        20, min=1, max=9999999999),
           sliderInput(inputId="nc_range",
                       label="Plot number of clusters range",
@@ -331,7 +339,7 @@ shinyUI(fluidPage(
         conditionalPanel(
           condition = "input.plot_display == 'm_v_power' || input.plot_display == 'm_v_nc'",
           sliderInput(inputId="m_three_range",
-                      label="Plot individuals range",
+                      label="Plot individuals (per subcluster) range",
                       min=1, max=3000,
                       value=c(5,100))
         ),
@@ -381,6 +389,7 @@ shinyUI(fluidPage(
         numericInput(inputId="oicc_ratio_est_three",
                      label=withMathJax("Assumed CAC (\\(\\alpha_1/\\alpha_0\\))"),
                      0.5,min=0, max=1, step=0.001),
+        helpText("The ratio of the between-subcluster outcome ICC over the within-subcluster outcome ICC.", style="margin-top:-0.5em; margin-bottom:1em;"),
         
         tags$i(h4("Covariate")),
         numericInput(inputId="cicc_wsub_est_three",
@@ -389,6 +398,7 @@ shinyUI(fluidPage(
         numericInput(inputId="cicc_ratio_est_three",
                      label=withMathJax("Assumed CAC (\\(\\rho_1/\\rho_0\\))"),
                      0.5,min=0, max=1, step=0.001),
+        helpText("The ratio of the between-subcluster covariate ICC over the within-subcluster covariate ICC.", style="margin-top:-0.5em; margin-bottom:1em;"),
         
         radioButtons(inputId="icc_sensitivity_three",
                      label="ICC sensitivity analyses",
@@ -751,6 +761,7 @@ shinyUI(fluidPage(
           numericInput(inputId="oicc_ratio_est_swd",
                        label=withMathJax("Assumed CAC (\\(\\alpha_1/\\alpha_0\\))"),
                        0.5,min=0, max=1, step=0.001),
+          helpText("The ratio of the between-period outcome ICC over the within-period outcome ICC.", style="margin-top:-0.5em; margin-bottom:1em;"),
           
           tags$i(h4("Covariate")),
           numericInput(inputId="cicc_wperiod_est_swd",
@@ -758,7 +769,8 @@ shinyUI(fluidPage(
                        0.1,min=0, max=1, step=0.001),
           numericInput(inputId="cicc_ratio_est_swd",
                        label=withMathJax("Assumed CAC (\\(\\rho_1/\\rho_0\\))"),
-                       0.5,min=0, max=1, step=0.001)
+                       0.5,min=0, max=1, step=0.001),
+          helpText("The ratio of the between-period covariate ICC over the within-period covariate ICC.", style="margin-top:-0.5em; margin-bottom:1em;"),
         ),#end cross conditional
         
         conditionalPanel(
@@ -770,6 +782,7 @@ shinyUI(fluidPage(
           numericInput(inputId="oicc_ratio_est_swd_cc",
                        label=withMathJax("Assumed CAC (\\(\\alpha_1/\\alpha_0\\))"),
                        0.5,min=0, max=1, step=0.001),
+          helpText("The ratio of the between-period outcome ICC over the within-period outcome ICC.", style="margin-top:-0.5em; margin-bottom:1em;"),
           numericInput(inputId="oicc_windiv_est_swd_cc",
                        label=withMathJax("Assumed within-individual ICC (\\(\\alpha_2\\))"),
                        0.1,min=0, max=1, step=0.001),
@@ -900,6 +913,7 @@ shinyUI(fluidPage(
       numericInput(inputId="mean_diff_HTE",
                    label="Assumed HTE",
                    1, min=0, max=999999),
+      helpText("Specify the target effect size for the effect modification, e.g., the difference in difference estimate for a binary effect modifier.", style="margin-top:-0.5em; margin-bottom:1em;"),
       # covariate sd for continuous #
       conditionalPanel(
         condition = "input.covar == 'continuous'",
@@ -912,7 +926,8 @@ shinyUI(fluidPage(
         condition = "input.covar == 'binary'",
         numericInput(inputId="prop_covar",
                      label="Covariate proportion",
-                     0.5, min=0, max=1,step=0.001)
+                     0.5, min=0, max=1,step=0.001),
+        helpText("e.g., prevalence of the binary covariate.", style="margin-top:-0.5em; margin-bottom:1em;"),
       ),#end conditional
       
       #treatment allocation #
@@ -920,7 +935,8 @@ shinyUI(fluidPage(
         condition = "input.trial == 'parallel' || input.trial == 'three_level'",
         numericInput(inputId="w",
                      label="Intervention allocation",
-                     0.5, min=0.000001, max=1, step=0.001)
+                     0.5, min=0.000001, max=1, step=0.001),
+        helpText("Enter the proportion of total participants in the intervention arm.", style="margin-top:-0.5em; margin-bottom:1em;"),
       ),
       # sig level #
       numericInput(inputId="sig",

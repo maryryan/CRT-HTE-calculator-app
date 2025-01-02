@@ -1052,7 +1052,7 @@ shinyServer(function(input, output, session) {
                           cicc == cicc_est()#cicc_unique[2]
             ) %>%
             mutate(cicc=factor(cicc)) %>%
-            plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~cicc,
+            plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                     linetype=~cicc, color=~cicc,legendgroup=~cicc,
                     colors=colors_plot,
                     hoverinfo="text",
@@ -1106,7 +1106,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(cicc=factor(cicc)) %>%
                   dplyr::filter(oicc == oicc_unique[i]) %>%
-                  plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~cicc,
+                  plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                           linetype=~cicc, color=~cicc,legendgroup=~cicc, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -1124,7 +1124,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(cicc=factor(cicc)) %>%
                   dplyr::filter(oicc == oicc_unique[i]) %>%
-                  plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~cicc,
+                  plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                           linetype=~cicc, color=~cicc,legendgroup=~cicc,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -1202,7 +1202,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(oicc=factor(oicc)) %>%
                   dplyr::filter(cicc == cicc_unique[i]) %>%
-                  plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~oicc,
+                  plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc,
                           linetype=~oicc, color=~oicc,legendgroup=~oicc, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -1219,7 +1219,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(oicc=factor(oicc)) %>%
                   dplyr::filter(cicc == cicc_unique[i]) %>%
-                  plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~oicc,
+                  plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc,
                           linetype=~oicc, color=~oicc,legendgroup=~oicc,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -1331,7 +1331,7 @@ shinyServer(function(input, output, session) {
                           cicc == cicc_est()#cicc_unique[2]
             ) %>%
             mutate(cicc=factor(cicc)) %>%
-            plot_ly(x=~n,y=~power_hte_col, type='scatter', mode='lines', name=~cicc,
+            plot_ly(x=~n,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                     linetype=~cicc, color=~cicc,legendgroup=~cicc,
                     colors=colors_plot,
                     hoverinfo="text",
@@ -1386,7 +1386,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(cicc=factor(cicc)) %>%
                   dplyr::filter(oicc == oicc_unique[i]) %>%
-                  plot_ly(x=~n,y=~power_hte_col, type='scatter', mode='lines', name=~cicc,
+                  plot_ly(x=~n,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                           linetype=~cicc, color=~cicc,legendgroup=~cicc, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -1403,7 +1403,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(cicc=factor(cicc)) %>%
                   dplyr::filter(oicc == oicc_unique[i]) %>%
-                  plot_ly(x=~n,y=~power_hte_col, type='scatter', mode='lines', name=~cicc,
+                  plot_ly(x=~n,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                           linetype=~cicc, color=~cicc,legendgroup=~cicc,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -1476,7 +1476,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(oicc=factor(oicc)) %>%
                   dplyr::filter(cicc == cicc_unique[i]) %>%
-                  plot_ly(x=~n,y=~power_hte_col, type='scatter', mode='lines', name=~oicc,
+                  plot_ly(x=~n,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc,
                           linetype=~oicc, color=~oicc,legendgroup=~oicc, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -1493,7 +1493,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(oicc=factor(oicc)) %>%
                   dplyr::filter(cicc == cicc_unique[i]) %>%
-                  plot_ly(x=~n,y=~power_hte_col, type='scatter', mode='lines', name=~oicc,
+                  plot_ly(x=~n,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc,
                           linetype=~oicc, color=~oicc,legendgroup=~oicc,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -1609,7 +1609,7 @@ shinyServer(function(input, output, session) {
                           cicc == cicc_est()#cicc_unique[2]
             ) %>%
             mutate(cicc=factor(cicc)) %>%
-            plot_ly(x=~m,y=~n, type='scatter', mode='lines', name=~cicc,
+            plot_ly(x=~m,y=~n, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                     linetype=~cicc, color=~cicc,legendgroup=~cicc, showlegend=F,
                     colors=colors_plot,
                     hoverinfo="text",
@@ -1663,7 +1663,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(cicc=factor(cicc)) %>%
                   dplyr::filter(oicc == oicc_unique[i]) %>%
-                  plot_ly(x=~m,y=~n, type='scatter', mode='lines', name=~cicc,
+                  plot_ly(x=~m,y=~n, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                           linetype=~cicc, color=~cicc,legendgroup=~cicc, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -1682,7 +1682,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(cicc=factor(cicc)) %>%
                   dplyr::filter(oicc == oicc_unique[i]) %>%
-                  plot_ly(x=~m,y=~n, type='scatter', mode='lines', name=~cicc,
+                  plot_ly(x=~m,y=~n, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                           linetype=~cicc, color=~cicc,legendgroup=~cicc,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -1756,7 +1756,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(oicc=factor(oicc)) %>%
                   dplyr::filter(cicc == cicc_unique[i]) %>%
-                  plot_ly(x=~m,y=~n, type='scatter', mode='lines', name=~oicc,
+                  plot_ly(x=~m,y=~n, type='scatter', mode='lines', line=list(width=3), name=~oicc,
                           linetype=~oicc, color=~oicc,legendgroup=~oicc, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -1775,7 +1775,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(oicc=factor(oicc)) %>%
                   dplyr::filter(cicc == cicc_unique[i]) %>%
-                  plot_ly(x=~m,y=~n, type='scatter', mode='lines', name=~oicc,
+                  plot_ly(x=~m,y=~n, type='scatter', mode='lines', line=list(width=3), name=~oicc,
                           linetype=~oicc, color=~oicc,legendgroup=~oicc,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -1940,7 +1940,7 @@ shinyServer(function(input, output, session) {
                           a0 == oicc_wsub_est_three(),
                           a1_a0 == oicc_ratio_est_three()) %>%
             mutate(r1_r0=factor(r1_r0)) %>%
-            plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+            plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                     linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                     colors=colors_plot,
                     hoverinfo="text",
@@ -2000,7 +2000,7 @@ shinyServer(function(input, output, session) {
                   dplyr::filter(a0 == oicc_wsub_est_three(),
                                 a1_a0 == oicc_ratio_est_three(),
                                 r0 == r0_unique[i]) %>%
-                  plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+                  plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                           linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -2023,7 +2023,7 @@ shinyServer(function(input, output, session) {
                   dplyr::filter(a0 == oicc_wsub_est_three(),
                                 a1_a0 == oicc_ratio_est_three(),
                                 r0 == r0_unique[i]) %>%
-                  plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+                  plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                           linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -2107,7 +2107,7 @@ shinyServer(function(input, output, session) {
                   dplyr::filter(r0 == cicc_wsub_est_three(),
                                 r1_r0 == cicc_ratio_est_three(),
                                 a0 == a0_unique[i]) %>%
-                  plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                  plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                           linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -2130,7 +2130,7 @@ shinyServer(function(input, output, session) {
                   dplyr::filter(r0 == cicc_wsub_est_three(),
                                 r1_r0 == cicc_ratio_est_three(),
                                 a0 == a0_unique[i]) %>%
-                  plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                  plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                           linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -2267,7 +2267,7 @@ shinyServer(function(input, output, session) {
                           a0 == oicc_wsub_est_three(),
                           a1_a0 == oicc_ratio_est_three()) %>%
             mutate(r1_r0=factor(r1_r0)) %>%
-            plot_ly(x=~nc,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+            plot_ly(x=~nc,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                     linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                     colors=colors_plot,
                     hoverinfo="text",
@@ -2327,7 +2327,7 @@ shinyServer(function(input, output, session) {
                   dplyr::filter(a0 == oicc_wsub_est_three(),
                                 a1_a0 == oicc_ratio_est_three(),
                                 r0 == r0_unique[i]) %>%
-                  plot_ly(x=~nc,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+                  plot_ly(x=~nc,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                           linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -2350,7 +2350,7 @@ shinyServer(function(input, output, session) {
                   dplyr::filter(a0 == oicc_wsub_est_three(),
                                 a1_a0 == oicc_ratio_est_three(),
                                 r0 == r0_unique[i]) %>%
-                  plot_ly(x=~nc,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+                  plot_ly(x=~nc,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                           linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -2434,7 +2434,7 @@ shinyServer(function(input, output, session) {
                   dplyr::filter(r0 == cicc_wsub_est_three(),
                                 r1_r0 == cicc_ratio_est_three(),
                                 a0 == a0_unique[i]) %>%
-                  plot_ly(x=~nc,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                  plot_ly(x=~nc,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                           linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -2457,7 +2457,7 @@ shinyServer(function(input, output, session) {
                   dplyr::filter(r0 == cicc_wsub_est_three(),
                                 r1_r0 == cicc_ratio_est_three(),
                                 a0 == a0_unique[i]) %>%
-                  plot_ly(x=~nc,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                  plot_ly(x=~nc,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                           linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -2599,7 +2599,7 @@ shinyServer(function(input, output, session) {
                           a0 == oicc_wsub_est_three(),
                           a1_a0 == oicc_ratio_est_three()) %>%
             mutate(r1_r0=factor(r1_r0)) %>%
-            plot_ly(x=~m,y=~nc, type='scatter', mode='lines', name=~r1_r0,
+            plot_ly(x=~m,y=~nc, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                     linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                     colors=colors_plot,
                     hoverinfo="text",
@@ -2659,7 +2659,7 @@ shinyServer(function(input, output, session) {
                   dplyr::filter(a0 == oicc_wsub_est_three(),
                                 a1_a0 == oicc_ratio_est_three(),
                                 r0 == r0_unique[i]) %>%
-                  plot_ly(x=~m,y=~nc, type='scatter', mode='lines', name=~r1_r0,
+                  plot_ly(x=~m,y=~nc, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                           linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -2682,7 +2682,7 @@ shinyServer(function(input, output, session) {
                   dplyr::filter(a0 == oicc_wsub_est_three(),
                                 a1_a0 == oicc_ratio_est_three(),
                                 r0 == r0_unique[i]) %>%
-                  plot_ly(x=~m,y=~nc, type='scatter', mode='lines', name=~r1_r0,
+                  plot_ly(x=~m,y=~nc, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                           linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -2766,7 +2766,7 @@ shinyServer(function(input, output, session) {
                   dplyr::filter(r0 == cicc_wsub_est_three(),
                                 r1_r0 == cicc_ratio_est_three(),
                                 a0 == a0_unique[i]) %>%
-                  plot_ly(x=~m,y=~nc, type='scatter', mode='lines', name=~a1_a0,
+                  plot_ly(x=~m,y=~nc, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                           linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -2789,7 +2789,7 @@ shinyServer(function(input, output, session) {
                   dplyr::filter(r0 == cicc_wsub_est_three(),
                                 r1_r0 == cicc_ratio_est_three(),
                                 a0 == a0_unique[i]) %>%
-                  plot_ly(x=~m,y=~nc, type='scatter', mode='lines', name=~a1_a0,
+                  plot_ly(x=~m,y=~nc, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                           linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -2960,7 +2960,7 @@ shinyServer(function(input, output, session) {
                             a0 == oicc_wperiod_est_swd(),
                             a1_a0 == oicc_ratio_est_swd()) %>%
               mutate(r1_r0=factor(r1_r0)) %>%
-              plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+              plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                       linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                       colors=colors_plot,
                       hoverinfo="text",
@@ -3022,7 +3022,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
                                   r0 == r0_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -3046,7 +3046,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
                                   r0 == r0_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -3131,7 +3131,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -3155,7 +3155,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -3289,7 +3289,7 @@ shinyServer(function(input, output, session) {
                             a1_a0 == oicc_ratio_est_swd_cc(),
                             a2 == oicc_windiv_est_swd_cc()) %>%
               mutate(r0=factor(r0)) %>%
-              plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~r0,
+              plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
                       linetype=~r0, color=~r0,legendgroup=~r0,
                       colors=colors_plot,
                       hoverinfo="text",
@@ -3349,7 +3349,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~r0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
                             linetype=~r0, color=~r0,legendgroup=~r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -3373,7 +3373,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~r0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
                             linetype=~r0, color=~r0,legendgroup=~r0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -3458,7 +3458,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -3482,7 +3482,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -3625,7 +3625,7 @@ shinyServer(function(input, output, session) {
                             a1_a0 == oicc_ratio_est_swd()) %>%
               mutate(r1_r0=factor(r1_r0),
                      ns=n/(J-1)) %>%
-              plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+              plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                       linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                       colors=colors_plot,
                       hoverinfo="text",
@@ -3687,7 +3687,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
                                   r0 == r0_unique[i]) %>%
-                    plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+                    plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -3712,7 +3712,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
                                   r0 == r0_unique[i]) %>%
-                    plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+                    plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -3798,7 +3798,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -3823,7 +3823,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -3961,7 +3961,7 @@ shinyServer(function(input, output, session) {
                             a2 == oicc_windiv_est_swd_cc()) %>%
               mutate(r0=factor(r0),
                      ns=n/(J-1)) %>%
-              plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', name=~r0,
+              plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
                       linetype=~r0, color=~r0,legendgroup=~r0,
                       colors=colors_plot,
                       hoverinfo="text",
@@ -4023,7 +4023,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', name=~r0,
+                    plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
                             linetype=~r0, color=~r0,legendgroup=~r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -4048,7 +4048,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', name=~r0,
+                    plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
                             linetype=~r0, color=~r0,legendgroup=~r0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -4134,7 +4134,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -4159,7 +4159,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -4302,7 +4302,7 @@ shinyServer(function(input, output, session) {
                             a0 == oicc_wperiod_est_swd(),
                             a1_a0 == oicc_ratio_est_swd()) %>%
               mutate(r1_r0=factor(r1_r0)) %>%
-              plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~r1_r0,
+              plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                       linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                       colors=colors_plot,
                       hoverinfo="text",
@@ -4363,7 +4363,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
                                   r0 == r0_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~r1_r0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -4387,7 +4387,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
                                   r0 == r0_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~r1_r0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -4472,7 +4472,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -4496,7 +4496,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -4633,7 +4633,7 @@ shinyServer(function(input, output, session) {
                             a1_a0 == oicc_ratio_est_swd_cc(),
                             a2 == oicc_windiv_est_swd_cc()) %>%
               mutate(r0=factor(r0)) %>%
-              plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~r0,
+              plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r0,
                       linetype=~r0, color=~r0,legendgroup=~r0,
                       colors=colors_plot,
                       hoverinfo="text",
@@ -4694,7 +4694,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~r0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r0,
                             linetype=~r0, color=~r0,legendgroup=~r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -4718,7 +4718,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~r0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r0,
                             linetype=~r0, color=~r0,legendgroup=~r0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -4802,7 +4802,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -4826,7 +4826,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -5015,7 +5015,7 @@ shinyServer(function(input, output, session) {
                             a0 == oicc_wperiod_est_swd(),
                             a1_a0 == oicc_ratio_est_swd()) %>%
               mutate(r1_r0=factor(r1_r0)) %>%
-              plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+              plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                       linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                       colors=colors_plot,
                       hoverinfo="text",
@@ -5077,7 +5077,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
                                   r0 == r0_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -5101,7 +5101,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
                                   r0 == r0_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -5186,7 +5186,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -5210,7 +5210,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -5344,7 +5344,7 @@ shinyServer(function(input, output, session) {
                             a1_a0 == oicc_ratio_est_swd_cc(),
                             a2 == oicc_windiv_est_swd_cc()) %>%
               mutate(r0=factor(r0)) %>%
-              plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~r0,
+              plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
                       linetype=~r0, color=~r0,legendgroup=~r0,
                       colors=colors_plot,
                       hoverinfo="text",
@@ -5404,7 +5404,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~r0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
                             linetype=~r0, color=~r0,legendgroup=~r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -5428,7 +5428,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~r0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
                             linetype=~r0, color=~r0,legendgroup=~r0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -5512,7 +5512,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -5536,7 +5536,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -5678,7 +5678,7 @@ shinyServer(function(input, output, session) {
                             a0 == oicc_wperiod_est_swd(),
                             a1_a0 == oicc_ratio_est_swd()) %>%
               mutate(r1_r0=factor(r1_r0)) %>%
-              plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+              plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                       linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                       colors=colors_plot,
                       hoverinfo="text",
@@ -5739,7 +5739,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
                                   r0 == r0_unique[i]) %>%
-                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -5763,7 +5763,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
                                   r0 == r0_unique[i]) %>%
-                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -5848,7 +5848,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -5872,7 +5872,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -6009,7 +6009,7 @@ shinyServer(function(input, output, session) {
                             a1_a0 == oicc_ratio_est_swd_cc(),
                             a2 == oicc_windiv_est_swd_cc()) %>%
               mutate(r0=factor(r0)) %>%
-              plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', name=~r0,
+              plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
                       linetype=~r0, color=~r0,legendgroup=~r0,
                       colors=colors_plot,
                       hoverinfo="text",
@@ -6070,7 +6070,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', name=~r0,
+                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
                             linetype=~r0, color=~r0,legendgroup=~r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -6094,7 +6094,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', name=~r0,
+                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
                             linetype=~r0, color=~r0,legendgroup=~r0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -6179,7 +6179,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -6203,7 +6203,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -6347,7 +6347,7 @@ shinyServer(function(input, output, session) {
                             a0 == oicc_wperiod_est_swd(),
                             a1_a0 == oicc_ratio_est_swd()) %>%
               mutate(r1_r0=factor(r1_r0)) %>%
-              plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~r1_r0,
+              plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                       linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                       colors=colors_plot,
                       hoverinfo="text",
@@ -6408,7 +6408,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
                                   r0 == r0_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~r1_r0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -6432,7 +6432,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
                                   r0 == r0_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~r1_r0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -6517,7 +6517,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -6541,7 +6541,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -6678,7 +6678,7 @@ shinyServer(function(input, output, session) {
                             a1_a0 == oicc_ratio_est_swd_cc(),
                             a2 == oicc_windiv_est_swd_cc()) %>%
               mutate(r0=factor(r0)) %>%
-              plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~r0,
+              plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r0,
                       linetype=~r0, color=~r0,legendgroup=~r0,
                       colors=colors_plot,
                       hoverinfo="text",
@@ -6739,7 +6739,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~r0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r0,
                             linetype=~r0, color=~r0,legendgroup=~r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -6763,7 +6763,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~r0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r0,
                             linetype=~r0, color=~r0,legendgroup=~r0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -6847,7 +6847,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -6871,7 +6871,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -7052,7 +7052,7 @@ shinyServer(function(input, output, session) {
                             a0 == oicc_wperiod_est_swd(),
                             a1_a0 == oicc_ratio_est_swd()) %>%
               mutate(r1_r0=factor(r1_r0)) %>%
-              plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+              plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                       linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                       colors=colors_plot,
                       hoverinfo="text",
@@ -7114,7 +7114,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
                                   r0 == r0_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -7138,7 +7138,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
                                   r0 == r0_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -7223,7 +7223,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -7247,7 +7247,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -7381,7 +7381,7 @@ shinyServer(function(input, output, session) {
                             a1_a0 == oicc_ratio_est_swd_cc(),
                             a2 == oicc_windiv_est_swd_cc()) %>%
               mutate(r0=factor(r0)) %>%
-              plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~r0,
+              plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
                       linetype=~r0, color=~r0,legendgroup=~r0,
                       colors=colors_plot,
                       hoverinfo="text",
@@ -7441,7 +7441,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~r0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
                             linetype=~r0, color=~r0,legendgroup=~r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -7465,7 +7465,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~r0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
                             linetype=~r0, color=~r0,legendgroup=~r0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -7550,7 +7550,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -7574,7 +7574,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -7715,7 +7715,7 @@ shinyServer(function(input, output, session) {
                             a0 == oicc_wperiod_est_swd(),
                             a1_a0 == oicc_ratio_est_swd()) %>%
               mutate(r1_r0=factor(r1_r0)) %>%
-              plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+              plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                       linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                       colors=colors_plot,
                       hoverinfo="text",
@@ -7776,7 +7776,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
                                   r0 == r0_unique[i]) %>%
-                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -7800,7 +7800,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
                                   r0 == r0_unique[i]) %>%
-                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', name=~r1_r0,
+                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -7885,7 +7885,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -7909,7 +7909,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -8046,7 +8046,7 @@ shinyServer(function(input, output, session) {
                             a1_a0 == oicc_ratio_est_swd_cc(),
                             a2 == oicc_windiv_est_swd_cc()) %>%
               mutate(r0=factor(r0)) %>%
-              plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', name=~r0,
+              plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
                       linetype=~r0, color=~r0,legendgroup=~r0,
                       colors=colors_plot,
                       hoverinfo="text",
@@ -8107,7 +8107,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', name=~r0,
+                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
                             linetype=~r0, color=~r0,legendgroup=~r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -8131,7 +8131,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', name=~r0,
+                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
                             linetype=~r0, color=~r0,legendgroup=~r0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -8216,7 +8216,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -8240,7 +8240,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -8384,7 +8384,7 @@ shinyServer(function(input, output, session) {
                             a0 == oicc_wperiod_est_swd(),
                             a1_a0 == oicc_ratio_est_swd()) %>%
               mutate(r1_r0=factor(r1_r0)) %>%
-              plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~r1_r0,
+              plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                       linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                       colors=colors_plot,
                       hoverinfo="text",
@@ -8445,7 +8445,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
                                   r0 == r0_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~r1_r0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -8469,7 +8469,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
                                   r0 == r0_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~r1_r0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -8554,7 +8554,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -8578,7 +8578,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -8715,7 +8715,7 @@ shinyServer(function(input, output, session) {
                             a1_a0 == oicc_ratio_est_swd_cc(),
                             a2 == oicc_windiv_est_swd_cc()) %>%
               mutate(r0=factor(r0)) %>%
-              plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~r0,
+              plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r0,
                       linetype=~r0, color=~r0,legendgroup=~r0,
                       colors=colors_plot,
                       hoverinfo="text",
@@ -8776,7 +8776,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~r0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r0,
                             linetype=~r0, color=~r0,legendgroup=~r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -8800,7 +8800,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~r0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r0,
                             linetype=~r0, color=~r0,legendgroup=~r0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -8884,7 +8884,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -8908,7 +8908,7 @@ shinyServer(function(input, output, session) {
                     dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
                                   a0 == a0_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', name=~a1_a0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -9112,7 +9112,7 @@ shinyServer(function(input, output, session) {
                           oicc0 == oicc_ctrl_est_irgt()#cicc_unique[2]
             ) %>%
             mutate(oicc0=factor(oicc0)) %>%
-            plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc0,
+            plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                     linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                     colors=colors_plot,
                     hoverinfo="text",
@@ -9140,7 +9140,7 @@ shinyServer(function(input, output, session) {
                             oicc0 == oicc_ctrl_est_irgt()#cicc_unique[2]
               ) %>%
               mutate(oicc0=factor(oicc0)) %>%
-              plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc0,
+              plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                       linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,
                       colors=colors_plot,
                       hoverinfo="text",
@@ -9238,7 +9238,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(oicc0=factor(oicc0)) %>%
                   dplyr::filter(oicc1 == oicc1_unique[i]) %>%
-                  plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc0,
+                  plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                           linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -9263,7 +9263,7 @@ shinyServer(function(input, output, session) {
                     as.data.frame() %>%
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i]) %>%
-                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -9290,7 +9290,7 @@ shinyServer(function(input, output, session) {
                     as.data.frame() %>%
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i]) %>%
-                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -9314,7 +9314,7 @@ shinyServer(function(input, output, session) {
                     as.data.frame() %>%
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i]) %>%
-                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -9338,7 +9338,7 @@ shinyServer(function(input, output, session) {
                     as.data.frame() %>%
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i]) %>%
-                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -9520,7 +9520,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(oicc1=factor(oicc1)) %>%
                   dplyr::filter(oicc0 == oicc0_unique[i]) %>%
-                  plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc1,
+                  plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                           linetype=~oicc1, color=~oicc1,legendgroup=~oicc1, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -9545,7 +9545,7 @@ shinyServer(function(input, output, session) {
                     as.data.frame() %>%
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i]) %>%
-                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -9573,7 +9573,7 @@ shinyServer(function(input, output, session) {
                     as.data.frame() %>%
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i]) %>%
-                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1,showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -9597,7 +9597,7 @@ shinyServer(function(input, output, session) {
                     as.data.frame() %>%
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i]) %>%
-                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -9621,7 +9621,7 @@ shinyServer(function(input, output, session) {
                     as.data.frame() %>%
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i]) %>%
-                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -9887,7 +9887,7 @@ shinyServer(function(input, output, session) {
                           oicc0 == oicc_ctrl_est_irgt()#cicc_unique[2]
             ) %>%
             mutate(oicc0=factor(oicc0)) %>%
-            plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc0,
+            plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                     linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                     colors=colors_plot,
                     hoverinfo="text",
@@ -9913,7 +9913,7 @@ shinyServer(function(input, output, session) {
                           oicc0 == oicc_ctrl_est_irgt()#cicc_unique[2]
             ) %>%
             mutate(oicc0=factor(oicc0)) %>%
-            plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc0,
+            plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                     linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,
                     colors=colors_plot,
                     hoverinfo="text",
@@ -9984,7 +9984,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(oicc0=factor(oicc0)) %>%
                   dplyr::filter(oicc1 == oicc1_unique[i]) %>%
-                  plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc0,
+                  plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                           linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -10008,7 +10008,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(oicc0=factor(oicc0)) %>%
                   dplyr::filter(oicc1 == oicc1_unique[i]) %>%
-                  plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc0,
+                  plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                           linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -10033,7 +10033,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(oicc0=factor(oicc0)) %>%
                   dplyr::filter(oicc1 == oicc1_unique[i]) %>%
-                  plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc0,
+                  plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                           linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -10057,7 +10057,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(oicc0=factor(oicc0)) %>%
                   dplyr::filter(oicc1 == oicc1_unique[i]) %>%
-                  plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc0,
+                  plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                           linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -10181,7 +10181,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(oicc1=factor(oicc1)) %>%
                   dplyr::filter(oicc0 == oicc0_unique[i]) %>%
-                  plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc1,
+                  plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                           linetype=~oicc1, color=~oicc1,legendgroup=~oicc1, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -10205,7 +10205,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(oicc1=factor(oicc1)) %>%
                   dplyr::filter(oicc0 == oicc0_unique[i]) %>%
-                  plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc1,
+                  plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                           linetype=~oicc1, color=~oicc1,legendgroup=~oicc1, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -10231,7 +10231,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(oicc1=factor(oicc1)) %>%
                   dplyr::filter(oicc0 == oicc0_unique[i]) %>%
-                  plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc1,
+                  plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                           linetype=~oicc1, color=~oicc1,legendgroup=~oicc1,showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -10255,7 +10255,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(oicc1=factor(oicc1)) %>%
                   dplyr::filter(oicc0 == oicc0_unique[i]) %>%
-                  plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc1,
+                  plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                           linetype=~oicc1, color=~oicc1,legendgroup=~oicc1,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -10492,7 +10492,7 @@ shinyServer(function(input, output, session) {
                           oicc0 == oicc_ctrl_est_irgt()#cicc_unique[2]
             ) %>%
             mutate(oicc0=factor(oicc0)) %>%
-            plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', name=~oicc0,
+            plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                     linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                     colors=colors_plot,
                     hoverinfo="text",
@@ -10520,7 +10520,7 @@ shinyServer(function(input, output, session) {
                             oicc0 == oicc_ctrl_est_irgt()#cicc_unique[2]
               ) %>%
               mutate(oicc0=factor(oicc0)) %>%
-              plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', name=~oicc0,
+              plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                       linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,
                       colors=colors_plot,
                       hoverinfo="text",
@@ -10618,7 +10618,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(oicc0=factor(oicc0)) %>%
                   dplyr::filter(oicc1 == oicc1_unique[i]) %>%
-                  plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', name=~oicc0,
+                  plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                           linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -10643,7 +10643,7 @@ shinyServer(function(input, output, session) {
                     as.data.frame() %>%
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i]) %>%
-                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -10670,7 +10670,7 @@ shinyServer(function(input, output, session) {
                     as.data.frame() %>%
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i]) %>%
-                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -10694,7 +10694,7 @@ shinyServer(function(input, output, session) {
                     as.data.frame() %>%
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i]) %>%
-                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -10718,7 +10718,7 @@ shinyServer(function(input, output, session) {
                     as.data.frame() %>%
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i]) %>%
-                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -10900,7 +10900,7 @@ shinyServer(function(input, output, session) {
                   as.data.frame() %>%
                   mutate(oicc1=factor(oicc1)) %>%
                   dplyr::filter(oicc0 == oicc0_unique[i]) %>%
-                  plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', name=~oicc1,
+                  plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                           linetype=~oicc1, color=~oicc1,legendgroup=~oicc1, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
@@ -10925,7 +10925,7 @@ shinyServer(function(input, output, session) {
                     as.data.frame() %>%
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i]) %>%
-                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -10953,7 +10953,7 @@ shinyServer(function(input, output, session) {
                     as.data.frame() %>%
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i]) %>%
-                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1,showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -10977,7 +10977,7 @@ shinyServer(function(input, output, session) {
                     as.data.frame() %>%
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i]) %>%
-                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -11001,7 +11001,7 @@ shinyServer(function(input, output, session) {
                     as.data.frame() %>%
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i]) %>%
-                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -11294,7 +11294,7 @@ shinyServer(function(input, output, session) {
                           cicc == cicc_est_het()#cicc_unique[2]
             ) %>%
             mutate(oicc0=factor(oicc0)) %>%
-            plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc0,
+            plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                     linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                     colors=colors_plot,
                     hoverinfo="text",
@@ -11322,7 +11322,7 @@ shinyServer(function(input, output, session) {
                           cicc == cicc_est_het()#cicc_unique[2]
             ) %>%
             mutate(oicc0=factor(oicc0)) %>%
-            plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc0,
+            plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                     linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,
                     colors=colors_plot,
                     hoverinfo="text",
@@ -11396,7 +11396,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -11422,7 +11422,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -11449,7 +11449,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -11475,7 +11475,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -11599,7 +11599,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   oicc0 == oicc_ctrl_est_het()) %>%
-                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -11625,7 +11625,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   oicc0 == oicc_ctrl_est_het()) %>%
-                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -11652,7 +11652,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   oicc0 == oicc_ctrl_est_het()) %>%
-                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc,showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -11678,7 +11678,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   oicc0 == oicc_ctrl_est_het()) %>%
-                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -11807,7 +11807,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -11833,7 +11833,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -11860,7 +11860,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1,showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -11886,7 +11886,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -12012,7 +12012,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -12038,7 +12038,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -12065,7 +12065,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc,showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -12091,7 +12091,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -12221,7 +12221,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc_ctrl_est_het(),
                                   cicc == cicc_unique[i]) %>%
-                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -12247,7 +12247,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc_ctrl_est_het(),
                                   cicc == cicc_unique[i]) %>%
-                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -12274,7 +12274,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc_ctrl_est_het(),
                                   cicc == cicc_unique[i]) %>%
-                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1,showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -12300,7 +12300,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc_ctrl_est_het(),
                                   cicc == cicc_unique[i]) %>%
-                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -12426,7 +12426,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(cicc == cicc_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -12452,7 +12452,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(cicc == cicc_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -12479,7 +12479,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(cicc == cicc_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -12505,7 +12505,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(cicc == cicc_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -12724,7 +12724,7 @@ shinyServer(function(input, output, session) {
                           cicc == cicc_est_het()#cicc_unique[2]
             ) %>%
             mutate(oicc0=factor(oicc0)) %>%
-            plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc0,
+            plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                     linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                     colors=colors_plot,
                     hoverinfo="text",
@@ -12752,7 +12752,7 @@ shinyServer(function(input, output, session) {
                           cicc == cicc_est_het()#cicc_unique[2]
             ) %>%
             mutate(oicc0=factor(oicc0)) %>%
-            plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc0,
+            plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                     linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,
                     colors=colors_plot,
                     hoverinfo="text",
@@ -12826,7 +12826,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -12852,7 +12852,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -12879,7 +12879,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -12905,7 +12905,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -13029,7 +13029,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   oicc0 == oicc_ctrl_est_het()) %>%
-                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -13055,7 +13055,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   oicc0 == oicc_ctrl_est_het()) %>%
-                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -13082,7 +13082,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   oicc0 == oicc_ctrl_est_het()) %>%
-                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc,showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -13108,7 +13108,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   oicc0 == oicc_ctrl_est_het()) %>%
-                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -13237,7 +13237,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -13263,7 +13263,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -13290,7 +13290,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1,showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -13316,7 +13316,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -13442,7 +13442,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -13468,7 +13468,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -13495,7 +13495,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc,showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -13521,7 +13521,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -13651,7 +13651,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc_ctrl_est_het(),
                                   cicc == cicc_unique[i]) %>%
-                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -13677,7 +13677,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc_ctrl_est_het(),
                                   cicc == cicc_unique[i]) %>%
-                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -13704,7 +13704,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc_ctrl_est_het(),
                                   cicc == cicc_unique[i]) %>%
-                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1,showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -13730,7 +13730,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc_ctrl_est_het(),
                                   cicc == cicc_unique[i]) %>%
-                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -13856,7 +13856,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(cicc == cicc_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -13882,7 +13882,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(cicc == cicc_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -13909,7 +13909,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(cicc == cicc_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~n1,y=~power1_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -13935,7 +13935,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(cicc == cicc_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~n0,y=~power0_hte_col, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -14171,7 +14171,7 @@ shinyServer(function(input, output, session) {
                           cicc == cicc_est_het()#cicc_unique[2]
             ) %>%
             mutate(oicc0=factor(oicc0)) %>%
-            plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', name=~oicc0,
+            plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                     linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                     colors=colors_plot,
                     hoverinfo="text",
@@ -14199,7 +14199,7 @@ shinyServer(function(input, output, session) {
                           cicc == cicc_est_het()#cicc_unique[2]
             ) %>%
             mutate(oicc0=factor(oicc0)) %>%
-            plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', name=~oicc0,
+            plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                     linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,
                     colors=colors_plot,
                     hoverinfo="text",
@@ -14273,7 +14273,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -14299,7 +14299,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -14326,7 +14326,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -14352,7 +14352,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -14476,7 +14476,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   oicc0 == oicc_ctrl_est_het()) %>%
-                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -14502,7 +14502,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   oicc0 == oicc_ctrl_est_het()) %>%
-                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -14529,7 +14529,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   oicc0 == oicc_ctrl_est_het()) %>%
-                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc,showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -14555,7 +14555,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc1 == oicc1_unique[i],
                                   oicc0 == oicc_ctrl_est_het()) %>%
-                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -14684,7 +14684,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -14710,7 +14710,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -14737,7 +14737,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1,showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -14763,7 +14763,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   cicc == cicc_est_het()) %>%
-                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -14889,7 +14889,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -14915,7 +14915,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -14942,7 +14942,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc,showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -14968,7 +14968,7 @@ shinyServer(function(input, output, session) {
                     mutate(cicc=factor(cicc)) %>%
                     dplyr::filter(oicc0 == oicc0_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~m0,y=~n1, type='scatter', mode='lines', name=~cicc,
+                    plot_ly(x=~m0,y=~n1, type='scatter', mode='lines', line=list(width=3), name=~cicc,
                             linetype=~cicc, color=~cicc,legendgroup=~cicc,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -15098,7 +15098,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc_ctrl_est_het(),
                                   cicc == cicc_unique[i]) %>%
-                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -15124,7 +15124,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc_ctrl_est_het(),
                                   cicc == cicc_unique[i]) %>%
-                    plot_ly(x=~m0,y=~n1, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m0,y=~n1, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -15151,7 +15151,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc_ctrl_est_het(),
                                   cicc == cicc_unique[i]) %>%
-                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1,showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -15177,7 +15177,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc1=factor(oicc1)) %>%
                     dplyr::filter(oicc0 == oicc_ctrl_est_het(),
                                   cicc == cicc_unique[i]) %>%
-                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', name=~oicc1,
+                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', line=list(width=3), name=~oicc1,
                             linetype=~oicc1, color=~oicc1,legendgroup=~oicc1,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -15303,7 +15303,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(cicc == cicc_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -15329,7 +15329,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(cicc == cicc_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -15356,7 +15356,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(cicc == cicc_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m1,y=~n1, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
@@ -15382,7 +15382,7 @@ shinyServer(function(input, output, session) {
                     mutate(oicc0=factor(oicc0)) %>%
                     dplyr::filter(cicc == cicc_unique[i],
                                   oicc1 == oicc_trt_est_het()) %>%
-                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', name=~oicc0,
+                    plot_ly(x=~m0,y=~n0, type='scatter', mode='lines', line=list(width=3), name=~oicc0,
                             linetype=~oicc0, color=~oicc0,legendgroup=~oicc0,
                             colors=colors_plot,
                             hoverinfo="text",
