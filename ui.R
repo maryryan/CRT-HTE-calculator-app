@@ -87,7 +87,7 @@ shinyUI(fluidPage(
       ),
       conditionalPanel(
         condition = "input.trial == 'irgt'",
-        helpText("A parallelt two-level CRT randomizes individuals to either receive treatment or intervention condition, but treatment conditions are administered in a clustered or grouped way (e.g., group instruction).", style="margin-top:-0.5em; margin-bottom:1em;")
+        helpText("A parallel two-level CRT randomizes individuals to either receive treatment or intervention condition, but treatment conditions are administered in a clustered or grouped way (e.g., group instruction).", style="margin-top:-0.5em; margin-bottom:1em;")
       ),
       conditionalPanel(
         condition = "input.trial == 'upload'",
