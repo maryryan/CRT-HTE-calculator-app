@@ -1,0 +1,11 @@
+name: shinyapp
+title: shinyapp
+username:
+account: cluster-hte
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 8260913
+bundleId: 9207681
+url: https://cluster-hte.shinyapps.io/shinyapp/
+asMultiple: FALSE
+asStatic: FALSE
