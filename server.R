@@ -19,6 +19,7 @@ library(htmltools)
 
 # Define server logic required to draw power plot
 shinyServer(function(input, output, session) {
+  options(shiny.sanitize.errors = FALSE)
   #### FUNCTIONS ####
   var_hte <- function(m, oicc, cicc, var_y, var_x, var_w){
     top <- var_y * (1 - oicc) * ( 1 + (m - 1) * oicc )
