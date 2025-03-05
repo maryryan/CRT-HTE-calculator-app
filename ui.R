@@ -15,10 +15,12 @@ library(patchwork)
 library(latex2exp)
 library(RColorBrewer)
 library(shinybrowser)
+library(shinyjs)
 
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
+  #useShinyjs(),
   # detect window size #
   tags$head(tags$script('
                                   var dimension = [0, 0];

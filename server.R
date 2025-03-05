@@ -16,6 +16,9 @@ library(latex2exp)
 library(RColorBrewer)
 library(htmltools)
 
+# load script to delay running reactives on inputs for a set amount of time #
+# use to improve hang on ICC ranges after deployment #
+source("debounce.R")
 
 # Define server logic required to draw power plot
 shinyServer(function(input, output, session) {
@@ -873,30 +876,32 @@ shinyServer(function(input, output, session) {
   
   ## parallel reacts ##
   #icc_display_react <- reactive({input$icc_display})
-  oicc_min <- reactive({input$oicc_range[1]})
-  oicc_max <- reactive({input$oicc_range[2]})
+
   oicc_est <- reactive({input$oicc_est})
-  cicc_min <- reactive({input$cicc_range[1]})
-  cicc_max <- reactive({input$cicc_range[2]})
   cicc_est <- reactive({input$cicc_est})
   
   sensitivity_react <- reactive({input$icc_sensitivity})
   
+  oicc_min <- debounce( input$oicc_range[1], 5000 )
+  oicc_max <- debounce( input$oicc_range[2], 5000 )
+  cicc_min <- debounce( input$cicc_range[1], 5000 )
+  cicc_max <- debounce( input$cicc_range[2], 5000 )
+  
   ## three-level reacts ##
-  oicc_wsub_min_three <- reactive({input$oicc_wsub_range_three[1]})
-  oicc_wsub_max_three <- reactive({input$oicc_wsub_range_three[2]})
+  oicc_wsub_min_three <- debounce( input$oicc_wsub_range_three[1] , 5000 )
+  oicc_wsub_max_three <- debounce( input$oicc_wsub_range_three[2], 5000 )
   oicc_wsub_est_three <- reactive({input$oicc_wsub_est_three})
   
-  oicc_ratio_min_three <- reactive({input$oicc_ratio_range_three[1]})
-  oicc_ratio_max_three <- reactive({input$oicc_ratio_range_three[2]})
+  oicc_ratio_min_three <- debounce( input$oicc_ratio_range_three[1], 5000 )
+  oicc_ratio_max_three <- debounce( input$oicc_ratio_range_three[2], 5000 )
   oicc_ratio_est_three <- reactive({input$oicc_ratio_est_three})
   
-  cicc_wsub_min_three <- reactive({input$cicc_wsub_range_three[1]})
-  cicc_wsub_max_three <- reactive({input$cicc_wsub_range_three[2]})
+  cicc_wsub_min_three <- debounce( input$cicc_wsub_range_three[1], 5000 )
+  cicc_wsub_max_three <- debounce( input$cicc_wsub_range_three[2], 5000 )
   cicc_wsub_est_three <- reactive({input$cicc_wsub_est_three})
   
-  cicc_ratio_min_three <- reactive({input$cicc_ratio_range_three[1]})
-  cicc_ratio_max_three <- reactive({input$cicc_ratio_range_three[2]})
+  cicc_ratio_min_three <- debounce( input$cicc_ratio_range_three[1], 5000 )
+  cicc_ratio_max_three <- debounce( input$cicc_ratio_range_three[2], 5000 )
   cicc_ratio_est_three <- reactive({input$cicc_ratio_est_three})
   
   sensitivity_three_react <- reactive({input$icc_sensitivity_three})
@@ -904,36 +909,36 @@ shinyServer(function(input, output, session) {
   ## crossovers & SW-CRT & upload reacts ##
   cohort <- reactive({input$cohort})
   
-  oicc_wperiod_min_swd <- reactive({input$oicc_wperiod_range_swd[1]})
-  oicc_wperiod_max_swd <- reactive({input$oicc_wperiod_range_swd[2]})
+  oicc_wperiod_min_swd <- debounce( input$oicc_wperiod_range_swd[1], 5000 )
+  oicc_wperiod_max_swd <- debounce( input$oicc_wperiod_range_swd[2], 5000 )
   oicc_wperiod_est_swd <- reactive({input$oicc_wperiod_est_swd})
   
-  oicc_wperiod_min_swd_cc <- reactive({input$oicc_wperiod_range_swd_cc[1]})
-  oicc_wperiod_max_swd_cc <- reactive({input$oicc_wperiod_range_swd_cc[2]})
+  oicc_wperiod_min_swd_cc <- debounce( input$oicc_wperiod_range_swd_cc[1], 5000 )
+  oicc_wperiod_max_swd_cc <- debounce( input$oicc_wperiod_range_swd_cc[2], 5000 )
   oicc_wperiod_est_swd_cc <- reactive({input$oicc_wperiod_est_swd_cc})
   
-  oicc_ratio_min_swd <- reactive({input$oicc_ratio_range_swd[1]})
-  oicc_ratio_max_swd <- reactive({input$oicc_ratio_range_swd[2]})
+  oicc_ratio_min_swd <- debounce( input$oicc_ratio_range_swd[1], 5000 )
+  oicc_ratio_max_swd <- debounce( input$oicc_ratio_range_swd[2], 5000 )
   oicc_ratio_est_swd <- reactive({input$oicc_ratio_est_swd})
   
-  oicc_ratio_min_swd_cc <- reactive({input$oicc_ratio_range_swd_cc[1]})
-  oicc_ratio_max_swd_cc <- reactive({input$oicc_ratio_range_swd_cc[2]})
+  oicc_ratio_min_swd_cc <- debounce( input$oicc_ratio_range_swd_cc[1], 5000 )
+  oicc_ratio_max_swd_cc <- debounce( input$oicc_ratio_range_swd_cc[2], 5000 )
   oicc_ratio_est_swd_cc <- reactive({input$oicc_ratio_est_swd_cc})
   
-  oicc_windiv_min_swd_cc <- reactive({input$oicc_windiv_range_swd_cc[1]})
-  oicc_windiv_max_swd_cc <- reactive({input$oicc_windiv_range_swd_cc[2]})
+  oicc_windiv_min_swd_cc <- debounce( input$oicc_windiv_range_swd_cc[1], 5000 )
+  oicc_windiv_max_swd_cc <- debounce( input$oicc_windiv_range_swd_cc[2], 5000 )
   oicc_windiv_est_swd_cc <- reactive({input$oicc_windiv_est_swd_cc})
   
-  cicc_wperiod_min_swd <- reactive({input$cicc_wperiod_range_swd[1]})
-  cicc_wperiod_max_swd <- reactive({input$cicc_wperiod_range_swd[2]})
+  cicc_wperiod_min_swd <- debounce( input$cicc_wperiod_range_swd[1], 5000 )
+  cicc_wperiod_max_swd <- debounce( input$cicc_wperiod_range_swd[2], 5000 )
   cicc_wperiod_est_swd <- reactive({input$cicc_wperiod_est_swd})
   
-  cicc_wperiod_min_swd_cc <- reactive({input$cicc_wperiod_range_swd_cc[1]})
-  cicc_wperiod_max_swd_cc <- reactive({input$cicc_wperiod_range_swd_cc[2]})
+  cicc_wperiod_min_swd_cc <- debounce( input$cicc_wperiod_range_swd_cc[1], 5000 )
+  cicc_wperiod_max_swd_cc <- debounce( input$cicc_wperiod_range_swd_cc[2], 5000 )
   cicc_wperiod_est_swd_cc <- reactive({input$cicc_wperiod_est_swd_cc})
   
-  cicc_ratio_min_swd <- reactive({input$cicc_ratio_range_swd[1]})
-  cicc_ratio_max_swd <- reactive({input$cicc_ratio_range_swd[2]})
+  cicc_ratio_min_swd <- debounce( input$cicc_ratio_range_swd[1], 5000 )
+  cicc_ratio_max_swd <- debounce( input$cicc_ratio_range_swd[2], 5000 )
   cicc_ratio_est_swd <- reactive({input$cicc_ratio_est_swd})
   
   sensitivity_swd_react <- reactive({input$icc_sensitivity_swd})
@@ -941,27 +946,27 @@ shinyServer(function(input, output, session) {
   ## irgt reactives ##
   clustering_irgt <- reactive({input$control_cluster})
   
-  oicc_trt_min_irgt <- reactive({input$oicc_trt_range_irgt[1]})
-  oicc_trt_max_irgt <- reactive({input$oicc_trt_range_irgt[2]})
+  oicc_trt_min_irgt <- debounce( input$oicc_trt_range_irgt[1], 5000 )
+  oicc_trt_max_irgt <- debounce( input$oicc_trt_range_irgt[2], 5000 )
   oicc_trt_est_irgt <- reactive({input$oicc_trt_est_irgt})
   
-  oicc_ctrl_min_irgt <- reactive({input$oicc_ctrl_range_irgt[1]})
-  oicc_ctrl_max_irgt <- reactive({input$oicc_ctrl_range_irgt[2]})
+  oicc_ctrl_min_irgt <- debounce( input$oicc_ctrl_range_irgt[1], 5000 )
+  oicc_ctrl_max_irgt <- debounce( input$oicc_ctrl_range_irgt[2], 5000 )
   oicc_ctrl_est_irgt <- reactive({input$oicc_ctrl_est_irgt})
   
   sensitivity_irgt_react <- reactive({input$icc_sensitivity_irgt})
   
   ## het crt reactives ##
-  oicc_trt_min_het <- reactive({input$oicc_trt_range_het[1]})
-  oicc_trt_max_het <- reactive({input$oicc_trt_range_het[2]})
+  oicc_trt_min_het <- debounce( input$oicc_trt_range_het[1], 5000 )
+  oicc_trt_max_het <- debounce( input$oicc_trt_range_het[2], 5000 )
   oicc_trt_est_het <- reactive({input$oicc_trt_est_het})
   
-  oicc_ctrl_min_het <- reactive({input$oicc_ctrl_range_het[1]})
-  oicc_ctrl_max_het <- reactive({input$oicc_ctrl_range_het[2]})
+  oicc_ctrl_min_het <- debounce( input$oicc_ctrl_range_het[1], 5000 )
+  oicc_ctrl_max_het <- debounce( input$oicc_ctrl_range_het[2], 5000 )
   oicc_ctrl_est_het <- reactive({input$oicc_ctrl_est_het})
   
-  cicc_min_het <- reactive({input$cicc_range_het[1]})
-  cicc_max_het <- reactive({input$cicc_range_het[2]})
+  cicc_min_het <- debounce( input$cicc_range_het[1], 5000 )
+  cicc_max_het <- debounce( input$cicc_range_het[2], 5000 )
   cicc_est_het <- reactive({input$cicc_est_het})
   
   sensitivity_het_react <- reactive({input$icc_sensitivity_het})
@@ -969,7 +974,29 @@ shinyServer(function(input, output, session) {
   # window reactive #
   window_width <- reactive({input$dimension[2]})
   
-  
+
+  #### DESIGN MATRIX OUTPUT ####
+  output$design_matrix <- renderTable({
+    
+    if(trial_react() =="crossover_2"){
+      desmat_display <- designMatrix(design = trial_react(), periods = 2)
+    }else if(trial_react() =="crossover_m"){
+      desmat_display <- designMatrix(design = trial_react(), periods = input$J)
+    }else if(trial_react() == "SWD"){
+      desmat_display <- designMatrix(design = trial_react(), periods = input$J_1+1, steps = input$J_1)
+    }else if(trial_react() == "upload"){
+      if(is.null(file1())) stop("User needs to upload design matrix before the function can continue")
+      desmat_display <- designMatrix(design = trial_react(), file=file1())
+    }else if(trial_react() =="parallel_m"){
+      desmat_display <- designMatrix(design = trial_react(), periods = input$J)
+    }else{
+      desmat_display <- designMatrix(design = trial_react())
+    }
+    
+    head(desmat_display, n=nrow(desmat_display))
+    
+  },digits=0)
+    
   ## power over cluster size ##
   output$powerPlot_hte <- renderPlotly({
     
@@ -15507,28 +15534,6 @@ shinyServer(function(input, output, session) {
     
     
   })#end of output plot
-  
-  #### DESIGN MATRIX OUTPUT ####
-  output$design_matrix <- renderTable({
-    
-    if(trial_react() =="crossover_2"){
-      desmat_display <- designMatrix(design = trial_react(), periods = 2)
-    }else if(trial_react() =="crossover_m"){
-      desmat_display <- designMatrix(design = trial_react(), periods = input$J)
-    }else if(trial_react() == "SWD"){
-      desmat_display <- designMatrix(design = trial_react(), periods = input$J_1+1, steps = input$J_1)
-    }else if(trial_react() == "upload"){
-      if(is.null(file1())) stop("User needs to upload design matrix before the function can continue")
-      desmat_display <- designMatrix(design = trial_react(), file=file1())
-    }else if(trial_react() =="parallel_m"){
-      desmat_display <- designMatrix(design = trial_react(), periods = input$J)
-    }else{
-      desmat_display <- designMatrix(design = trial_react())
-    }
-    
-    head(desmat_display, n=nrow(desmat_display))
-    
-  },digits=0)
   
   
 })
