@@ -936,13 +936,13 @@ shinyUI(fluidPage(
       conditionalPanel(
         condition = "input.trial == 'parallel' || input.trial == 'three_level'",
         numericInput(inputId="w",
-                     label="Intervention allocation",
+                     label="Intervention randomization ratio",
                      0.5, min=0.000001, max=1, step=0.001),
-        helpText("Enter the proportion of total participants in the intervention arm.", style="margin-top:-0.5em; margin-bottom:1em;"),
+        helpText("Enter the proportion of total clusters randomized to the intervention or treatment arm.", style="margin-top:-0.5em; margin-bottom:1em;"),
       ),
       # sig level #
       numericInput(inputId="sig",
-                   label="Significance level",
+                   label="Significance level (two-sided)",
                    0.05, min=0.000001, max=1, step=0.001),
       ## loading message when the app is calculating ##
       tags$head(tags$style(type="text/css", "
