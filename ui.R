@@ -81,7 +81,7 @@ shinyUI(fluidPage(
       ),
       conditionalPanel(
         condition = "input.trial == 'SWD'",
-        helpText("A stepped-wedge CRT randomizes clusters of individuals to the time at which the cluster initiates the intervention. All clusters begin on the control condition and, as time progresses, batches of clusters are transitioned to the intervention.", style="margin-top:-0.5em; margin-bottom:1em;")
+        helpText("A stepped-wedge CRT randomizes clusters of individuals to the time at which the cluster initiates the intervention. All clusters begin on the control condition and, as time progresses, batches of clusters are transitioned to the intervention. This option assumes an equal number of clusters per sequence (balanced); if you would like to use a stepped-wedge design with unequal numbers of clusters per sequence, please use the 'Upload custom design' option.", style="margin-top:-0.5em; margin-bottom:1em;")
       ),
       conditionalPanel(
         condition = "input.trial == 'het_two'",
