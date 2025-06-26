@@ -915,7 +915,7 @@ shinyUI(fluidPage(
       numericInput(inputId="mean_diff_HTE",
                    label="Assumed HTE",
                    1, min=0, max=999999),
-      helpText("Specify the target effect size for the effect modification, e.g., the difference in difference estimate for a binary effect modifier.", style="margin-top:-0.5em; margin-bottom:1em;"),
+      helpText("Specify the target effect size for the treatment effect modification, e.g., the treatment interaction .", style="margin-top:-0.5em; margin-bottom:1em;"),
       # covariate sd for continuous #
       conditionalPanel(
         condition = "input.covar == 'continuous'",
