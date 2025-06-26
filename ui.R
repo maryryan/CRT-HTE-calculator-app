@@ -936,7 +936,7 @@ shinyUI(fluidPage(
       conditionalPanel(
         condition = "input.trial == 'parallel' || input.trial == 'three_level'",
         numericInput(inputId="w",
-                     label="Intervention randomization ratio",
+                     label="Intervention randomization proportion",
                      0.5, min=0.000001, max=1, step=0.001),
         helpText("Enter the proportion of total clusters randomized to the intervention or treatment arm.", style="margin-top:-0.5em; margin-bottom:1em;"),
       ),
@@ -977,7 +977,7 @@ shinyUI(fluidPage(
                  tableOutput("design_matrix")),
         tabPanel("References and Resources", 
                  h3("References and Resources"),
-                 p(em("This application has been written by Mary M. Ryan (University of Wisconsin - Madison USA), Fan Li (Yale School of Public Health USA), and with input from Monica Taljaard (University of Ottawa - Ottawa Hospital Research Institute CA). Please email mary.ryan@wisc.edu if you need to report errors or would like to submit comments or feedback."), style = "font-size:13pt;"),
+                 p(em("This application has been written by Mary Ryan Baumann (University of Wisconsin - Madison USA), Fan Li (Yale School of Public Health USA), and with input from Monica Taljaard (University of Ottawa - Ottawa Hospital Research Institute CA). Please email mary.ryan@wisc.edu if you need to report errors or would like to submit comments or feedback."), style = "font-size:13pt;"),
                  p(em("Source code and updates for can be found on Github:", a("https://github.com/maryryan/CRT-HTE-calculator-app", href="https://github.com/maryryan/CRT-HTE-calculator-app")), style = "font-size:13pt;"),
                  p(tags$ul(
                    tags$li(strong("Parallel two-level design"),": Yang S., Li F., Starks M., Hernandez A.F., Mentz R.J., Choudhury K.R. Sample size requirements for detecting treatment effect heterogeneity in cluster randomized trials. Stat Med. 2020 July 16;39(28):4218-4237. doi: 10.1002/sim.8721. Epub 2020 Aug 21. PubMed PMID: 32823372", style = "font-size:13pt;"),
