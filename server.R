@@ -76,17 +76,17 @@ shinyServer(function(input, output, session) {
     return(power_result)
   }
   
-  var_hte_three <- function(ns, m, pw, var_y, var_x, a0, a1, r0, r1, rand){
+  var_hte_three <- function(ns, m, pw, var_y, var_x, alpha0, alpha1, rho0, rho1, rand){
     
     # eigen values for outcome #
-    l1 <- 1 - a0
-    l2 <- 1 + (m-1)*a0 - m*a1
-    l3 <- 1 + (m-1)*a0 + (ns-1)*m*a1
+    l1 <- 1 - alpha0
+    l2 <- 1 + (m-1)*alpha0 - m*alpha1
+    l3 <- 1 + (m-1)*alpha0 + (ns-1)*m*alpha1
     
     # eigen values for effect modifier #
-    e1 <- 1 - r0
-    e2 <- 1 + (m-1)*r0 - m*r1
-    e3 <- 1 + (m-1)*r0 + (ns-1)*m*r1
+    e1 <- 1 - rho0
+    e2 <- 1 + (m-1)*rho0 - m*rho1
+    e3 <- 1 + (m-1)*rho0 + (ns-1)*m*rho1
     
     # randomization variance #
     var_w <- pw*(1-pw)
@@ -94,7 +94,7 @@ shinyServer(function(input, output, session) {
     if(rand=="cluster"){
       var_4 <- var_y/(var_w * var_x) * (ns*m)/( (1/l3)*e3 + (ns-1)*(1/l2)*e2 + ns*(m-1)*(1/l1)*e1 )
     }else if(rand=="subcluster"){
-      var_4 <- var_y/(var_w * var_x) * (m)/( m*(1/l1) - (1 + (m-1)*r0)*((1/l1) - (1/l2)) )
+      var_4 <- var_y/(var_w * var_x) * (m)/( m*(1/l1) - (1 + (m-1)*rho0)*((1/l1) - (1/l2)) )
     }else if(rand=="individ"){
       var_4 <- var_y/(var_w*var_x) * l1
     }
@@ -109,12 +109,12 @@ shinyServer(function(input, output, session) {
     
   }
   
-  power_hte_three <- function(nc, ns, m, pw, var_y, var_x, a0, a1_a0, r0, r1_r0, rand, d, a=0.05){
+  power_hte_three <- function(nc, ns, m, pw, var_y, var_x, alpha0, a1_a0, rho0, r1_r0, rand, d, a=0.05){
     z <- qnorm(1 - a/2)
-    a1 <- a1_a0*a0
-    r1 <- r1_r0*r0
+    alpha1 <- a1_a0*alpha0
+    rho1 <- r1_r0*rho0
     
-    var_4 <- var_hte_three(ns, m, pw, var_y, var_x, a0, a1, r0, r1, rand)
+    var_4 <- var_hte_three(ns, m, pw, var_y, var_x, alpha0, alpha1, rho0, rho1, rand)
     
     inside <- abs(d)/sqrt(var_4/(nc*ns*m)) - z
     
@@ -122,12 +122,12 @@ shinyServer(function(input, output, session) {
     return(power_result)
   }
   
-  nc_hte_three <- function(m, ns, power=0.9, pw, var_y, var_x, a0, a1_a0, r0, r1_r0, rand, d, a=0.05){
+  nc_hte_three <- function(m, ns, power=0.9, pw, var_y, var_x, alpha0, a1_a0, rho0, r1_r0, rand, d, a=0.05){
     
-    a1 <- a1_a0*a0
-    r1 <- r1_r0*r0
+    alpha1 <- a1_a0*alpha0
+    rho1 <- r1_r0*rho0
     
-    s2_hte <- var_hte_three(ns, m, pw, var_y, var_x, a0, a1, r0, r1, rand)
+    s2_hte <- var_hte_three(ns, m, pw, var_y, var_x, alpha0, alpha1, rho0, rho1, rand)
     
     z_typeI <- qnorm(1-a/2)
     z_power <- qnorm(power)
@@ -141,27 +141,27 @@ shinyServer(function(input, output, session) {
     return( list(nc=ceiling(nc_result), power_emp=power_result) )
   }
   
-  var_hte_swd_cs <- function(n,m,J,var_y,var_x,a0,a1,r0,r1){
+  var_hte_swd_cs <- function(n,m,J,var_y,var_x,alpha0,alpha1,rho0,rho1){
     ## n clusters
     ## m people per cluster-period
     ## J periods
     ## var_y outcome variance
     ## var_x covariate variance
-    ## a0 within-period outcome ICC
-    ## a1 between-period outcome ICC
-    ## r0 within-period covariate ICC
-    ## r1 between-period covariate ICC
+    ## alpha0 within-period outcome ICC
+    ## alpha1 between-period outcome ICC
+    ## rho0 within-period covariate ICC
+    ## rho1 between-period covariate ICC
     
     
     # eigenvalues for outcome #
-    l1 <- 1 - a0
-    l2 <- 1 + (m-1)*a0 - m*a1
-    l3 <- 1 + (m-1)*a0 + (J-1)*m*a1
+    l1 <- 1 - alpha0
+    l2 <- 1 + (m-1)*alpha0 - m*alpha1
+    l3 <- 1 + (m-1)*alpha0 + (J-1)*m*alpha1
     
     # eigenvalues for covariate #
-    e1 <- 1 - r0
-    e2 <- 1 + (m-1)*r0 - m*r1
-    e3 <- 1 + (m-1)*r0 + (J-1)*m*r1
+    e1 <- 1 - rho0
+    e2 <- 1 + (m-1)*rho0 - m*rho1
+    e3 <- 1 + (m-1)*rho0 + (J-1)*m*rho1
     
     # intervention sequence #
     W0 <- matrix(0, ncol=J, nrow=J-1)
@@ -206,27 +206,27 @@ shinyServer(function(input, output, session) {
     
   }
   
-  var_hte_swd_cc <- function(n,m,J,var_y,var_x,a0,a1,a2,r0){
+  var_hte_swd_cc <- function(n,m,J,var_y,var_x,alpha0,alpha1,a2,rho0){
     
     ## n clusters
     ## m people per cluster-period
     ## J periods
     ## var_y outcome variance
     ## var_x covariate variance
-    ## a0 within-period outcome ICC
-    ## a1 between-period outcome ICC
+    ## alpha0 within-period outcome ICC
+    ## alpha1 between-period outcome ICC
     ## a2 within-individual outcome ICC
-    ## r0 within-period covariate ICC
+    ## rho0 within-period covariate ICC
     
     # eigenvalues for outcome #
-    t1 <- 1-a0+a1-a2
-    t2 <- 1-a0-(J-1)*(a1-a2)
-    t3 <- 1+(m-1)*(a0-a1)-a2
-    t4 <- 1+(m-1)*a0 + (J-1)*(m-1)*a1 + (J-1)*a2
+    t1 <- 1-alpha0+alpha1-a2
+    t2 <- 1-alpha0-(J-1)*(alpha1-a2)
+    t3 <- 1+(m-1)*(alpha0-alpha1)-a2
+    t4 <- 1+(m-1)*alpha0 + (J-1)*(m-1)*alpha1 + (J-1)*a2
     
     #eigenvalues for covariate #
-    eta1 <- 1-r0
-    eta2 <- 1+(m-1)*r0
+    eta1 <- 1-rho0
+    eta2 <- 1+(m-1)*rho0
     
     # intervention sequence #
     W0 <- matrix(0, ncol=J, nrow=J-1)
@@ -258,16 +258,16 @@ shinyServer(function(input, output, session) {
     
   }
   
-  power_hte_swd <- function(n, m, J, var_y, var_x, a0, a1_a0, a2=NULL, r0, r1_r0=NULL, d, cohort, a=0.05){
+  power_hte_swd <- function(n, m, J, var_y, var_x, alpha0, a1_a0, a2=NULL, rho0, r1_r0=NULL, d, cohort, a=0.05){
     z <- qnorm(1 - a/2)
-    a1 <- a1_a0*a0
+    alpha1 <- a1_a0*alpha0
     
     if(cohort=="cross"){
-      r1 <- r1_r0*r0
+      rho1 <- r1_r0*rho0
       
-      var_4 <- var_hte_swd_cs(n,m,J,var_y,var_x,a0,a1,r0,r1)#var_hte_swd_cs_billy(n=n, m=m, J=J, var_y=var_y, var_x=var_x, d=d, a0=a0, a1=a1, r0=r0, r1=r1, a=a)#
+      var_4 <- var_hte_swd_cs(n,m,J,var_y,var_x,alpha0,alpha1,rho0,rho1)#var_hte_swd_cs_billy(n=n, m=m, J=J, var_y=var_y, var_x=var_x, d=d, alpha0=alpha0, alpha1=alpha1, rho0=rho0, rho1=rho1, a=a)#
     }else if (cohort=="closed"){
-      var_4 <- var_hte_swd_cc(n,m,J,var_y,var_x,a0,a1,a2,r0)
+      var_4 <- var_hte_swd_cc(n,m,J,var_y,var_x,alpha0,alpha1,a2,rho0)
     }
     
     
@@ -278,8 +278,8 @@ shinyServer(function(input, output, session) {
     return(power_result)
   }
   
-  ns_hte_swd <- function(m,J,var_y,var_x,a0, a1_a0, a2=NULL, r0, r1_r0=NULL, d, cohort, a=0.05, power=0.8){
-    a1 <- a1_a0*a0
+  ns_hte_swd <- function(m,J,var_y,var_x,alpha0, a1_a0, a2=NULL, rho0, r1_r0=NULL, d, cohort, a=0.05, power=0.8){
+    alpha1 <- a1_a0*alpha0
     
     z <- qnorm(1 - a/2)
     
@@ -292,11 +292,11 @@ shinyServer(function(input, output, session) {
       
       if(cohort=="cross"){
         
-        r1 <- r1_r0*r0
+        rho1 <- r1_r0*rho0
         
-        s2_hte <- var_hte_swd_cs(n_result,m,J,var_y,var_x,a0,a1,r0,r1)#var_hte_swd_cs_billy(n=n, m=m, J=J, var_y=var_y, var_x=var_x, d=d, a0=a0, a1=a1, r0=r0, r1=r1, a=a)#
+        s2_hte <- var_hte_swd_cs(n_result,m,J,var_y,var_x,alpha0,alpha1,rho0,rho1)#var_hte_swd_cs_billy(n=n, m=m, J=J, var_y=var_y, var_x=var_x, d=d, alpha0=alpha0, alpha1=alpha1, rho0=rho0, rho1=rho1, a=a)#
       }else if (cohort=="closed"){
-        s2_hte <- var_hte_swd_cc(n_result,m,J,var_y,var_x,a0,a1,a2,r0)
+        s2_hte <- var_hte_swd_cc(n_result,m,J,var_y,var_x,alpha0,alpha1,a2,rho0)
       }
       
       power_emp <- pnorm( abs(d)/sqrt(s2_hte) - z )
@@ -311,7 +311,7 @@ shinyServer(function(input, output, session) {
     
   }
   
-  var_hte_parallel_m_cs <- function(desmat,n,m,var_y,var_x,w,a0,a1,r0,r1, range=F){
+  var_hte_parallel_m_cs <- function(desmat,n,m,var_y,var_x,w,alpha0,alpha1,rho0,rho1, range=F){
     
     ## desmat design matrix
     ## n total number of clusters
@@ -319,23 +319,23 @@ shinyServer(function(input, output, session) {
     ## var_y outcome variance
     ## var_x covariate variance
     ## w proportion of clusters on treatment arm
-    ## a0 within-period outcome ICC
-    ## a1 between-period outcome ICC
-    ## r0 within-period covariate ICC
-    ## r1 between-period covariate ICC
+    ## alpha0 within-period outcome ICC
+    ## alpha1 between-period outcome ICC
+    ## rho0 within-period covariate ICC
+    ## rho1 between-period covariate ICC
     
     # determine number of periods #
     J <- ncol(desmat)
     
     # eigenvalues for outcome #
-    l1 <- 1 - a0
-    l2 <- 1 + (m-1)*a0 - m*a1
-    l3 <- 1 + (m-1)*a0 + (J-1)*m*a1
+    l1 <- 1 - alpha0
+    l2 <- 1 + (m-1)*alpha0 - m*alpha1
+    l3 <- 1 + (m-1)*alpha0 + (J-1)*m*alpha1
     
     # eigenvalues for covariate #
-    e1 <- 1 - r0
-    e2 <- 1 + (m-1)*r0 - m*r1
-    e3 <- 1 + (m-1)*r0 + (J-1)*m*r1
+    e1 <- 1 - rho0
+    e2 <- 1 + (m-1)*rho0 - m*rho1
+    e3 <- 1 + (m-1)*rho0 + (J-1)*m*rho1
     
     # intervention sequence #
     # W0 <- matrix(0, ncol=J, nrow=J-1)
@@ -380,7 +380,7 @@ shinyServer(function(input, output, session) {
     
   }
   
-  var_hte_parallel_m_cc <- function(desmat, n,m,var_y,var_x,w,a0,a1,a2,r0,range=F){
+  var_hte_parallel_m_cc <- function(desmat, n,m,var_y,var_x,w,alpha0,alpha1,a2,rho0,range=F){
     
     ## desmat design matrix
     ## n total number of clusters
@@ -389,23 +389,23 @@ shinyServer(function(input, output, session) {
     ## var_y outcome variance
     ## var_x covariate variance
     ## w proportion of clusters on treatment arm
-    ## a0 within-period outcome ICC
-    ## a1 between-period outcome ICC
+    ## alpha0 within-period outcome ICC
+    ## alpha1 between-period outcome ICC
     ## a2 within-individual outcome ICC
-    ## r0 within-period covariate ICC
+    ## rho0 within-period covariate ICC
     
     # determine number of periods #
     J <- ncol(desmat)
     
     # eigenvalues for outcome #
-    t1 <- 1-a0+a1-a2
-    t2 <- 1-a0-(J-1)*(a1-a2)
-    t3 <- 1+(m-1)*(a0-a1)-a2
-    t4 <- 1+(m-1)*a0 + (J-1)*(m-1)*a1 + (J-1)*a2
+    t1 <- 1-alpha0+alpha1-a2
+    t2 <- 1-alpha0-(J-1)*(alpha1-a2)
+    t3 <- 1+(m-1)*(alpha0-alpha1)-a2
+    t4 <- 1+(m-1)*alpha0 + (J-1)*(m-1)*alpha1 + (J-1)*a2
     
     #eigenvalues for covariate #
-    eta1 <- 1-r0
-    eta2 <- 1+(m-1)*r0
+    eta1 <- 1-rho0
+    eta2 <- 1+(m-1)*rho0
     
     # intervention sequence #
     # W0 <- matrix(0, ncol=J, nrow=J-1)
@@ -444,16 +444,16 @@ shinyServer(function(input, output, session) {
     
   }
   
-  power_hte_parallel_m <- function(desmat, n, m, var_y, var_x, w, a0, a1_a0, a2=NULL, r0, r1_r0=NULL, d, cohort, a=0.05, range=F){
+  power_hte_parallel_m <- function(desmat, n, m, var_y, var_x, w, alpha0, a1_a0, a2=NULL, rho0, r1_r0=NULL, d, cohort, a=0.05, range=F){
     z <- qnorm(1 - a/2)
-    a1 <- a1_a0*a0
+    alpha1 <- a1_a0*alpha0
     
     if(cohort=="cross"){
-      r1 <- r1_r0*r0
+      rho1 <- r1_r0*rho0
       
-      var_4 <- var_hte_parallel_m_cs(desmat,n,m,var_y,var_x,w,a0,a1,r0,r1, range)#var_hte_swd_cs_billy(n=n, m=m, J=J, var_y=var_y, var_x=var_x, d=d, a0=a0, a1=a1, r0=r0, r1=r1, a=a)#
+      var_4 <- var_hte_parallel_m_cs(desmat,n,m,var_y,var_x,w,alpha0,alpha1,rho0,rho1, range)#var_hte_swd_cs_billy(n=n, m=m, J=J, var_y=var_y, var_x=var_x, d=d, alpha0=alpha0, alpha1=alpha1, rho0=rho0, rho1=rho1, a=a)#
     }else if (cohort=="closed"){
-      var_4 <- var_hte_parallel_m_cc(desmat,n,m,var_y,var_x,w,a0,a1,a2,r0,range)
+      var_4 <- var_hte_parallel_m_cc(desmat,n,m,var_y,var_x,w,alpha0,alpha1,a2,rho0,range)
     }
     
     
@@ -464,8 +464,8 @@ shinyServer(function(input, output, session) {
     return(power_result)
   }
   
-  ns_hte_parallel_m <- function(desmat,m,var_y,var_x,w,a0, a1_a0, a2=NULL, r0, r1_r0=NULL, d, cohort, a=0.05, power=0.8, range=F){
-    a1 <- a1_a0*a0
+  ns_hte_parallel_m <- function(desmat,m,var_y,var_x,w,alpha0, a1_a0, a2=NULL, rho0, r1_r0=NULL, d, cohort, a=0.05, power=0.8, range=F){
+    alpha1 <- a1_a0*alpha0
     
     z <- qnorm(1 - a/2)
     
@@ -484,11 +484,11 @@ shinyServer(function(input, output, session) {
       
       if(cohort=="cross"){
         
-        r1 <- r1_r0*r0
+        rho1 <- r1_r0*rho0
         
-        s2_hte <- var_hte_parallel_m_cs(desmat, nca,m,var_y,var_x,w,a0,a1,r0,r1,range)#var_hte_swd_cs_billy(n=n, m=m, J=J, var_y=var_y, var_x=var_x, d=d, a0=a0, a1=a1, r0=r0, r1=r1, a=a)#
+        s2_hte <- var_hte_parallel_m_cs(desmat, nca,m,var_y,var_x,w,alpha0,alpha1,rho0,rho1,range)#var_hte_swd_cs_billy(n=n, m=m, J=J, var_y=var_y, var_x=var_x, d=d, alpha0=alpha0, alpha1=alpha1, rho0=rho0, rho1=rho1, a=a)#
       }else if (cohort=="closed"){
-        s2_hte <- var_hte_parallel_m_cc(desmat,nca,m,var_y,var_x,w,a0,a1,a2,r0,range)
+        s2_hte <- var_hte_parallel_m_cc(desmat,nca,m,var_y,var_x,w,alpha0,alpha1,a2,rho0,range)
       }
       
       power_emp <- pnorm( abs(d)/sqrt(s2_hte) - z )
@@ -503,31 +503,31 @@ shinyServer(function(input, output, session) {
     
   }
   
-  var_hte_ownDes_cs <- function(desmat,n_seq,m,var_y,var_x,a0,a1,r0,r1){
+  var_hte_ownDes_cs <- function(desmat,n_seq,m,var_y,var_x,alpha0,alpha1,rho0,rho1){
     
     ## desmat design matrix
     ## n_seq clusters per sequence
     ## m people per cluster-period
     ## var_y outcome variance
     ## var_x covariate variance
-    ## a0 within-period outcome ICC
-    ## a1 between-period outcome ICC
-    ## r0 within-period covariate ICC
-    ## r1 between-period covariate ICC
+    ## alpha0 within-period outcome ICC
+    ## alpha1 between-period outcome ICC
+    ## rho0 within-period covariate ICC
+    ## rho1 between-period covariate ICC
     
     # determine number of periods #
     J <- ncol(desmat)
     n <- n_seq*nrow(desmat)
     
     # eigenvalues for outcome #
-    l1 <- 1 - a0
-    l2 <- 1 + (m-1)*a0 - m*a1
-    l3 <- 1 + (m-1)*a0 + (J-1)*m*a1
+    l1 <- 1 - alpha0
+    l2 <- 1 + (m-1)*alpha0 - m*alpha1
+    l3 <- 1 + (m-1)*alpha0 + (J-1)*m*alpha1
     
     # eigenvalues for covariate #
-    e1 <- 1 - r0
-    e2 <- 1 + (m-1)*r0 - m*r1
-    e3 <- 1 + (m-1)*r0 + (J-1)*m*r1
+    e1 <- 1 - rho0
+    e2 <- 1 + (m-1)*rho0 - m*rho1
+    e3 <- 1 + (m-1)*rho0 + (J-1)*m*rho1
     
     # intervention sequence #
     # W0 <- matrix(0, ncol=J, nrow=J-1)
@@ -567,7 +567,7 @@ shinyServer(function(input, output, session) {
     
   }
   
-  var_hte_ownDes_cc <- function(desmat, n_seq,m,var_y,var_x,a0,a1,a2,r0){
+  var_hte_ownDes_cc <- function(desmat, n_seq,m,var_y,var_x,alpha0,alpha1,a2,rho0){
     
     ## desmat design matrix
     ## n_seq clusters per sequence
@@ -575,24 +575,24 @@ shinyServer(function(input, output, session) {
     ## J periods
     ## var_y outcome variance
     ## var_x covariate variance
-    ## a0 within-period outcome ICC
-    ## a1 between-period outcome ICC
+    ## alpha0 within-period outcome ICC
+    ## alpha1 between-period outcome ICC
     ## a2 within-individual outcome ICC
-    ## r0 within-period covariate ICC
+    ## rho0 within-period covariate ICC
     
     # determine number of periods #
     J <- ncol(desmat)
     n <- n_seq*nrow(desmat)
     
     # eigenvalues for outcome #
-    t1 <- 1-a0+a1-a2
-    t2 <- 1-a0-(J-1)*(a1-a2)
-    t3 <- 1+(m-1)*(a0-a1)-a2
-    t4 <- 1+(m-1)*a0 + (J-1)*(m-1)*a1 + (J-1)*a2
+    t1 <- 1-alpha0+alpha1-a2
+    t2 <- 1-alpha0-(J-1)*(alpha1-a2)
+    t3 <- 1+(m-1)*(alpha0-alpha1)-a2
+    t4 <- 1+(m-1)*alpha0 + (J-1)*(m-1)*alpha1 + (J-1)*a2
     
     #eigenvalues for covariate #
-    eta1 <- 1-r0
-    eta2 <- 1+(m-1)*r0
+    eta1 <- 1-rho0
+    eta2 <- 1+(m-1)*rho0
     
     # intervention sequence #
     # W0 <- matrix(0, ncol=J, nrow=J-1)
@@ -626,16 +626,16 @@ shinyServer(function(input, output, session) {
     
   }
   
-  power_hte_ownDes <- function(desmat, n_seq, m, var_y, var_x, a0, a1_a0, a2=NULL, r0, r1_r0=NULL, d, cohort, a=0.05){
+  power_hte_ownDes <- function(desmat, n_seq, m, var_y, var_x, alpha0, a1_a0, a2=NULL, rho0, r1_r0=NULL, d, cohort, a=0.05){
     z <- qnorm(1 - a/2)
-    a1 <- a1_a0*a0
+    alpha1 <- a1_a0*alpha0
     
     if(cohort=="cross"){
-      r1 <- r1_r0*r0
+      rho1 <- r1_r0*rho0
       
-      var_4 <- var_hte_ownDes_cs(desmat,n_seq,m,var_y,var_x,a0,a1,r0,r1)#var_hte_swd_cs_billy(n=n, m=m, J=J, var_y=var_y, var_x=var_x, d=d, a0=a0, a1=a1, r0=r0, r1=r1, a=a)#
+      var_4 <- var_hte_ownDes_cs(desmat,n_seq,m,var_y,var_x,alpha0,alpha1,rho0,rho1)#var_hte_swd_cs_billy(n=n, m=m, J=J, var_y=var_y, var_x=var_x, d=d, alpha0=alpha0, alpha1=alpha1, rho0=rho0, rho1=rho1, a=a)#
     }else if (cohort=="closed"){
-      var_4 <- var_hte_ownDes_cc(desmat,n_seq,m,var_y,var_x,a0,a1,a2,r0)
+      var_4 <- var_hte_ownDes_cc(desmat,n_seq,m,var_y,var_x,alpha0,alpha1,a2,rho0)
     }
     
     
@@ -646,8 +646,8 @@ shinyServer(function(input, output, session) {
     return(power_result)
   }
   
-  ns_hte_ownDes <- function(desmat,m,var_y,var_x,a0, a1_a0, a2=NULL, r0, r1_r0=NULL, d, cohort, a=0.05, power=0.8){
-    a1 <- a1_a0*a0
+  ns_hte_ownDes <- function(desmat,m,var_y,var_x,alpha0, a1_a0, a2=NULL, rho0, r1_r0=NULL, d, cohort, a=0.05, power=0.8){
+    alpha1 <- a1_a0*alpha0
     
     z <- qnorm(1 - a/2)
     
@@ -662,11 +662,11 @@ shinyServer(function(input, output, session) {
       
       if(cohort=="cross"){
         
-        r1 <- r1_r0*r0
+        rho1 <- r1_r0*rho0
         
-        s2_hte <- var_hte_ownDes_cs(desmat, nca,m,var_y,var_x,a0,a1,r0,r1)#var_hte_swd_cs_billy(n=n, m=m, J=J, var_y=var_y, var_x=var_x, d=d, a0=a0, a1=a1, r0=r0, r1=r1, a=a)#
+        s2_hte <- var_hte_ownDes_cs(desmat, nca,m,var_y,var_x,alpha0,alpha1,rho0,rho1)#var_hte_swd_cs_billy(n=n, m=m, J=J, var_y=var_y, var_x=var_x, d=d, alpha0=alpha0, alpha1=alpha1, rho0=rho0, rho1=rho1, a=a)#
       }else if (cohort=="closed"){
-        s2_hte <- var_hte_ownDes_cc(desmat,nca,m,var_y,var_x,a0,a1,a2,r0)
+        s2_hte <- var_hte_ownDes_cc(desmat,nca,m,var_y,var_x,alpha0,alpha1,a2,rho0)
       }
       
       power_emp <- pnorm( abs(d)/sqrt(s2_hte) - z )
@@ -681,30 +681,30 @@ shinyServer(function(input, output, session) {
     
   }
   
-  var_hte_crossover_cs <- function(n_seq,m,J,var_y,var_x,a0,a1,r0,r1){
+  var_hte_crossover_cs <- function(n_seq,m,J,var_y,var_x,alpha0,alpha1,rho0,rho1){
     
     ## n_seq clusters per sequence
     ## m people per cluster-period
     ## J periods
     ## var_y outcome variance
     ## var_x covariate variance
-    ## a0 within-period outcome ICC
-    ## a1 between-period outcome ICC
-    ## r0 within-period covariate ICC
-    ## r1 between-period covariate ICC
+    ## alpha0 within-period outcome ICC
+    ## alpha1 between-period outcome ICC
+    ## rho0 within-period covariate ICC
+    ## rho1 between-period covariate ICC
     
     # determine total clusters - crossovers always have 2 sequences#
     n <- n_seq*2
     
     # eigenvalues for outcome #
-    l1 <- 1 - a0
-    l2 <- 1 + (m-1)*a0 - m*a1
-    l3 <- 1 + (m-1)*a0 + (J-1)*m*a1
+    l1 <- 1 - alpha0
+    l2 <- 1 + (m-1)*alpha0 - m*alpha1
+    l3 <- 1 + (m-1)*alpha0 + (J-1)*m*alpha1
     
     # eigenvalues for covariate #
-    e1 <- 1 - r0
-    e2 <- 1 + (m-1)*r0 - m*r1
-    e3 <- 1 + (m-1)*r0 + (J-1)*m*r1
+    e1 <- 1 - rho0
+    e2 <- 1 + (m-1)*rho0 - m*rho1
+    e3 <- 1 + (m-1)*rho0 + (J-1)*m*rho1
     
     # intervention sequence #
     if( J %% 2 == 1 ){
@@ -738,30 +738,30 @@ shinyServer(function(input, output, session) {
     
   }
   
-  var_hte_crossover_cc <- function(n_seq,m,J,var_y,var_x,a0,a1,a2,r0){
+  var_hte_crossover_cc <- function(n_seq,m,J,var_y,var_x,alpha0,alpha1,a2,rho0){
     
     ## n_seq clusters per sequence
     ## m people per cluster-period
     ## J periods
     ## var_y outcome variance
     ## var_x covariate variance
-    ## a0 within-period outcome ICC
-    ## a1 between-period outcome ICC
+    ## alpha0 within-period outcome ICC
+    ## alpha1 between-period outcome ICC
     ## a2 within-individual outcome ICC
-    ## r0 within-period covariate ICC
+    ## rho0 within-period covariate ICC
     
     # determine total number of clusters - crossovers always have 2 #
     n <- n_seq*2
     
     # eigenvalues for outcome #
-    t1 <- 1-a0+a1-a2
-    t2 <- 1-a0-(J-1)*(a1-a2)
-    t3 <- 1+(m-1)*(a0-a1)-a2
-    t4 <- 1+(m-1)*a0 + (J-1)*(m-1)*a1 + (J-1)*a2
+    t1 <- 1-alpha0+alpha1-a2
+    t2 <- 1-alpha0-(J-1)*(alpha1-a2)
+    t3 <- 1+(m-1)*(alpha0-alpha1)-a2
+    t4 <- 1+(m-1)*alpha0 + (J-1)*(m-1)*alpha1 + (J-1)*a2
     
     #eigenvalues for covariate #
-    eta1 <- 1-r0
-    eta2 <- 1+(m-1)*r0
+    eta1 <- 1-rho0
+    eta2 <- 1+(m-1)*rho0
     
     # intervention sequence #
     if( J %% 2 == 1 ){
@@ -796,16 +796,16 @@ shinyServer(function(input, output, session) {
     
   }
   
-  power_hte_crossover <- function(n_seq, m, J, var_y, var_x, a0, a1_a0, a2=NULL, r0, r1_r0=NULL, d, cohort, a=0.05){
+  power_hte_crossover <- function(n_seq, m, J, var_y, var_x, alpha0, a1_a0, a2=NULL, rho0, r1_r0=NULL, d, cohort, a=0.05){
     z <- qnorm(1 - a/2)
-    a1 <- a1_a0*a0
+    alpha1 <- a1_a0*alpha0
     
     if(cohort=="cross"){
-      r1 <- r1_r0*r0
+      rho1 <- r1_r0*rho0
       
-      var_4 <- var_hte_crossover_cs(n_seq,m,J,var_y,var_x,a0,a1,r0,r1)#var_hte_swd_cs_billy(n=n, m=m, J=J, var_y=var_y, var_x=var_x, d=d, a0=a0, a1=a1, r0=r0, r1=r1, a=a)#
+      var_4 <- var_hte_crossover_cs(n_seq,m,J,var_y,var_x,alpha0,alpha1,rho0,rho1)#var_hte_swd_cs_billy(n=n, m=m, J=J, var_y=var_y, var_x=var_x, d=d, alpha0=alpha0, alpha1=alpha1, rho0=rho0, rho1=rho1, a=a)#
     }else if (cohort=="closed"){
-      var_4 <- var_hte_crossover_cc(n_seq,m,J,var_y,var_x,a0,a1,a2,r0)
+      var_4 <- var_hte_crossover_cc(n_seq,m,J,var_y,var_x,alpha0,alpha1,a2,rho0)
     }
     
     
@@ -816,8 +816,8 @@ shinyServer(function(input, output, session) {
     return(power_result)
   }
   
-  ns_hte_crossover <- function(m,J, var_y,var_x,a0, a1_a0, a2=NULL, r0, r1_r0=NULL, d, cohort, a=0.05, power=0.8){
-    a1 <- a1_a0*a0
+  ns_hte_crossover <- function(m,J, var_y,var_x,alpha0, a1_a0, a2=NULL, rho0, r1_r0=NULL, d, cohort, a=0.05, power=0.8){
+    alpha1 <- a1_a0*alpha0
     
     z <- qnorm(1 - a/2)
     
@@ -831,11 +831,11 @@ shinyServer(function(input, output, session) {
       
       if(cohort=="cross"){
         
-        r1 <- r1_r0*r0
+        rho1 <- r1_r0*rho0
         
-        s2_hte <- var_hte_crossover_cs(nca,m,J,var_y,var_x,a0,a1,r0,r1)#var_hte_swd_cs_billy(n=n, m=m, J=J, var_y=var_y, var_x=var_x, d=d, a0=a0, a1=a1, r0=r0, r1=r1, a=a)#
+        s2_hte <- var_hte_crossover_cs(nca,m,J,var_y,var_x,alpha0,alpha1,rho0,rho1)#var_hte_swd_cs_billy(n=n, m=m, J=J, var_y=var_y, var_x=var_x, d=d, alpha0=alpha0, alpha1=alpha1, rho0=rho0, rho1=rho1, a=a)#
       }else if (cohort=="closed"){
-        s2_hte <- var_hte_crossover_cc(nca,m,J,var_y,var_x,a0,a1,a2,r0)
+        s2_hte <- var_hte_crossover_cc(nca,m,J,var_y,var_x,alpha0,alpha1,a2,rho0)
       }
       
       power_emp <- pnorm( abs(d)/sqrt(s2_hte) - z )
@@ -2127,13 +2127,13 @@ shinyServer(function(input, output, session) {
         m_range <- seq(input$m_three_range[1],input$m_three_range[2])
         if(sensitivity_three_react() == "est_only"){
           df_power <- expand.grid(nc=input$nc, ns=input$ns, m=m_range,
-                                  a0=#c(oicc_wsub_min_three(),
+                                  alpha0=#c(oicc_wsub_min_three(),
                                     oicc_wsub_est_three(),
                                   # oicc_wsub_max_three()),
                                   a1_a0=#c(oicc_ratio_min_three(),
                                     oicc_ratio_est_three(),
                                   # oicc_ratio_max_three()),
-                                  r0=#c(cicc_wsub_min_three(),
+                                  rho0=#c(cicc_wsub_min_three(),
                                     cicc_wsub_est_three(),
                                   # cicc_wsub_max_three()),
                                   r1_r0=#c(cicc_ratio_min_three(),
@@ -2146,13 +2146,13 @@ shinyServer(function(input, output, session) {
                                   rand=input$randomization_three)
         }else{
           df_power <- expand.grid(nc=input$nc, ns=input$ns, m=m_range,
-                                  a0=c(oicc_wsub_min_three(),
+                                  alpha0=c(oicc_wsub_min_three(),
                                        oicc_wsub_est_three(),
                                        oicc_wsub_max_three()),
                                   a1_a0=c(oicc_ratio_min_three(),
                                           oicc_ratio_est_three(),
                                           oicc_ratio_max_three()),
-                                  r0=c(cicc_wsub_min_three(),
+                                  rho0=c(cicc_wsub_min_three(),
                                        cicc_wsub_est_three(),
                                        cicc_wsub_max_three()),
                                   r1_r0=c(cicc_ratio_min_three(),
@@ -2172,8 +2172,8 @@ shinyServer(function(input, output, session) {
                                               m=df_power[i,"m"],
                                               pw=df_power[i,"pw"],
                                               var_y=df_power[i,"var_y"], var_x=df_power[i,"var_x"],
-                                              a0=df_power[i,"a0"], a1_a0=df_power[i,"a1_a0"],
-                                              r0=df_power[i,"r0"], r1_r0=df_power[i,"r1_r0"],
+                                              alpha0=df_power[i,"alpha0"], a1_a0=df_power[i,"a1_a0"],
+                                              rho0=df_power[i,"rho0"], r1_r0=df_power[i,"r1_r0"],
                                               rand=df_power[i,"rand"],
                                               d=df_power[i,"d"], a=df_power[i,"a"])
         }
@@ -2183,17 +2183,17 @@ shinyServer(function(input, output, session) {
         if(sensitivity_three_react() == "est_only"){
           p_est <- df_power %>%
             as.data.frame() %>%
-            dplyr::filter(r0 == cicc_wsub_est_three(),
+            dplyr::filter(rho0 == cicc_wsub_est_three(),
                           r1_r0 == cicc_ratio_est_three(),
-                          a0 == oicc_wsub_est_three(),
+                          alpha0 == oicc_wsub_est_three(),
                           a1_a0 == oicc_ratio_est_three()) %>%
             mutate(r1_r0=factor(r1_r0)) %>%
             plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                     linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                     colors=colors_plot,
                     hoverinfo="text",
-                    text=~paste0("within-subcluster outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                 "; <br>within-subcluster covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                    text=~paste0("within-subcluster outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                 "; <br>within-subcluster covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                  "<br>Clusters (nc):", nc, "; Subclusters (ns):", ns,"<br>Cluster size (m): ", m,
                                  "<br>HTE power: ", round(power_hte_col,4)),
                     height=input$dimension[2]*0.8) %>%
@@ -2215,7 +2215,7 @@ shinyServer(function(input, output, session) {
               list(
                 x = 0.485,
                 y = 1.03,#0.97,
-                text = paste0("<i>Assumed a0 (", oicc_wsub_est_three(), "), a1/a0 (", oicc_ratio_est_three(),"), r0 (", cicc_wsub_est_three(),") and r1/r0 (", cicc_ratio_est_three(),")</i>"),
+                text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wsub_est_three(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_three(),"), \U1D70C<sub>0</sub> (", cicc_wsub_est_three(),") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_three(),")</i>"),
                 xref = "paper",
                 yref = "paper",
                 xanchor = "center",
@@ -2232,9 +2232,9 @@ shinyServer(function(input, output, session) {
           if(input$icc_display_three == "oICC_constant"){
             #legend_title <- latex2exp::TeX("$\\rho_x$")
             
-            a0_unique <- sort(unique(df_power[,"a0"]))
+            a0_unique <- sort(unique(df_power[,"alpha0"]))
             a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
-            r0_unique <- sort(unique(df_power[,"r0"]))
+            r0_unique <- sort(unique(df_power[,"rho0"]))
             r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
             p_o <- p_c <- vector(mode="list", length=length(a0_unique))
             
@@ -2245,15 +2245,15 @@ shinyServer(function(input, output, session) {
                 p_o[[i]] <- df_power %>%
                   as.data.frame() %>%
                   mutate(r1_r0=factor(r1_r0)) %>%
-                  dplyr::filter(a0 == oicc_wsub_est_three(),
+                  dplyr::filter(alpha0 == oicc_wsub_est_three(),
                                 a1_a0 == oicc_ratio_est_three(),
-                                r0 == r0_unique[i]) %>%
+                                rho0 == r0_unique[i]) %>%
                   plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                           linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
-                          text=~paste0("within-subcluster outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                       "; <br>within-subcluster covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                          text=~paste0("within-subcluster outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                       "; <br>within-subcluster covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                        "<br>Clusters (nc):", nc, "; Subclusters (ns):", ns,"<br>Cluster size (m): ", m,
                                        "<br>HTE power: ", round(power_hte_col,4)),
                           height=input$dimension[2]*0.8) %>%
@@ -2268,15 +2268,15 @@ shinyServer(function(input, output, session) {
                 p_o[[i]] <- df_power %>%
                   as.data.frame() %>%
                   mutate(r1_r0=factor(r1_r0)) %>%
-                  dplyr::filter(a0 == oicc_wsub_est_three(),
+                  dplyr::filter(alpha0 == oicc_wsub_est_three(),
                                 a1_a0 == oicc_ratio_est_three(),
-                                r0 == r0_unique[i]) %>%
+                                rho0 == r0_unique[i]) %>%
                   plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                           linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                           colors=colors_plot,
                           hoverinfo="text",
-                          text=~paste0("within-subcluster outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                       "; <br>within-subcluster covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                          text=~paste0("within-subcluster outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                       "; <br>within-subcluster covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                        "<br>Clusters (nc):", nc, "; Subclusters (ns):", ns,"<br>Cluster size (m): ", m,
                                        "<br>HTE power: ", round(power_hte_col,4)),
                           height=input$dimension[2]*0.8) %>%
@@ -2302,7 +2302,7 @@ shinyServer(function(input, output, session) {
                   x = 0.23,
                   y = 1.03,
                   #yshift=-30,
-                  text = paste0("<i>Assumed a0 (", oicc_wsub_est_three(), ") and a1/a0 (", oicc_ratio_est_three(),"), minimum r0 (", cicc_wsub_min_three(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wsub_est_three(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_three(),"), minimum \U1D70C<sub>0</sub> (", cicc_wsub_min_three(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -2313,7 +2313,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.23,
                   y = 0.43,
-                  text = paste0("<i>Assumed a0 (", oicc_wsub_est_three(), ") and a1/a0 (", oicc_ratio_est_three(),"), and maximum r0 (", cicc_wsub_max_three(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wsub_est_three(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_three(),"), and maximum \U1D70C<sub>0</sub> (", cicc_wsub_max_three(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -2323,7 +2323,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.77,
                   y = 1.03,
-                  text = paste0("<i>Assumed a0 (", oicc_wsub_est_three(), "), a1/a0 (", oicc_ratio_est_three(),"), and r0 (", cicc_wsub_est_three(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wsub_est_three(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_three(),"), and \U1D70C<sub>0</sub> (", cicc_wsub_est_three(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -2339,9 +2339,9 @@ shinyServer(function(input, output, session) {
             
           }else if(input$icc_display_three == "cICC_constant"){
             #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-            a0_unique <- sort(unique(df_power[,"a0"]))
+            a0_unique <- sort(unique(df_power[,"alpha0"]))
             a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
-            r0_unique <- sort(unique(df_power[,"r0"]))
+            r0_unique <- sort(unique(df_power[,"rho0"]))
             r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
             p_o <- p_c <- vector(mode="list", length=length(a0_unique))
             
@@ -2352,15 +2352,15 @@ shinyServer(function(input, output, session) {
                 p_c[[i]] <- df_power %>%
                   as.data.frame() %>%
                   mutate(a1_a0=factor(a1_a0)) %>%
-                  dplyr::filter(r0 == cicc_wsub_est_three(),
+                  dplyr::filter(rho0 == cicc_wsub_est_three(),
                                 r1_r0 == cicc_ratio_est_three(),
-                                a0 == a0_unique[i]) %>%
+                                alpha0 == a0_unique[i]) %>%
                   plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                           linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
-                          text=~paste0("within-subcluster outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                       "; <br>within-subcluster covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                          text=~paste0("within-subcluster outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                       "; <br>within-subcluster covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                        "<br>Clusters (nc):", nc, "; Subclusters (ns):", ns,"<br>Cluster size (m): ", m,
                                        "<br>HTE power: ", round(power_hte_col,4)),
                           height=input$dimension[2]*0.8) %>%
@@ -2375,15 +2375,15 @@ shinyServer(function(input, output, session) {
                 p_c[[i]] <- df_power %>%
                   as.data.frame() %>%
                   mutate(a1_a0=factor(a1_a0)) %>%
-                  dplyr::filter(r0 == cicc_wsub_est_three(),
+                  dplyr::filter(rho0 == cicc_wsub_est_three(),
                                 r1_r0 == cicc_ratio_est_three(),
-                                a0 == a0_unique[i]) %>%
+                                alpha0 == a0_unique[i]) %>%
                   plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                           linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                           colors=colors_plot,
                           hoverinfo="text",
-                          text=~paste0("within-subcluster outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                       "; <br>within-subcluster covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                          text=~paste0("within-subcluster outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                       "; <br>within-subcluster covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                        "<br>Clusters (nc):", nc, "; Subclusters (ns):", ns,"<br>Cluster size (m): ", m,
                                        "<br>HTE power: ", round(power_hte_col,4)),
                           height=input$dimension[2]*0.8) %>%
@@ -2409,7 +2409,7 @@ shinyServer(function(input, output, session) {
                   x = 0.23,
                   y = 1.03,
                   #yshift=-30,
-                  text = paste0("<i>Assumed r0 (", cicc_wsub_est_three(), ") and r1/r0 (", cicc_ratio_est_three(),"), minimum a0 (", oicc_wsub_min_three(),")</i>"),
+                  text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wsub_est_three(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_three(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wsub_min_three(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -2420,7 +2420,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.23,
                   y = 0.43,
-                  text = paste0("<i>Assumed r0 (", cicc_wsub_est_three(), ") and r1/r0 (", cicc_ratio_est_three(),"), and maximum a0 (", oicc_wsub_max_three(),")</i>"),
+                  text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wsub_est_three(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_three(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wsub_max_three(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -2430,7 +2430,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.77,
                   y = 1.03,
-                  text = paste0("<i>Assumed r0 (", cicc_wsub_est_three(), "), r1/r0 (", cicc_ratio_est_three(),"), and a0 (", oicc_wsub_est_three(),")</i>"),
+                  text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wsub_est_three(), "), \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_three(),"), and \U1D6FC<sub>0</sub> (", oicc_wsub_est_three(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -2454,13 +2454,13 @@ shinyServer(function(input, output, session) {
         nc_range <- seq(input$nc_range[1],input$nc_range[2])
         if(sensitivity_three_react() == "est_only"){
           df_power <- expand.grid(nc=nc_range, ns=input$ns, m=input$m_three,
-                                  a0=#c(oicc_wsub_min_three(),
+                                  alpha0=#c(oicc_wsub_min_three(),
                                     oicc_wsub_est_three(),
                                   # oicc_wsub_max_three()),
                                   a1_a0=#c(oicc_ratio_min_three(),
                                     oicc_ratio_est_three(),
                                   # oicc_ratio_max_three()),
-                                  r0=#c(cicc_wsub_min_three(),
+                                  rho0=#c(cicc_wsub_min_three(),
                                     cicc_wsub_est_three(),
                                   # cicc_wsub_max_three()),
                                   r1_r0=#c(cicc_ratio_min_three(),
@@ -2473,13 +2473,13 @@ shinyServer(function(input, output, session) {
                                   rand=input$randomization_three)
         }else{
           df_power <- expand.grid(nc=nc_range, ns=input$ns, m=input$m_three,
-                                  a0=c(oicc_wsub_min_three(),
+                                  alpha0=c(oicc_wsub_min_three(),
                                        oicc_wsub_est_three(),
                                        oicc_wsub_max_three()),
                                   a1_a0=c(oicc_ratio_min_three(),
                                           oicc_ratio_est_three(),
                                           oicc_ratio_max_three()),
-                                  r0=c(cicc_wsub_min_three(),
+                                  rho0=c(cicc_wsub_min_three(),
                                        cicc_wsub_est_three(),
                                        cicc_wsub_max_three()),
                                   r1_r0=c(cicc_ratio_min_three(),
@@ -2499,8 +2499,8 @@ shinyServer(function(input, output, session) {
                                               m=df_power[i,"m"],
                                               pw=df_power[i,"pw"],
                                               var_y=df_power[i,"var_y"], var_x=df_power[i,"var_x"],
-                                              a0=df_power[i,"a0"], a1_a0=df_power[i,"a1_a0"],
-                                              r0=df_power[i,"r0"], r1_r0=df_power[i,"r1_r0"],
+                                              alpha0=df_power[i,"alpha0"], a1_a0=df_power[i,"a1_a0"],
+                                              rho0=df_power[i,"rho0"], r1_r0=df_power[i,"r1_r0"],
                                               rand=df_power[i,"rand"],
                                               d=df_power[i,"d"], a=df_power[i,"a"])
         }
@@ -2510,17 +2510,17 @@ shinyServer(function(input, output, session) {
         if(sensitivity_three_react() == "est_only"){
           p_est <- df_power %>%
             as.data.frame() %>%
-            dplyr::filter(r0 == cicc_wsub_est_three(),
+            dplyr::filter(rho0 == cicc_wsub_est_three(),
                           r1_r0 == cicc_ratio_est_three(),
-                          a0 == oicc_wsub_est_three(),
+                          alpha0 == oicc_wsub_est_three(),
                           a1_a0 == oicc_ratio_est_three()) %>%
             mutate(r1_r0=factor(r1_r0)) %>%
             plot_ly(x=~nc,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                     linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                     colors=colors_plot,
                     hoverinfo="text",
-                    text=~paste0("within-subcluster outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                 "; <br>within-subcluster covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                    text=~paste0("within-subcluster outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                 "; <br>within-subcluster covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                  "<br>Clusters (nc):", nc, "; Subclusters (ns):", ns,"<br>Cluster size (m): ", m,
                                  "<br>HTE power: ", round(power_hte_col,4)),
                     height=input$dimension[2]*0.8) %>%
@@ -2542,7 +2542,7 @@ shinyServer(function(input, output, session) {
               list(
                 x = 0.485,
                 y = 1.03,#0.97,
-                text = paste0("<i>Assumed a0 (", oicc_wsub_est_three(), "), a1/a0 (", oicc_ratio_est_three(),"), r0 (", cicc_wsub_est_three(),") and r1/r0 (", cicc_ratio_est_three(),")</i>"),
+                text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wsub_est_three(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_three(),"), \U1D70C<sub>0</sub> (", cicc_wsub_est_three(),") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_three(),")</i>"),
                 xref = "paper",
                 yref = "paper",
                 xanchor = "center",
@@ -2559,9 +2559,9 @@ shinyServer(function(input, output, session) {
           if(input$icc_display_three == "oICC_constant"){
             #legend_title <- latex2exp::TeX("$\\rho_x$")
             
-            a0_unique <- sort(unique(df_power[,"a0"]))
+            a0_unique <- sort(unique(df_power[,"alpha0"]))
             a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
-            r0_unique <- sort(unique(df_power[,"r0"]))
+            r0_unique <- sort(unique(df_power[,"rho0"]))
             r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
             p_o <- p_c <- vector(mode="list", length=length(a0_unique))
             
@@ -2572,15 +2572,15 @@ shinyServer(function(input, output, session) {
                 p_o[[i]] <- df_power %>%
                   as.data.frame() %>%
                   mutate(r1_r0=factor(r1_r0)) %>%
-                  dplyr::filter(a0 == oicc_wsub_est_three(),
+                  dplyr::filter(alpha0 == oicc_wsub_est_three(),
                                 a1_a0 == oicc_ratio_est_three(),
-                                r0 == r0_unique[i]) %>%
+                                rho0 == r0_unique[i]) %>%
                   plot_ly(x=~nc,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                           linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
-                          text=~paste0("within-subcluster outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                       "; <br>within-subcluster covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                          text=~paste0("within-subcluster outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                       "; <br>within-subcluster covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                        "<br>Clusters (nc):", nc, "; Subclusters (ns):", ns,"<br>Cluster size (m): ", m,
                                        "<br>HTE power: ", round(power_hte_col,4)),
                           height=input$dimension[2]*0.8) %>%
@@ -2595,15 +2595,15 @@ shinyServer(function(input, output, session) {
                 p_o[[i]] <- df_power %>%
                   as.data.frame() %>%
                   mutate(r1_r0=factor(r1_r0)) %>%
-                  dplyr::filter(a0 == oicc_wsub_est_three(),
+                  dplyr::filter(alpha0 == oicc_wsub_est_three(),
                                 a1_a0 == oicc_ratio_est_three(),
-                                r0 == r0_unique[i]) %>%
+                                rho0 == r0_unique[i]) %>%
                   plot_ly(x=~nc,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                           linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                           colors=colors_plot,
                           hoverinfo="text",
-                          text=~paste0("within-subcluster outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                       "; <br>within-subcluster covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                          text=~paste0("within-subcluster outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                       "; <br>within-subcluster covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                        "<br>Clusters (nc):", nc, "; Subclusters (ns):", ns,"<br>Cluster size (m): ", m,
                                        "<br>HTE power: ", round(power_hte_col,4)),
                           height=input$dimension[2]*0.8) %>%
@@ -2629,7 +2629,7 @@ shinyServer(function(input, output, session) {
                   x = 0.23,
                   y = 1.03,
                   #yshift=-30,
-                  text = paste0("<i>Assumed a0 (", oicc_wsub_est_three(), ") and a1/a0 (", oicc_ratio_est_three(),"), minimum r0 (", cicc_wsub_min_three(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wsub_est_three(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_three(),"), minimum \U1D70C<sub>0</sub> (", cicc_wsub_min_three(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -2640,7 +2640,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.23,
                   y = 0.43,
-                  text = paste0("<i>Assumed a0 (", oicc_wsub_est_three(), ") and a1/a0 (", oicc_ratio_est_three(),"), and maximum r0 (", cicc_wsub_max_three(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wsub_est_three(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_three(),"), and maximum \U1D70C<sub>0</sub> (", cicc_wsub_max_three(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -2650,7 +2650,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.77,
                   y = 1.03,
-                  text = paste0("<i>Assumed a0 (", oicc_wsub_est_three(), "), a1/a0 (", oicc_ratio_est_three(),"), and r0 (", cicc_wsub_est_three(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wsub_est_three(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_three(),"), and \U1D70C<sub>0</sub> (", cicc_wsub_est_three(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -2666,9 +2666,9 @@ shinyServer(function(input, output, session) {
             
           }else if(input$icc_display_three == "cICC_constant"){
             #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-            a0_unique <- sort(unique(df_power[,"a0"]))
+            a0_unique <- sort(unique(df_power[,"alpha0"]))
             a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
-            r0_unique <- sort(unique(df_power[,"r0"]))
+            r0_unique <- sort(unique(df_power[,"rho0"]))
             r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
             p_o <- p_c <- vector(mode="list", length=length(a0_unique))
             
@@ -2679,15 +2679,15 @@ shinyServer(function(input, output, session) {
                 p_c[[i]] <- df_power %>%
                   as.data.frame() %>%
                   mutate(a1_a0=factor(a1_a0)) %>%
-                  dplyr::filter(r0 == cicc_wsub_est_three(),
+                  dplyr::filter(rho0 == cicc_wsub_est_three(),
                                 r1_r0 == cicc_ratio_est_three(),
-                                a0 == a0_unique[i]) %>%
+                                alpha0 == a0_unique[i]) %>%
                   plot_ly(x=~nc,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                           linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
-                          text=~paste0("within-subcluster outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                       "; <br>within-subcluster covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                          text=~paste0("within-subcluster outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                       "; <br>within-subcluster covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                        "<br>Clusters (nc):", nc, "; Subclusters (ns):", ns,"<br>Cluster size (m): ", m,
                                        "<br>HTE power: ", round(power_hte_col,4)),
                           height=input$dimension[2]*0.8) %>%
@@ -2702,15 +2702,15 @@ shinyServer(function(input, output, session) {
                 p_c[[i]] <- df_power %>%
                   as.data.frame() %>%
                   mutate(a1_a0=factor(a1_a0)) %>%
-                  dplyr::filter(r0 == cicc_wsub_est_three(),
+                  dplyr::filter(rho0 == cicc_wsub_est_three(),
                                 r1_r0 == cicc_ratio_est_three(),
-                                a0 == a0_unique[i]) %>%
+                                alpha0 == a0_unique[i]) %>%
                   plot_ly(x=~nc,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                           linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                           colors=colors_plot,
                           hoverinfo="text",
-                          text=~paste0("within-subcluster outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                       "; <br>within-subcluster covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                          text=~paste0("within-subcluster outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                       "; <br>within-subcluster covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                        "<br>Clusters (nc):", nc, "; Subclusters (ns):", ns,"<br>Cluster size (m): ", m,
                                        "<br>HTE power: ", round(power_hte_col,4)),
                           height=input$dimension[2]*0.8) %>%
@@ -2736,7 +2736,7 @@ shinyServer(function(input, output, session) {
                   x = 0.23,
                   y = 1.03,
                   #yshift=-30,
-                  text = paste0("<i>Assumed r0 (", cicc_wsub_est_three(), ") and r1/r0 (", cicc_ratio_est_three(),"), minimum a0 (", oicc_wsub_min_three(),")</i>"),
+                  text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wsub_est_three(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_three(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wsub_min_three(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -2747,7 +2747,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.23,
                   y = 0.43,
-                  text = paste0("<i>Assumed r0 (", cicc_wsub_est_three(), ") and r1/r0 (", cicc_ratio_est_three(),"), and maximum a0 (", oicc_wsub_max_three(),")</i>"),
+                  text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wsub_est_three(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_three(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wsub_max_three(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -2757,7 +2757,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.77,
                   y = 1.03,
-                  text = paste0("<i>Assumed r0 (", cicc_wsub_est_three(), "), r1/r0 (", cicc_ratio_est_three(),"), and a0 (", oicc_wsub_est_three(),")</i>"),
+                  text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wsub_est_three(), "), \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_three(),"), and \U1D6FC<sub>0</sub> (", oicc_wsub_est_three(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -2783,13 +2783,13 @@ shinyServer(function(input, output, session) {
         if(sensitivity_three_react() == "est_only"){
           df_nc <- expand.grid(power=input$power_three, m=m_range,
                                ns=input$ns,
-                               a0=#c(oicc_wsub_min_three(),
+                               alpha0=#c(oicc_wsub_min_three(),
                                  oicc_wsub_est_three(),
                                # oicc_wsub_max_three()),
                                a1_a0=#c(oicc_ratio_min_three(),
                                  oicc_ratio_est_three(),
                                # oicc_ratio_max_three()),
-                               r0=#c(cicc_wsub_min_three(),
+                               rho0=#c(cicc_wsub_min_three(),
                                  cicc_wsub_est_three(),
                                # cicc_wsub_max_three()),
                                r1_r0=#c(cicc_ratio_min_three(),
@@ -2803,13 +2803,13 @@ shinyServer(function(input, output, session) {
         }else{
           df_nc <- expand.grid(power=input$power_three, m=m_range,
                                ns=input$ns,
-                               a0=c(oicc_wsub_min_three(),
+                               alpha0=c(oicc_wsub_min_three(),
                                     oicc_wsub_est_three(),
                                     oicc_wsub_max_three()),
                                a1_a0=c(oicc_ratio_min_three(),
                                        oicc_ratio_est_three(),
                                        oicc_ratio_max_three()),
-                               r0=c(cicc_wsub_min_three(),
+                               rho0=c(cicc_wsub_min_three(),
                                     cicc_wsub_est_three(),
                                     cicc_wsub_max_three()),
                                r1_r0=c(cicc_ratio_min_three(),
@@ -2830,8 +2830,8 @@ shinyServer(function(input, output, session) {
                                                 power=df_nc[i,"power"],
                                                 pw=df_nc[i,"pw"],
                                                 var_y=df_nc[i,"var_y"], var_x=df_nc[i,"var_x"],
-                                                a0=df_nc[i,"a0"], a1_a0=df_nc[i,"a1_a0"],
-                                                r0=df_nc[i,"r0"], r1_r0=df_nc[i,"r1_r0"],
+                                                alpha0=df_nc[i,"alpha0"], a1_a0=df_nc[i,"a1_a0"],
+                                                rho0=df_nc[i,"rho0"], r1_r0=df_nc[i,"r1_r0"],
                                                 rand=df_nc[i,"rand"],
                                                 d=df_nc[i,"d"], a=df_nc[i,"a"]))
         }
@@ -2842,17 +2842,17 @@ shinyServer(function(input, output, session) {
         if(sensitivity_three_react() == "est_only"){
           p_est <- df_nc %>%
             as.data.frame() %>%
-            dplyr::filter(r0 == cicc_wsub_est_three(),
+            dplyr::filter(rho0 == cicc_wsub_est_three(),
                           r1_r0 == cicc_ratio_est_three(),
-                          a0 == oicc_wsub_est_three(),
+                          alpha0 == oicc_wsub_est_three(),
                           a1_a0 == oicc_ratio_est_three()) %>%
             mutate(r1_r0=factor(r1_r0)) %>%
             plot_ly(x=~m,y=~nc, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                     linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                     colors=colors_plot,
                     hoverinfo="text",
-                    text=~paste0("within-subcluster outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                 "; <br>within-subcluster covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                    text=~paste0("within-subcluster outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                 "; <br>within-subcluster covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                  "<br>Clusters (nc):", nc, "; Subclusters (ns):", ns,"<br>Cluster size (m): ", m,
                                  "<br>HTE power: ", round(power_emp,4)),
                     height=input$dimension[2]*0.8) %>%
@@ -2874,7 +2874,7 @@ shinyServer(function(input, output, session) {
               list(
                 x = 0.485,
                 y = 1.03,#0.97,
-                text = paste0("<i>Assumed a0 (", oicc_wsub_est_three(), "), a1/a0 (", oicc_ratio_est_three(),"), r0 (", cicc_wsub_est_three(),") and r1/r0 (", cicc_ratio_est_three(),")</i>"),
+                text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wsub_est_three(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_three(),"), \U1D70C<sub>0</sub> (", cicc_wsub_est_three(),") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_three(),")</i>"),
                 xref = "paper",
                 yref = "paper",
                 xanchor = "center",
@@ -2891,9 +2891,9 @@ shinyServer(function(input, output, session) {
           if(input$icc_display_three == "oICC_constant"){
             #legend_title <- latex2exp::TeX("$\\rho_x$")
             
-            a0_unique <- sort(unique(df_nc[,"a0"]))
+            a0_unique <- sort(unique(df_nc[,"alpha0"]))
             a1_a0_unique <- sort(unique(df_nc[,"a1_a0"]))
-            r0_unique <- sort(unique(df_nc[,"r0"]))
+            r0_unique <- sort(unique(df_nc[,"rho0"]))
             r1_r0_unique <- sort(unique(df_nc[,"r1_r0"]))
             p_o <- p_c <- vector(mode="list", length=length(a0_unique))
             
@@ -2904,15 +2904,15 @@ shinyServer(function(input, output, session) {
                 p_o[[i]] <- df_nc %>%
                   as.data.frame() %>%
                   mutate(r1_r0=factor(r1_r0)) %>%
-                  dplyr::filter(a0 == oicc_wsub_est_three(),
+                  dplyr::filter(alpha0 == oicc_wsub_est_three(),
                                 a1_a0 == oicc_ratio_est_three(),
-                                r0 == r0_unique[i]) %>%
+                                rho0 == r0_unique[i]) %>%
                   plot_ly(x=~m,y=~nc, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                           linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
-                          text=~paste0("within-subcluster outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                       "; <br>within-subcluster covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                          text=~paste0("within-subcluster outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                       "; <br>within-subcluster covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                        "<br>Clusters (nc):", nc, "; Subclusters (ns):", ns,"<br>Cluster size (m): ", m,
                                        "<br>HTE power: ", round(power_emp,4)),
                           height=input$dimension[2]*0.8) %>%
@@ -2927,15 +2927,15 @@ shinyServer(function(input, output, session) {
                 p_o[[i]] <- df_nc %>%
                   as.data.frame() %>%
                   mutate(r1_r0=factor(r1_r0)) %>%
-                  dplyr::filter(a0 == oicc_wsub_est_three(),
+                  dplyr::filter(alpha0 == oicc_wsub_est_three(),
                                 a1_a0 == oicc_ratio_est_three(),
-                                r0 == r0_unique[i]) %>%
+                                rho0 == r0_unique[i]) %>%
                   plot_ly(x=~m,y=~nc, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                           linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                           colors=colors_plot,
                           hoverinfo="text",
-                          text=~paste0("within-subcluster outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                       "; <br>within-subcluster covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                          text=~paste0("within-subcluster outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                       "; <br>within-subcluster covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                        "<br>Clusters (nc):", nc, "; Subclusters (ns):", ns,"<br>Cluster size (m): ", m,
                                        "<br>HTE power: ", round(power_emp,4)),
                           height=input$dimension[2]*0.8) %>%
@@ -2961,7 +2961,7 @@ shinyServer(function(input, output, session) {
                   x = 0.23,
                   y = 1.03,
                   #yshift=-30,
-                  text = paste0("<i>Assumed a0 (", oicc_wsub_est_three(), ") and a1/a0 (", oicc_ratio_est_three(),"), minimum r0 (", cicc_wsub_min_three(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wsub_est_three(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_three(),"), minimum \U1D70C<sub>0</sub> (", cicc_wsub_min_three(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -2972,7 +2972,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.23,
                   y = 0.43,
-                  text = paste0("<i>Assumed a0 (", oicc_wsub_est_three(), ") and a1/a0 (", oicc_ratio_est_three(),"), and maximum r0 (", cicc_wsub_max_three(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wsub_est_three(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_three(),"), and maximum \U1D70C<sub>0</sub> (", cicc_wsub_max_three(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -2982,7 +2982,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.77,
                   y = 1.03,
-                  text = paste0("<i>Assumed a0 (", oicc_wsub_est_three(), "), a1/a0 (", oicc_ratio_est_three(),"), and r0 (", cicc_wsub_est_three(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wsub_est_three(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_three(),"), and \U1D70C<sub>0</sub> (", cicc_wsub_est_three(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -2998,9 +2998,9 @@ shinyServer(function(input, output, session) {
             
           }else if(input$icc_display_three == "cICC_constant"){
             #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-            a0_unique <- sort(unique(df_nc[,"a0"]))
+            a0_unique <- sort(unique(df_nc[,"alpha0"]))
             a1_a0_unique <- sort(unique(df_nc[,"a1_a0"]))
-            r0_unique <- sort(unique(df_nc[,"r0"]))
+            r0_unique <- sort(unique(df_nc[,"rho0"]))
             r1_r0_unique <- sort(unique(df_nc[,"r1_r0"]))
             p_o <- p_c <- vector(mode="list", length=length(a0_unique))
             
@@ -3011,15 +3011,15 @@ shinyServer(function(input, output, session) {
                 p_c[[i]] <- df_nc %>%
                   as.data.frame() %>%
                   mutate(a1_a0=factor(a1_a0)) %>%
-                  dplyr::filter(r0 == cicc_wsub_est_three(),
+                  dplyr::filter(rho0 == cicc_wsub_est_three(),
                                 r1_r0 == cicc_ratio_est_three(),
-                                a0 == a0_unique[i]) %>%
+                                alpha0 == a0_unique[i]) %>%
                   plot_ly(x=~m,y=~nc, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                           linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                           colors=colors_plot,
                           hoverinfo="text",
-                          text=~paste0("within-subcluster outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                       "; <br>within-subcluster covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                          text=~paste0("within-subcluster outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                       "; <br>within-subcluster covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                        "<br>Clusters (nc):", nc, "; Subclusters (ns):", ns,"<br>Cluster size (m): ", m,
                                        "<br>HTE power: ", round(power_emp,4)),
                           height=input$dimension[2]*0.8) %>%
@@ -3034,15 +3034,15 @@ shinyServer(function(input, output, session) {
                 p_c[[i]] <- df_nc %>%
                   as.data.frame() %>%
                   mutate(a1_a0=factor(a1_a0)) %>%
-                  dplyr::filter(r0 == cicc_wsub_est_three(),
+                  dplyr::filter(rho0 == cicc_wsub_est_three(),
                                 r1_r0 == cicc_ratio_est_three(),
-                                a0 == a0_unique[i]) %>%
+                                alpha0 == a0_unique[i]) %>%
                   plot_ly(x=~m,y=~nc, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                           linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                           colors=colors_plot,
                           hoverinfo="text",
-                          text=~paste0("within-subcluster outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                       "; <br>within-subcluster covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                          text=~paste0("within-subcluster outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                       "; <br>within-subcluster covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                        "<br>Clusters (nc):", nc, "; Subclusters (ns):", ns,"<br>Cluster size (m): ", m,
                                        "<br>HTE power: ", round(power_emp,4)),
                           height=input$dimension[2]*0.8) %>%
@@ -3068,7 +3068,7 @@ shinyServer(function(input, output, session) {
                   x = 0.23,
                   y = 1.03,
                   #yshift=-30,
-                  text = paste0("<i>Assumed r0 (", cicc_wsub_est_three(), ") and r1/r0 (", cicc_ratio_est_three(),"), minimum a0 (", oicc_wsub_min_three(),")</i>"),
+                  text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wsub_est_three(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_three(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wsub_min_three(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -3079,7 +3079,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.23,
                   y = 0.43,
-                  text = paste0("<i>Assumed r0 (", cicc_wsub_est_three(), ") and r1/r0 (", cicc_ratio_est_three(),"), and maximum a0 (", oicc_wsub_max_three(),")</i>"),
+                  text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wsub_est_three(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_three(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wsub_max_three(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -3089,7 +3089,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.77,
                   y = 1.03,
-                  text = paste0("<i>Assumed r0 (", cicc_wsub_est_three(), "), r1/r0 (", cicc_ratio_est_three(),"), and a0 (", oicc_wsub_est_three(),")</i>"),
+                  text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wsub_est_three(), "), \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_three(),"), and \U1D6FC<sub>0</sub> (", oicc_wsub_est_three(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -3150,13 +3150,13 @@ shinyServer(function(input, output, session) {
           
           if(sensitivity_swd_react() == "est_only"){
             df_power <- expand.grid(n=n, m=m_range, J=J,
-                                    a0=#c(oicc_wperiod_min_swd(),
+                                    alpha0=#c(oicc_wperiod_min_swd(),
                                       oicc_wperiod_est_swd(),
                                     #oicc_wperiod_max_swd()),
                                     a1_a0=#c(oicc_ratio_min_swd(),
                                       oicc_ratio_est_swd(),
                                     # oicc_ratio_max_swd()),
-                                    r0=#c(cicc_wperiod_min_swd(),
+                                    rho0=#c(cicc_wperiod_min_swd(),
                                       cicc_wperiod_est_swd(),
                                     # cicc_wperiod_max_swd()),
                                     r1_r0=#c(cicc_ratio_min_swd(),
@@ -3168,13 +3168,13 @@ shinyServer(function(input, output, session) {
                                     d=input$mean_diff_HTE, a=input$sig)
           }else{
             df_power <- expand.grid(n=n, m=m_range, J=J,
-                                    a0=c(oicc_wperiod_min_swd(),
+                                    alpha0=c(oicc_wperiod_min_swd(),
                                          oicc_wperiod_est_swd(),
                                          oicc_wperiod_max_swd()),
                                     a1_a0=c(oicc_ratio_min_swd(),
                                             oicc_ratio_est_swd(),
                                             oicc_ratio_max_swd()),
-                                    r0=c(cicc_wperiod_min_swd(),
+                                    rho0=c(cicc_wperiod_min_swd(),
                                          cicc_wperiod_est_swd(),
                                          cicc_wperiod_max_swd()),
                                     r1_r0=c(cicc_ratio_min_swd(),
@@ -3192,8 +3192,8 @@ shinyServer(function(input, output, session) {
             power_hte_col[i] <- power_hte_swd(n=df_power[i,"n"],
                                               m=df_power[i,"m"], J=df_power[i,"J"],
                                               var_y=df_power[i,"var_y"], var_x=df_power[i,"var_x"],
-                                              a0=df_power[i,"a0"], a1_a0=df_power[i,"a1_a0"],
-                                              r0=df_power[i,"r0"], r1_r0=df_power[i,"r1_r0"],
+                                              alpha0=df_power[i,"alpha0"], a1_a0=df_power[i,"a1_a0"],
+                                              rho0=df_power[i,"rho0"], r1_r0=df_power[i,"r1_r0"],
                                               cohort=df_power[i,"cohort"],
                                               d=df_power[i,"d"], a=df_power[i,"a"])
           }
@@ -3203,17 +3203,17 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_power %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                             r1_r0 == cicc_ratio_est_swd(),
-                            a0 == oicc_wperiod_est_swd(),
+                            alpha0 == oicc_wperiod_est_swd(),
                             a1_a0 == oicc_ratio_est_swd()) %>%
               mutate(r1_r0=factor(r1_r0)) %>%
               plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                       linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                   "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                    "<br>Clusters (total):", n, "; Clusters (per sequence):", n/(J-1),"<br>Cluster size (per period): ", m,
                                    "<br>Sequences (steps): ", (J-1),
                                    "<br>HTE power: ", round(power_hte_col,4)),
@@ -3236,7 +3236,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), r0 (", cicc_wperiod_est_swd(),") and r1/r0 (", cicc_ratio_est_swd(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -3253,9 +3253,9 @@ shinyServer(function(input, output, session) {
             if(input$icc_display_swd == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
               
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
               
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
@@ -3267,15 +3267,15 @@ shinyServer(function(input, output, session) {
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n, "; Clusters (per sequence):", n/(J-1),"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", (J-1),
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -3291,15 +3291,15 @@ shinyServer(function(input, output, session) {
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n, "; Clusters (per sequence):", n/(J-1),"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", (J-1),
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -3326,7 +3326,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), minimum r0 (", cicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -3337,7 +3337,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), and maximum r0 (", cicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -3347,7 +3347,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), and r0 (", cicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -3363,9 +3363,9 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -3376,15 +3376,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n, "; Clusters (per sequence):", n/(J-1),"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", (J-1),
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -3400,15 +3400,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n, "; Clusters (per sequence):", n/(J-1),"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", (J-1),
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -3435,7 +3435,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), minimum a0 (", oicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -3446,7 +3446,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), and maximum a0 (", oicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -3456,7 +3456,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), "), r1/r0 (", cicc_ratio_est_swd(),"), and a0 (", oicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), "), \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -3477,7 +3477,7 @@ shinyServer(function(input, output, session) {
         }else if(cohort() == "closed"){
           if(sensitivity_swd_react() == "est_only"){
             df_power <- expand.grid(n=n, m=m_range, J=J,
-                                    a0=#c(oicc_wperiod_min_swd_cc(),
+                                    alpha0=#c(oicc_wperiod_min_swd_cc(),
                                       oicc_wperiod_est_swd_cc(),
                                     # oicc_wperiod_max_swd_cc()),
                                     a1_a0=#c(oicc_ratio_min_swd_cc(),
@@ -3486,7 +3486,7 @@ shinyServer(function(input, output, session) {
                                     a2=#c(oicc_windiv_min_swd_cc(),
                                       oicc_windiv_est_swd_cc(),
                                     # oicc_windiv_max_swd_cc()),
-                                    r0=#c(cicc_wperiod_min_swd_cc(),
+                                    rho0=#c(cicc_wperiod_min_swd_cc(),
                                       cicc_wperiod_est_swd_cc(),
                                     # cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
@@ -3495,7 +3495,7 @@ shinyServer(function(input, output, session) {
                                     d=input$mean_diff_HTE, a=input$sig)
           }else{
             df_power <- expand.grid(n=n, m=m_range, J=J,
-                                    a0=c(oicc_wperiod_min_swd_cc(),
+                                    alpha0=c(oicc_wperiod_min_swd_cc(),
                                          oicc_wperiod_est_swd_cc(),
                                          oicc_wperiod_max_swd_cc()),
                                     a1_a0=c(oicc_ratio_min_swd_cc(),
@@ -3504,7 +3504,7 @@ shinyServer(function(input, output, session) {
                                     a2=c(oicc_windiv_min_swd_cc(),
                                          oicc_windiv_est_swd_cc(),
                                          oicc_windiv_max_swd_cc()),
-                                    r0=c(cicc_wperiod_min_swd_cc(),
+                                    rho0=c(cicc_wperiod_min_swd_cc(),
                                          cicc_wperiod_est_swd_cc(),
                                          cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
@@ -3519,9 +3519,9 @@ shinyServer(function(input, output, session) {
             power_hte_col[i] <- power_hte_swd(n=df_power[i,"n"],
                                               m=df_power[i,"m"], J=df_power[i,"J"],
                                               var_y=df_power[i,"var_y"], var_x=df_power[i,"var_x"],
-                                              a0=df_power[i,"a0"], a1_a0=df_power[i,"a1_a0"],
+                                              alpha0=df_power[i,"alpha0"], a1_a0=df_power[i,"a1_a0"],
                                               a2=df_power[i,"a2"],
-                                              r0=df_power[i,"r0"],
+                                              rho0=df_power[i,"rho0"],
                                               cohort=df_power[i,"cohort"],
                                               d=df_power[i,"d"], a=df_power[i,"a"])
             #if(is.nan(power_hte_col[i])) print(i)
@@ -3532,17 +3532,17 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_power %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
-                            a0 == oicc_wperiod_est_swd_cc(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
+                            alpha0 == oicc_wperiod_est_swd_cc(),
                             a1_a0 == oicc_ratio_est_swd_cc(),
                             a2 == oicc_windiv_est_swd_cc()) %>%
-              mutate(r0=factor(r0)) %>%
-              plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                      linetype=~r0, color=~r0,legendgroup=~r0,
+              mutate(rho0=factor(rho0)) %>%
+              plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                      linetype=~rho0, color=~rho0,legendgroup=~rho0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
-                                   "; <br>within-period covariate ICC (r0): ", r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                    "<br>Clusters (total):", n, "; Clusters (per sequence):", n/(J-1),"<br>Cluster size (per period): ", m,
                                    "<br>Sequences (steps): ", (J-1),
                                    "<br>HTE power: ", round(power_hte_col,4)),
@@ -3565,7 +3565,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), a2 (", oicc_windiv_est_swd_cc(), "), and r0 (", cicc_wperiod_est_swd(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), a2 (", oicc_windiv_est_swd_cc(), "), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -3580,10 +3580,10 @@ shinyServer(function(input, output, session) {
               )
           }else if(sensitivity_swd_react() == "sensitivity"){
             if(input$icc_display_swd == "oICC_constant"){
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
               a2_unique <- sort(unique(df_power[,"a2"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -3593,16 +3593,16 @@ shinyServer(function(input, output, session) {
                   # outcome ICCs #
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0, showlegend=F,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n, "; Clusters (per sequence):", n/(J-1),"<br>Cluster size (total): ", m,
                                          "<br>Sequences (steps): ", (J-1),
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -3617,16 +3617,16 @@ shinyServer(function(input, output, session) {
                 }else{
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n, "; Clusters (per sequence):", n/(J-1),"<br>Cluster size (total): ", m,
                                          "<br>Sequences (steps): ", (J-1),
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -3653,7 +3653,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum r0 (", cicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -3664,7 +3664,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum r0 (", cicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -3674,7 +3674,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and r0 (", cicc_wperiod_est_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -3690,10 +3690,10 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
               a2_unique <- sort(unique(df_power[,"a2"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
               for(i in seq(length(a0_unique))){
@@ -3703,15 +3703,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n, "; Clusters (per sequence):", n/(J-1),"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", (J-1),
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -3727,15 +3727,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n, "; Clusters (per sequence):", n/(J-1),"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", (J-1),
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -3762,7 +3762,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum a0 (", oicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -3773,7 +3773,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum a0 (", oicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -3783,7 +3783,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and a0 (", oicc_wperiod_est_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -3813,13 +3813,13 @@ shinyServer(function(input, output, session) {
           
           if(sensitivity_swd_react() == "est_only"){
             df_power <- expand.grid(n=n_range, m=input$m_swd,J=J,
-                                    a0=#c(oicc_wperiod_min_swd(),
+                                    alpha0=#c(oicc_wperiod_min_swd(),
                                       oicc_wperiod_est_swd(),
                                     # oicc_wperiod_max_swd()),
                                     a1_a0=#c(oicc_ratio_min_swd(),
                                       oicc_ratio_est_swd(),
                                     #  oicc_ratio_max_swd()),
-                                    r0=#c(cicc_wperiod_min_swd(),
+                                    rho0=#c(cicc_wperiod_min_swd(),
                                       cicc_wperiod_est_swd(),
                                     # cicc_wperiod_max_swd()),
                                     r1_r0=#c(cicc_ratio_min_swd(),
@@ -3832,13 +3832,13 @@ shinyServer(function(input, output, session) {
             
           }else{
             df_power <- expand.grid(n=n_range, m=input$m_swd,J=J,
-                                    a0=c(oicc_wperiod_min_swd(),
+                                    alpha0=c(oicc_wperiod_min_swd(),
                                          oicc_wperiod_est_swd(),
                                          oicc_wperiod_max_swd()),
                                     a1_a0=c(oicc_ratio_min_swd(),
                                             oicc_ratio_est_swd(),
                                             oicc_ratio_max_swd()),
-                                    r0=c(cicc_wperiod_min_swd(),
+                                    rho0=c(cicc_wperiod_min_swd(),
                                          cicc_wperiod_est_swd(),
                                          cicc_wperiod_max_swd()),
                                     r1_r0=c(cicc_ratio_min_swd(),
@@ -3856,8 +3856,8 @@ shinyServer(function(input, output, session) {
             power_hte_col[i] <- power_hte_swd(n=df_power[i,"n"],
                                               m=df_power[i,"m"], J=df_power[i,"J"],
                                               var_y=df_power[i,"var_y"], var_x=df_power[i,"var_x"],
-                                              a0=df_power[i,"a0"], a1_a0=df_power[i,"a1_a0"],
-                                              r0=df_power[i,"r0"], r1_r0=df_power[i,"r1_r0"],
+                                              alpha0=df_power[i,"alpha0"], a1_a0=df_power[i,"a1_a0"],
+                                              rho0=df_power[i,"rho0"], r1_r0=df_power[i,"r1_r0"],
                                               cohort=df_power[i,"cohort"],
                                               d=df_power[i,"d"], a=df_power[i,"a"])
           }
@@ -3867,9 +3867,9 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_power %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                             r1_r0 == cicc_ratio_est_swd(),
-                            a0 == oicc_wperiod_est_swd(),
+                            alpha0 == oicc_wperiod_est_swd(),
                             a1_a0 == oicc_ratio_est_swd()) %>%
               mutate(r1_r0=factor(r1_r0),
                      ns=n/(J-1)) %>%
@@ -3877,8 +3877,8 @@ shinyServer(function(input, output, session) {
                       linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                   "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                    "<br>Clusters (total):", n, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                    "<br>Sequences (steps): ", (J-1),
                                    "<br>HTE power: ", round(power_hte_col,4)),
@@ -3901,7 +3901,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), r0 (", cicc_wperiod_est_swd(),") and r1/r0 (", cicc_ratio_est_swd(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -3918,9 +3918,9 @@ shinyServer(function(input, output, session) {
             if(input$icc_display_three == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
               
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -3932,15 +3932,15 @@ shinyServer(function(input, output, session) {
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0),
                            ns=n/(J-1)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", (J-1),
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -3957,15 +3957,15 @@ shinyServer(function(input, output, session) {
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0),
                            ns=n/(J-1)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", (J-1),
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -3992,7 +3992,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), minimum r0 (", cicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -4003,7 +4003,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), and maximum r0 (", cicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -4013,7 +4013,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), and r0 (", cicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -4029,9 +4029,9 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -4043,15 +4043,15 @@ shinyServer(function(input, output, session) {
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0),
                            ns=n/(J-1)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", (J-1),
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -4068,15 +4068,15 @@ shinyServer(function(input, output, session) {
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0),
                            ns=n/(J-1)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", (J-1),
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -4103,7 +4103,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), minimum a0 (", oicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -4114,7 +4114,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), and maximum a0 (", oicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -4124,7 +4124,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), "), r1/r0 (", cicc_ratio_est_swd(),"), and a0 (", oicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), "), \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -4146,7 +4146,7 @@ shinyServer(function(input, output, session) {
           
           if(sensitivity_swd_react() == "est_only"){
             df_power <- expand.grid(n=n_range, m=input$m_swd,J=J,
-                                    a0=#c(oicc_wperiod_min_swd(),
+                                    alpha0=#c(oicc_wperiod_min_swd(),
                                       oicc_wperiod_est_swd_cc(),
                                     # oicc_wperiod_max_swd()),
                                     a1_a0=#c(oicc_ratio_min_swd(),
@@ -4155,7 +4155,7 @@ shinyServer(function(input, output, session) {
                                     a2=#c(oicc_windiv_min_swd_cc(),
                                       oicc_windiv_est_swd_cc(),
                                     # oicc_windiv_max_swd_cc()),
-                                    r0=#c(cicc_wperiod_min_swd_cc(),
+                                    rho0=#c(cicc_wperiod_min_swd_cc(),
                                       cicc_wperiod_est_swd_cc(),
                                     # cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
@@ -4165,7 +4165,7 @@ shinyServer(function(input, output, session) {
             
           }else{
             df_power <- expand.grid(n=n_range, m=input$m_swd,J=J,
-                                    a0=c(oicc_wperiod_min_swd_cc(),
+                                    alpha0=c(oicc_wperiod_min_swd_cc(),
                                          oicc_wperiod_est_swd_cc(),
                                          oicc_wperiod_max_swd_cc()),
                                     a1_a0=c(oicc_ratio_min_swd_cc(),
@@ -4174,7 +4174,7 @@ shinyServer(function(input, output, session) {
                                     a2=c(oicc_windiv_min_swd_cc(),
                                          oicc_windiv_est_swd_cc(),
                                          oicc_windiv_max_swd_cc()),
-                                    r0=c(cicc_wperiod_min_swd_cc(),
+                                    rho0=c(cicc_wperiod_min_swd_cc(),
                                          cicc_wperiod_est_swd_cc(),
                                          cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
@@ -4184,16 +4184,16 @@ shinyServer(function(input, output, session) {
             
           }
           
-          # df_power <- df_power <- cbind(df_power, a1=df_power$a0*df_power$a1_a0)
-          # df_power <- df_power[which(df_power$a1 <=  df_power$a0),]
+          # df_power <- df_power <- cbind(df_power, alpha1=df_power$alpha0*df_power$a1_a0)
+          # df_power <- df_power[which(df_power$alpha1 <=  df_power$alpha0),]
           
           power_hte_col <- rep(NA, nrow(df_power))
           for(i in seq(nrow(df_power))){
             power_hte_col[i] <- power_hte_swd(n=df_power[i,"n"],
                                               m=df_power[i,"m"], J=df_power[i,"J"],
                                               var_y=df_power[i,"var_y"], var_x=df_power[i,"var_x"],
-                                              a0=df_power[i,"a0"], a1_a0=df_power[i,"a1_a0"],
-                                              a2=df_power[i,"a2"], r0=df_power[i,"r0"],
+                                              alpha0=df_power[i,"alpha0"], a1_a0=df_power[i,"a1_a0"],
+                                              a2=df_power[i,"a2"], rho0=df_power[i,"rho0"],
                                               cohort=df_power[i,"cohort"],
                                               d=df_power[i,"d"], a=df_power[i,"a"])
           }
@@ -4203,18 +4203,18 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_power %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
-                            a0 == oicc_wperiod_est_swd_cc(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
+                            alpha0 == oicc_wperiod_est_swd_cc(),
                             a1_a0 == oicc_ratio_est_swd_cc(),
                             a2 == oicc_windiv_est_swd_cc()) %>%
-              mutate(r0=factor(r0),
+              mutate(rho0=factor(rho0),
                      ns=n/(J-1)) %>%
-              plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                      linetype=~r0, color=~r0,legendgroup=~r0,
+              plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                      linetype=~rho0, color=~rho0,legendgroup=~rho0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
-                                   "; <br>within-period covariate ICC (r0): ", r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                    "<br>Clusters (total):", n, "; Clusters (per sequence):", n/(J-1),"<br>Cluster size (per period): ", m,
                                    "<br>Sequences (steps): ", (J-1),
                                    "<br>HTE power: ", round(power_hte_col,4)),
@@ -4237,7 +4237,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(), "), and r0 (", cicc_wperiod_est_swd_cc(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(), "), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -4254,10 +4254,10 @@ shinyServer(function(input, output, session) {
             if(input$icc_display_three == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
               
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
               a2_unique <- sort(unique(df_power[,"a2"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
               for(i in seq(length(r0_unique))){
@@ -4266,17 +4266,17 @@ shinyServer(function(input, output, session) {
                   # outcome ICCs #
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0),
+                    mutate(rho0=factor(rho0),
                            ns=n/(J-1)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0, showlegend=F,
+                    plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n, "; Clusters (per sequence):", n/(J-1),"<br>Cluster size (total): ", m,
                                          "<br>Sequences (steps): ", (J-1),
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -4291,17 +4291,17 @@ shinyServer(function(input, output, session) {
                 }else{
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0),
+                    mutate(rho0=factor(rho0),
                            ns=n/(J-1)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0,
+                    plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n, "; Clusters (per sequence):", n/(J-1),"<br>Cluster size (total): ", m,
                                          "<br>Sequences (steps): ", (J-1),
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -4328,7 +4328,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum r0 (", cicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -4339,7 +4339,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum r0 (", cicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -4349,7 +4349,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and r0 (", cicc_wperiod_est_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -4365,10 +4365,10 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
               a2_unique <- sort(unique(df_power[,"a2"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
               for(i in seq(length(a0_unique))){
@@ -4379,15 +4379,15 @@ shinyServer(function(input, output, session) {
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0),
                            ns=n/(J-1)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n, "; Clusters (per sequence):", n/(J-1),"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", (J-1),
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -4404,15 +4404,15 @@ shinyServer(function(input, output, session) {
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0),
                            ns=n/(J-1)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~ns,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n, "; Clusters (per sequence):", n/(J-1),"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", (J-1),
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -4439,7 +4439,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum a0 (", oicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -4450,7 +4450,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum a0 (", oicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -4460,7 +4460,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and a0 (", oicc_wperiod_est_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -4487,13 +4487,13 @@ shinyServer(function(input, output, session) {
         if(cohort() == "cross"){
           if(sensitivity_swd_react() == "est_only"){
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,
-                                 a0=#c(oicc_wperiod_min_swd(),
+                                 alpha0=#c(oicc_wperiod_min_swd(),
                                    oicc_wperiod_est_swd(),
                                  # oicc_wperiod_max_swd()),
                                  a1_a0=#c(oicc_ratio_min_swd(),
                                    oicc_ratio_est_swd(),
                                  # oicc_ratio_max_swd()),
-                                 r0=#c(cicc_wperiod_min_swd(),
+                                 rho0=#c(cicc_wperiod_min_swd(),
                                    cicc_wperiod_est_swd(),
                                  # cicc_wperiod_max_swd()),
                                  r1_r0=#c(cicc_ratio_min_swd(),
@@ -4506,13 +4506,13 @@ shinyServer(function(input, output, session) {
             
           }else{
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,
-                                 a0=c(oicc_wperiod_min_swd(),
+                                 alpha0=c(oicc_wperiod_min_swd(),
                                       oicc_wperiod_est_swd(),
                                       oicc_wperiod_max_swd()),
                                  a1_a0=c(oicc_ratio_min_swd(),
                                          oicc_ratio_est_swd(),
                                          oicc_ratio_max_swd()),
-                                 r0=c(cicc_wperiod_min_swd(),
+                                 rho0=c(cicc_wperiod_min_swd(),
                                       cicc_wperiod_est_swd(),
                                       cicc_wperiod_max_swd()),
                                  r1_r0=c(cicc_ratio_min_swd(),
@@ -4531,8 +4531,8 @@ shinyServer(function(input, output, session) {
             ns_hte_col[i,] <- unlist(ns_hte_swd(m=df_ns[i,"m"],
                                                 J=df_ns[i,"J"],
                                                 var_y=df_ns[i,"var_y"], var_x=df_ns[i,"var_x"],
-                                                a0=df_ns[i,"a0"], a1_a0=df_ns[i,"a1_a0"],
-                                                r0=df_ns[i,"r0"], r1_r0=df_ns[i,"r1_r0"],
+                                                alpha0=df_ns[i,"alpha0"], a1_a0=df_ns[i,"a1_a0"],
+                                                rho0=df_ns[i,"rho0"], r1_r0=df_ns[i,"r1_r0"],
                                                 d=df_ns[i,"d"],
                                                 cohort=df_ns[i,"cohort"],
                                                 a=df_ns[i,"a"],
@@ -4545,17 +4545,17 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_ns %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                             r1_r0 == cicc_ratio_est_swd(),
-                            a0 == oicc_wperiod_est_swd(),
+                            alpha0 == oicc_wperiod_est_swd(),
                             a1_a0 == oicc_ratio_est_swd()) %>%
               mutate(r1_r0=factor(r1_r0)) %>%
               plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                       linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                   "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                    "<br>Clusters (total):", ns*(J-1), "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                    "<br>Sequences (steps): ", input$J_1,
                                    "<br>HTE power: ", round(power_emp,4)),
@@ -4578,7 +4578,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), r0 (", cicc_wperiod_est_swd(),") and r1/r0 (", cicc_ratio_est_swd(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -4595,9 +4595,9 @@ shinyServer(function(input, output, session) {
             if(input$icc_display_swd == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
               
-              a0_unique <- sort(unique(df_ns[,"a0"]))
+              a0_unique <- sort(unique(df_ns[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_ns[,"a1_a0"]))
-              r0_unique <- sort(unique(df_ns[,"r0"]))
+              r0_unique <- sort(unique(df_ns[,"rho0"]))
               r1_r0_unique <- sort(unique(df_ns[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -4608,15 +4608,15 @@ shinyServer(function(input, output, session) {
                   p_o[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", ns*(J-1), "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", input$J_1,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -4632,15 +4632,15 @@ shinyServer(function(input, output, session) {
                   p_o[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", ns*(J-1), "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", input$J_1,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -4667,7 +4667,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), minimum r0 (", cicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -4678,7 +4678,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), and maximum r0 (", cicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -4688,7 +4688,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), and r0 (", cicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -4704,9 +4704,9 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_ns[,"a0"]))
+              a0_unique <- sort(unique(df_ns[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_ns[,"a1_a0"]))
-              r0_unique <- sort(unique(df_ns[,"r0"]))
+              r0_unique <- sort(unique(df_ns[,"rho0"]))
               r1_r0_unique <- sort(unique(df_ns[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -4717,15 +4717,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", ns*(J-1), "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", input$J_1,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -4741,15 +4741,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", ns*(J-1), "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", input$J_1,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -4776,7 +4776,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), minimum a0 (", oicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -4787,7 +4787,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), and maximum a0 (", oicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -4797,7 +4797,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), "), r1/r0 (", cicc_ratio_est_swd(),"), and a0 (", oicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), "), \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -4818,7 +4818,7 @@ shinyServer(function(input, output, session) {
         }else if(cohort() == "closed"){
           if(sensitivity_swd_react() == "est_only"){
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,
-                                 a0=#c(oicc_wperiod_min_swd(),
+                                 alpha0=#c(oicc_wperiod_min_swd(),
                                    oicc_wperiod_est_swd_cc(),
                                  # oicc_wperiod_max_swd()),
                                  a1_a0=#c(oicc_ratio_min_swd(),
@@ -4827,7 +4827,7 @@ shinyServer(function(input, output, session) {
                                  a2=#c(oicc_windiv_min_swd_cc(),
                                    oicc_windiv_est_swd_cc(),
                                  # oicc_windiv_max_swd_cc()),
-                                 r0=#c(cicc_wperiod_min_swd_cc(),
+                                 rho0=#c(cicc_wperiod_min_swd_cc(),
                                    cicc_wperiod_est_swd_cc(),
                                  # cicc_wperiod_max_swd_cc()),
                                  var_y=var_y, #(input$sd_outcome)^2,
@@ -4837,7 +4837,7 @@ shinyServer(function(input, output, session) {
             
           }else{
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,
-                                 a0=c(oicc_wperiod_min_swd_cc(),
+                                 alpha0=c(oicc_wperiod_min_swd_cc(),
                                       oicc_wperiod_est_swd_cc(),
                                       oicc_wperiod_max_swd_cc()),
                                  a1_a0=c(oicc_ratio_min_swd_cc(),
@@ -4846,7 +4846,7 @@ shinyServer(function(input, output, session) {
                                  a2=c(oicc_windiv_min_swd_cc(),
                                       oicc_windiv_est_swd_cc(),
                                       oicc_windiv_max_swd_cc()),
-                                 r0=c(cicc_wperiod_min_swd_cc(),
+                                 rho0=c(cicc_wperiod_min_swd_cc(),
                                       cicc_wperiod_est_swd_cc(),
                                       cicc_wperiod_max_swd_cc()),
                                  var_y=var_y, #(input$sd_outcome)^2,
@@ -4862,8 +4862,8 @@ shinyServer(function(input, output, session) {
             ns_hte_col[i,] <- unlist(ns_hte_swd(m=df_ns[i,"m"],
                                                 J=df_ns[i,"J"],
                                                 var_y=df_ns[i,"var_y"], var_x=df_ns[i,"var_x"],
-                                                a0=df_ns[i,"a0"], a1_a0=df_ns[i,"a1_a0"],
-                                                a2=df_ns[i,"a2"], r0=df_ns[i,"r0"],
+                                                alpha0=df_ns[i,"alpha0"], a1_a0=df_ns[i,"a1_a0"],
+                                                a2=df_ns[i,"a2"], rho0=df_ns[i,"rho0"],
                                                 d=df_ns[i,"d"],
                                                 cohort=df_ns[i,"cohort"],
                                                 a=df_ns[i,"a"],
@@ -4876,17 +4876,17 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_ns %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
-                            a0 == oicc_wperiod_est_swd_cc(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
+                            alpha0 == oicc_wperiod_est_swd_cc(),
                             a1_a0 == oicc_ratio_est_swd_cc(),
                             a2 == oicc_windiv_est_swd_cc()) %>%
-              mutate(r0=factor(r0)) %>%
-              plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                      linetype=~r0, color=~r0,legendgroup=~r0,
+              mutate(rho0=factor(rho0)) %>%
+              plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                      linetype=~rho0, color=~rho0,legendgroup=~rho0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
-                                   "; <br>within-period covariate ICC (r0): ", r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                    "<br>Clusters (total):", ns*(J-1), "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                    "<br>Sequences (steps): ", input$J_1,
                                    "<br>HTE power: ", round(power_emp,4)),
@@ -4909,7 +4909,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(), "), and r0 (", cicc_wperiod_est_swd_cc(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(), "), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -4926,10 +4926,10 @@ shinyServer(function(input, output, session) {
             if(input$icc_display_swd == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
               
-              a0_unique <- sort(unique(df_ns[,"a0"]))
+              a0_unique <- sort(unique(df_ns[,"\U1D6FC<sub>0</sub>"]))
               a1_a0_unique <- sort(unique(df_ns[,"a1_a0"]))
               a2_unique <- sort(unique(df_ns[,"a2"]))
-              r0_unique <- sort(unique(df_ns[,"r0"]))
+              r0_unique <- sort(unique(df_ns[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
               for(i in seq(length(r0_unique))){
@@ -4938,16 +4938,16 @@ shinyServer(function(input, output, session) {
                   # outcome ICCs #
                   p_o[[i]] <- df_ns %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0, showlegend=F,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", ns*(J-1), "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", input$J_1,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -4962,16 +4962,16 @@ shinyServer(function(input, output, session) {
                 }else{
                   p_o[[i]] <- df_ns %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", ns*(J-1), "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", input$J_1,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -4998,7 +4998,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum r0 (", cicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -5009,7 +5009,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum r0 (", cicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -5019,7 +5019,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and r0 (", cicc_wperiod_est_swd_cc(),")</i>"),                      xref = "paper",
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(),")</i>"),                      xref = "paper",
                     yref = "paper",
                     xanchor = "center",
                     yanchor = "bottom",
@@ -5034,10 +5034,10 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_ns[,"a0"]))
+              a0_unique <- sort(unique(df_ns[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_ns[,"a1_a0"]))
               a2_unique <- sort(unique(df_ns[,"a2"]))
-              r0_unique <- sort(unique(df_ns[,"r0"]))
+              r0_unique <- sort(unique(df_ns[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
               for(i in seq(length(a0_unique))){
@@ -5047,15 +5047,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", ns*(J-1), "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", input$J_1,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -5071,15 +5071,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", ns*(J-1), "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", input$J_1,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -5106,7 +5106,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum a0 (", oicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -5117,7 +5117,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum a0 (", oicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -5127,7 +5127,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and a0 (", oicc_wperiod_est_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -5195,13 +5195,13 @@ shinyServer(function(input, output, session) {
           
           if(sensitivity_swd_react() == "est_only"){
             df_power <- expand.grid(n=n, m=m_range, J=J,
-                                    a0=#c(oicc_wperiod_min_swd(),
+                                    alpha0=#c(oicc_wperiod_min_swd(),
                                       oicc_wperiod_est_swd(),
                                     #oicc_wperiod_max_swd()),
                                     a1_a0=#c(oicc_ratio_min_swd(),
                                       oicc_ratio_est_swd(),
                                     # oicc_ratio_max_swd()),
-                                    r0=#c(cicc_wperiod_min_swd(),
+                                    rho0=#c(cicc_wperiod_min_swd(),
                                       cicc_wperiod_est_swd(),
                                     # cicc_wperiod_max_swd()),
                                     r1_r0=#c(cicc_ratio_min_swd(),
@@ -5214,13 +5214,13 @@ shinyServer(function(input, output, session) {
                                     d=input$mean_diff_HTE, a=input$sig)
           }else{
             df_power <- expand.grid(n=n, m=m_range, J=J,
-                                    a0=c(oicc_wperiod_min_swd(),
+                                    alpha0=c(oicc_wperiod_min_swd(),
                                          oicc_wperiod_est_swd(),
                                          oicc_wperiod_max_swd()),
                                     a1_a0=c(oicc_ratio_min_swd(),
                                             oicc_ratio_est_swd(),
                                             oicc_ratio_max_swd()),
-                                    r0=c(cicc_wperiod_min_swd(),
+                                    rho0=c(cicc_wperiod_min_swd(),
                                          cicc_wperiod_est_swd(),
                                          cicc_wperiod_max_swd()),
                                     r1_r0=c(cicc_ratio_min_swd(),
@@ -5239,8 +5239,8 @@ shinyServer(function(input, output, session) {
             power_hte_col[i] <- power_hte_parallel_m(desmat, n=df_power[i,"n"],
                                                      m=df_power[i,"m"],# J=df_power[i,"J"],
                                                      var_y=df_power[i,"var_y"], var_x=df_power[i,"var_x"],w=df_power[i,"w"],
-                                                     a0=df_power[i,"a0"], a1_a0=df_power[i,"a1_a0"],
-                                                     r0=df_power[i,"r0"], r1_r0=df_power[i,"r1_r0"],
+                                                     alpha0=df_power[i,"alpha0"], a1_a0=df_power[i,"a1_a0"],
+                                                     rho0=df_power[i,"rho0"], r1_r0=df_power[i,"r1_r0"],
                                                      cohort=df_power[i,"cohort"],
                                                      d=df_power[i,"d"], a=df_power[i,"a"])
           }
@@ -5250,17 +5250,17 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_power %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                             r1_r0 == cicc_ratio_est_swd(),
-                            a0 == oicc_wperiod_est_swd(),
+                            alpha0 == oicc_wperiod_est_swd(),
                             a1_a0 == oicc_ratio_est_swd()) %>%
               mutate(r1_r0=factor(r1_r0)) %>%
               plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                       linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                   "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                    "<br>Clusters (total):", n,
                                    "<br>Clusters on treatment: ", n*w,"<br>Clusters on control: ", n*(1-w),
                                    "<br>Cluster size (per period): ", m,
@@ -5285,7 +5285,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), r0 (", cicc_wperiod_est_swd(),") and r1/r0 (", cicc_ratio_est_swd(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -5302,9 +5302,9 @@ shinyServer(function(input, output, session) {
             if(input$icc_display_swd == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
               
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
               
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
@@ -5316,15 +5316,15 @@ shinyServer(function(input, output, session) {
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total): ", n,
                                          "<br>Clusters on treatment: ", n*w,"<br>Clusters on control: ", n*(1-w),
                                          "<br>Cluster size (per period): ", m,
@@ -5342,15 +5342,15 @@ shinyServer(function(input, output, session) {
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total): ", n,
                                          "<br>Clusters on treatment: ", n*w,"<br>Clusters on control: ", n*(1-w),
                                          "<br>Cluster size (per period): ", m,
@@ -5379,7 +5379,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), minimum r0 (", cicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -5390,7 +5390,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), and maximum r0 (", cicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -5400,7 +5400,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), and r0 (", cicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -5416,9 +5416,9 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -5429,15 +5429,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total): ", n,
                                          "<br>Clusters on treatment: ", n*w,"<br>Clusters on control: ", n*(1-w),
                                          "<br>Cluster size (per period): ", m,
@@ -5455,15 +5455,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total): ", n,
                                          "<br>Clusters on treatment: ", n*w,"<br>Clusters on control: ", n*(1-w),
                                          "<br>Cluster size (per period): ", m,
@@ -5492,7 +5492,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), minimum a0 (", oicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -5503,7 +5503,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), and maximum a0 (", oicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -5513,7 +5513,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), "), r1/r0 (", cicc_ratio_est_swd(),"), and a0 (", oicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), "), \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -5534,7 +5534,7 @@ shinyServer(function(input, output, session) {
         }else if(cohort() == "closed"){
           if(sensitivity_swd_react() == "est_only"){
             df_power <- expand.grid(n=n, m=m_range, J=J,
-                                    a0=#c(oicc_wperiod_min_swd_cc(),
+                                    alpha0=#c(oicc_wperiod_min_swd_cc(),
                                       oicc_wperiod_est_swd_cc(),
                                     # oicc_wperiod_max_swd_cc()),
                                     a1_a0=#c(oicc_ratio_min_swd_cc(),
@@ -5543,7 +5543,7 @@ shinyServer(function(input, output, session) {
                                     a2=#c(oicc_windiv_min_swd_cc(),
                                       oicc_windiv_est_swd_cc(),
                                     # oicc_windiv_max_swd_cc()),
-                                    r0=#c(cicc_wperiod_min_swd_cc(),
+                                    rho0=#c(cicc_wperiod_min_swd_cc(),
                                       cicc_wperiod_est_swd_cc(),
                                     # cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
@@ -5553,7 +5553,7 @@ shinyServer(function(input, output, session) {
                                     d=input$mean_diff_HTE, a=input$sig)
           }else{
             df_power <- expand.grid(n=n, m=m_range, J=J,
-                                    a0=c(oicc_wperiod_min_swd_cc(),
+                                    alpha0=c(oicc_wperiod_min_swd_cc(),
                                          oicc_wperiod_est_swd_cc(),
                                          oicc_wperiod_max_swd_cc()),
                                     a1_a0=c(oicc_ratio_min_swd_cc(),
@@ -5562,7 +5562,7 @@ shinyServer(function(input, output, session) {
                                     a2=c(oicc_windiv_min_swd_cc(),
                                          oicc_windiv_est_swd_cc(),
                                          oicc_windiv_max_swd_cc()),
-                                    r0=c(cicc_wperiod_min_swd_cc(),
+                                    rho0=c(cicc_wperiod_min_swd_cc(),
                                          cicc_wperiod_est_swd_cc(),
                                          cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
@@ -5578,9 +5578,9 @@ shinyServer(function(input, output, session) {
             power_hte_col[i] <- power_hte_parallel_m(desmat,n=df_power[i,"n"],
                                                      m=df_power[i,"m"],# J=df_power[i,"J"],
                                                      var_y=df_power[i,"var_y"], var_x=df_power[i,"var_x"],w=df_power[i,"w"],
-                                                     a0=df_power[i,"a0"], a1_a0=df_power[i,"a1_a0"],
+                                                     alpha0=df_power[i,"alpha0"], a1_a0=df_power[i,"a1_a0"],
                                                      a2=df_power[i,"a2"],
-                                                     r0=df_power[i,"r0"],
+                                                     rho0=df_power[i,"rho0"],
                                                      cohort=df_power[i,"cohort"],
                                                      d=df_power[i,"d"], a=df_power[i,"a"])
             # if(is.nan(power_hte_col[i])) print(i)
@@ -5591,17 +5591,17 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_power %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
-                            a0 == oicc_wperiod_est_swd_cc(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
+                            alpha0 == oicc_wperiod_est_swd_cc(),
                             a1_a0 == oicc_ratio_est_swd_cc(),
                             a2 == oicc_windiv_est_swd_cc()) %>%
-              mutate(r0=factor(r0)) %>%
-              plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                      linetype=~r0, color=~r0,legendgroup=~r0,
+              mutate(rho0=factor(rho0)) %>%
+              plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                      linetype=~rho0, color=~rho0,legendgroup=~rho0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
-                                   "; <br>within-period covariate ICC (r0): ", r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                    "<br>Clusters (total): ", n,
                                    "<br>Clusters on treatment: ", n*w,"<br>Clusters on control: ", n*(1-w),
                                    "<br>Cluster size (per period): ", m,
@@ -5626,7 +5626,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), a2 (", oicc_windiv_est_swd_cc(), "), and r0 (", cicc_wperiod_est_swd(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), a2 (", oicc_windiv_est_swd_cc(), "), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -5641,10 +5641,10 @@ shinyServer(function(input, output, session) {
               )
           }else if(sensitivity_swd_react() == "sensitivity"){
             if(input$icc_display_swd == "oICC_constant"){
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
               a2_unique <- sort(unique(df_power[,"a2"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -5654,16 +5654,16 @@ shinyServer(function(input, output, session) {
                   # outcome ICCs #
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0, showlegend=F,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total): ", n,
                                          "<br>Clusters on treatment: ", n*w,"<br>Clusters on control: ", n*(1-w),
                                          "<br>Cluster size (total): ", m,
@@ -5680,16 +5680,16 @@ shinyServer(function(input, output, session) {
                 }else{
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total): ", n,
                                          "<br>Clusters on treatment: ", n*w,"<br>Clusters on control: ", n*(1-w),
                                          "<br>Cluster size (total): ", m,
@@ -5717,7 +5717,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum r0 (", cicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -5728,7 +5728,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum r0 (", cicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -5738,7 +5738,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and r0 (", cicc_wperiod_est_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -5754,10 +5754,10 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
               a2_unique <- sort(unique(df_power[,"a2"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
               for(i in seq(length(a0_unique))){
@@ -5767,15 +5767,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total): ", n,
                                          "<br>Clusters on treatment: ", n*w,"<br>Clusters on control: ", n*(1-w),
                                          "<br>Cluster size (per period): ", m,
@@ -5793,15 +5793,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total): ", n,
                                          "<br>Clusters on treatment: ", n*w,"<br>Clusters on control: ", n*(1-w),
                                          "<br>Cluster size (per period): ", m,
@@ -5830,7 +5830,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum a0 (", oicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -5841,7 +5841,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum a0 (", oicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -5851,7 +5851,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and a0 (", oicc_wperiod_est_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -5882,13 +5882,13 @@ shinyServer(function(input, output, session) {
           
           if(sensitivity_swd_react() == "est_only"){
             df_power <- expand.grid(n=ns_range, m=input$m_swd,J=J,
-                                    a0=#c(oicc_wperiod_min_swd(),
+                                    alpha0=#c(oicc_wperiod_min_swd(),
                                       oicc_wperiod_est_swd(),
                                     # oicc_wperiod_max_swd()),
                                     a1_a0=#c(oicc_ratio_min_swd(),
                                       oicc_ratio_est_swd(),
                                     #  oicc_ratio_max_swd()),
-                                    r0=#c(cicc_wperiod_min_swd(),
+                                    rho0=#c(cicc_wperiod_min_swd(),
                                       cicc_wperiod_est_swd(),
                                     # cicc_wperiod_max_swd()),
                                     r1_r0=#c(cicc_ratio_min_swd(),
@@ -5902,13 +5902,13 @@ shinyServer(function(input, output, session) {
             
           }else{
             df_power <- expand.grid(n=ns_range, m=input$m_swd,J=J,
-                                    a0=c(oicc_wperiod_min_swd(),
+                                    alpha0=c(oicc_wperiod_min_swd(),
                                          oicc_wperiod_est_swd(),
                                          oicc_wperiod_max_swd()),
                                     a1_a0=c(oicc_ratio_min_swd(),
                                             oicc_ratio_est_swd(),
                                             oicc_ratio_max_swd()),
-                                    r0=c(cicc_wperiod_min_swd(),
+                                    rho0=c(cicc_wperiod_min_swd(),
                                          cicc_wperiod_est_swd(),
                                          cicc_wperiod_max_swd()),
                                     r1_r0=c(cicc_ratio_min_swd(),
@@ -5927,8 +5927,8 @@ shinyServer(function(input, output, session) {
             power_hte_col[i] <- power_hte_parallel_m(desmat,n=df_power[i,"n"],
                                                      m=df_power[i,"m"],# J=df_power[i,"J"],
                                                      var_y=df_power[i,"var_y"], var_x=df_power[i,"var_x"],w=df_power[i,"w"],
-                                                     a0=df_power[i,"a0"], a1_a0=df_power[i,"a1_a0"],
-                                                     r0=df_power[i,"r0"], r1_r0=df_power[i,"r1_r0"],
+                                                     alpha0=df_power[i,"alpha0"], a1_a0=df_power[i,"a1_a0"],
+                                                     rho0=df_power[i,"rho0"], r1_r0=df_power[i,"r1_r0"],
                                                      cohort=df_power[i,"cohort"],
                                                      d=df_power[i,"d"], a=df_power[i,"a"], range=T)
           }
@@ -5938,17 +5938,17 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_power %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                             r1_r0 == cicc_ratio_est_swd(),
-                            a0 == oicc_wperiod_est_swd(),
+                            alpha0 == oicc_wperiod_est_swd(),
                             a1_a0 == oicc_ratio_est_swd()) %>%
               mutate(r1_r0=factor(r1_r0)) %>%
               plot_ly(x=~n,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                       linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                   "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                    "<br>Clusters (total): ", (ceiling(n*w) + ceiling(n*(1-w))),
                                    "<br>Clusters on treatment: ", ceiling(n*w),"<br>Clusters on control: ", ceiling(n*(1-w)),
                                    "<br>Cluster size (per period): ", m,
@@ -5973,7 +5973,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), r0 (", cicc_wperiod_est_swd(),") and r1/r0 (", cicc_ratio_est_swd(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -5990,9 +5990,9 @@ shinyServer(function(input, output, session) {
             if(input$icc_display_three == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
               
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -6003,15 +6003,15 @@ shinyServer(function(input, output, session) {
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~n,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total): ", (ceiling(n*w) + ceiling(n*(1-w))),
                                          "<br>Clusters on treatment: ", ceiling(n*w),"<br>Clusters on control: ", ceiling(n*(1-w)),
                                          "<br>Cluster size (per period): ", m,
@@ -6029,15 +6029,15 @@ shinyServer(function(input, output, session) {
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~n,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total): ", (ceiling(n*w) + ceiling(n*(1-w))),
                                          "<br>Clusters on treatment: ", ceiling(n*w),"<br>Clusters on control: ", ceiling(n*(1-w)),
                                          "<br>Cluster size (per period): ", m,
@@ -6066,7 +6066,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), minimum r0 (", cicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -6077,7 +6077,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), and maximum r0 (", cicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -6087,7 +6087,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), and r0 (", cicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -6103,9 +6103,9 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -6116,15 +6116,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~n,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total): ", (ceiling(n*w) + ceiling(n*(1-w))),
                                          "<br>Clusters on treatment: ", ceiling(n*w),"<br>Clusters on control: ", ceiling(n*(1-w)),
                                          "<br>Cluster size (per period): ", m,
@@ -6142,15 +6142,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~n,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total): ", (ceiling(n*w) + ceiling(n*(1-w))),
                                          "<br>Clusters on treatment: ", ceiling(n*w),"<br>Clusters on control: ", ceiling(n*(1-w)),
                                          "<br>Cluster size (per period): ", m,
@@ -6179,7 +6179,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), minimum a0 (", oicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -6190,7 +6190,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), and maximum a0 (", oicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -6200,7 +6200,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), "), r1/r0 (", cicc_ratio_est_swd(),"), and a0 (", oicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), "), \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -6222,7 +6222,7 @@ shinyServer(function(input, output, session) {
           
           if(sensitivity_swd_react() == "est_only"){
             df_power <- expand.grid(n=ns_range, m=input$m_swd,J=J,
-                                    a0=#c(oicc_wperiod_min_swd(),
+                                    alpha0=#c(oicc_wperiod_min_swd(),
                                       oicc_wperiod_est_swd_cc(),
                                     # oicc_wperiod_max_swd()),
                                     a1_a0=#c(oicc_ratio_min_swd(),
@@ -6231,7 +6231,7 @@ shinyServer(function(input, output, session) {
                                     a2=#c(oicc_windiv_min_swd_cc(),
                                       oicc_windiv_est_swd_cc(),
                                     # oicc_windiv_max_swd_cc()),
-                                    r0=#c(cicc_wperiod_min_swd_cc(),
+                                    rho0=#c(cicc_wperiod_min_swd_cc(),
                                       cicc_wperiod_est_swd_cc(),
                                     # cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
@@ -6242,7 +6242,7 @@ shinyServer(function(input, output, session) {
             
           }else{
             df_power <- expand.grid(n=ns_range, m=input$m_swd,J=J,
-                                    a0=c(oicc_wperiod_min_swd_cc(),
+                                    alpha0=c(oicc_wperiod_min_swd_cc(),
                                          oicc_wperiod_est_swd_cc(),
                                          oicc_wperiod_max_swd_cc()),
                                     a1_a0=c(oicc_ratio_min_swd_cc(),
@@ -6251,7 +6251,7 @@ shinyServer(function(input, output, session) {
                                     a2=c(oicc_windiv_min_swd_cc(),
                                          oicc_windiv_est_swd_cc(),
                                          oicc_windiv_max_swd_cc()),
-                                    r0=c(cicc_wperiod_min_swd_cc(),
+                                    rho0=c(cicc_wperiod_min_swd_cc(),
                                          cicc_wperiod_est_swd_cc(),
                                          cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
@@ -6262,16 +6262,16 @@ shinyServer(function(input, output, session) {
             
           }
           
-          # df_power <- df_power <- cbind(df_power, a1=df_power$a0*df_power$a1_a0)
-          # df_power <- df_power[which(df_power$a1 <=  df_power$a0),]
+          # df_power <- df_power <- cbind(df_power, alpha1=df_power$alpha0*df_power$a1_a0)
+          # df_power <- df_power[which(df_power$alpha1 <=  df_power$alpha0),]
           
           power_hte_col <- rep(NA, nrow(df_power))
           for(i in seq(nrow(df_power))){
             power_hte_col[i] <- power_hte_parallel_m(desmat,n=df_power[i,"n"],
                                                      m=df_power[i,"m"], #J=df_power[i,"J"],
                                                      var_y=df_power[i,"var_y"], var_x=df_power[i,"var_x"],w=df_power[i,"w"],
-                                                     a0=df_power[i,"a0"], a1_a0=df_power[i,"a1_a0"],
-                                                     a2=df_power[i,"a2"], r0=df_power[i,"r0"],
+                                                     alpha0=df_power[i,"alpha0"], a1_a0=df_power[i,"a1_a0"],
+                                                     a2=df_power[i,"a2"], rho0=df_power[i,"rho0"],
                                                      cohort=df_power[i,"cohort"],
                                                      d=df_power[i,"d"], a=df_power[i,"a"],range=T)
           }
@@ -6281,17 +6281,17 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_power %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
-                            a0 == oicc_wperiod_est_swd_cc(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
+                            alpha0 == oicc_wperiod_est_swd_cc(),
                             a1_a0 == oicc_ratio_est_swd_cc(),
                             a2 == oicc_windiv_est_swd_cc()) %>%
-              mutate(r0=factor(r0)) %>%
-              plot_ly(x=~n,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                      linetype=~r0, color=~r0,legendgroup=~r0,
+              mutate(rho0=factor(rho0)) %>%
+              plot_ly(x=~n,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                      linetype=~rho0, color=~rho0,legendgroup=~rho0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
-                                   "; <br>within-period covariate ICC (r0): ", r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                    "<br>Clusters (total): ", (ceiling(n*w) + ceiling(n*(1-w))),
                                    "<br>Clusters on treatment: ", ceiling(n*w),"<br>Clusters on control: ", ceiling(n*(1-w)),
                                    "<br>Cluster size (per period): ", m,
@@ -6316,7 +6316,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(), "), and r0 (", cicc_wperiod_est_swd_cc(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(), "), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -6333,10 +6333,10 @@ shinyServer(function(input, output, session) {
             if(input$icc_display_three == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
               
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
               a2_unique <- sort(unique(df_power[,"a2"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
               for(i in seq(length(r0_unique))){
@@ -6345,16 +6345,16 @@ shinyServer(function(input, output, session) {
                   # outcome ICCs #
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~n,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0, showlegend=F,
+                    plot_ly(x=~n,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total): ", (ceiling(n*w) + ceiling(n*(1-w))),
                                          "<br>Clusters on treatment: ", ceiling(n*w),"<br>Clusters on control: ", ceiling(n*(1-w)),
                                          "<br>Cluster size (total): ", m,
@@ -6371,16 +6371,16 @@ shinyServer(function(input, output, session) {
                 }else{
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~n,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0,
+                    plot_ly(x=~n,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total): ", (ceiling(n*w) + ceiling(n*(1-w))),
                                          "<br>Clusters on treatment: ", ceiling(n*w),"<br>Clusters on control: ", ceiling(n*(1-w)),
                                          "<br>Cluster size (total): ", m,
@@ -6409,7 +6409,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum r0 (", cicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -6420,7 +6420,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum r0 (", cicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -6430,7 +6430,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and r0 (", cicc_wperiod_est_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -6446,10 +6446,10 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
               a2_unique <- sort(unique(df_power[,"a2"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
               for(i in seq(length(a0_unique))){
@@ -6459,15 +6459,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~n,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total): ", (ceiling(n*w) + ceiling(n*(1-w))),
                                          "<br>Clusters on treatment: ", ceiling(n*w),"<br>Clusters on control: ", ceiling(n*(1-w)),
                                          "<br>Cluster size (per period): ", m,
@@ -6485,15 +6485,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~n,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total): ", (ceiling(n*w) + ceiling(n*(1-w))),
                                          "<br>Clusters on treatment: ", ceiling(n*w),"<br>Clusters on control: ", ceiling(n*(1-w)),
                                          "<br>Cluster size (per period): ", m,
@@ -6522,7 +6522,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum a0 (", oicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -6533,7 +6533,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum a0 (", oicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -6543,7 +6543,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and a0 (", oicc_wperiod_est_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -6571,13 +6571,13 @@ shinyServer(function(input, output, session) {
         if(cohort() == "cross"){
           if(sensitivity_swd_react() == "est_only"){
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,
-                                 a0=#c(oicc_wperiod_min_swd(),
+                                 alpha0=#c(oicc_wperiod_min_swd(),
                                    oicc_wperiod_est_swd(),
                                  # oicc_wperiod_max_swd()),
                                  a1_a0=#c(oicc_ratio_min_swd(),
                                    oicc_ratio_est_swd(),
                                  # oicc_ratio_max_swd()),
-                                 r0=#c(cicc_wperiod_min_swd(),
+                                 rho0=#c(cicc_wperiod_min_swd(),
                                    cicc_wperiod_est_swd(),
                                  # cicc_wperiod_max_swd()),
                                  r1_r0=#c(cicc_ratio_min_swd(),
@@ -6591,13 +6591,13 @@ shinyServer(function(input, output, session) {
             
           }else{
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,
-                                 a0=c(oicc_wperiod_min_swd(),
+                                 alpha0=c(oicc_wperiod_min_swd(),
                                       oicc_wperiod_est_swd(),
                                       oicc_wperiod_max_swd()),
                                  a1_a0=c(oicc_ratio_min_swd(),
                                          oicc_ratio_est_swd(),
                                          oicc_ratio_max_swd()),
-                                 r0=c(cicc_wperiod_min_swd(),
+                                 rho0=c(cicc_wperiod_min_swd(),
                                       cicc_wperiod_est_swd(),
                                       cicc_wperiod_max_swd()),
                                  r1_r0=c(cicc_ratio_min_swd(),
@@ -6617,8 +6617,8 @@ shinyServer(function(input, output, session) {
             ns_hte_col[i,] <- unlist(ns_hte_parallel_m(desmat, m=df_ns[i,"m"],
                                                        #J=df_ns[i,"J"],
                                                        var_y=df_ns[i,"var_y"], var_x=df_ns[i,"var_x"],w=df_ns[i,"w"],
-                                                       a0=df_ns[i,"a0"], a1_a0=df_ns[i,"a1_a0"],
-                                                       r0=df_ns[i,"r0"], r1_r0=df_ns[i,"r1_r0"],
+                                                       alpha0=df_ns[i,"alpha0"], a1_a0=df_ns[i,"a1_a0"],
+                                                       rho0=df_ns[i,"rho0"], r1_r0=df_ns[i,"r1_r0"],
                                                        d=df_ns[i,"d"],
                                                        cohort=df_ns[i,"cohort"],
                                                        a=df_ns[i,"a"],
@@ -6631,17 +6631,17 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_ns %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                             r1_r0 == cicc_ratio_est_swd(),
-                            a0 == oicc_wperiod_est_swd(),
+                            alpha0 == oicc_wperiod_est_swd(),
                             a1_a0 == oicc_ratio_est_swd()) %>%
               mutate(r1_r0=factor(r1_r0)) %>%
               plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                       linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                   "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                    "<br>Clusters (total): ", ns,
                                    "<br>Clusters on treatment: ", ceiling(ns*w),"<br>Clusters on control: ", ceiling(ns*(1-w)),
                                    "<br>Cluster size (per period): ", m,
@@ -6666,7 +6666,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), r0 (", cicc_wperiod_est_swd(),") and r1/r0 (", cicc_ratio_est_swd(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -6683,9 +6683,9 @@ shinyServer(function(input, output, session) {
             if(input$icc_display_swd == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
               
-              a0_unique <- sort(unique(df_ns[,"a0"]))
+              a0_unique <- sort(unique(df_ns[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_ns[,"a1_a0"]))
-              r0_unique <- sort(unique(df_ns[,"r0"]))
+              r0_unique <- sort(unique(df_ns[,"rho0"]))
               r1_r0_unique <- sort(unique(df_ns[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -6696,15 +6696,15 @@ shinyServer(function(input, output, session) {
                   p_o[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total): ", ns,
                                          "<br>Clusters on treatment: ", ceiling(ns*w),"<br>Clusters on control: ", ceiling(ns*(1-w)),
                                          "<br>Cluster size (per period): ", m,
@@ -6722,15 +6722,15 @@ shinyServer(function(input, output, session) {
                   p_o[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total): ", ns,
                                          "<br>Clusters on treatment: ", ceiling(ns*w),"<br>Clusters on control: ", ceiling(ns*(1-w)),
                                          "<br>Cluster size (per period): ", m,
@@ -6759,7 +6759,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), minimum r0 (", cicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -6770,7 +6770,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), and maximum r0 (", cicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -6780,7 +6780,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), and r0 (", cicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -6796,9 +6796,9 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_ns[,"a0"]))
+              a0_unique <- sort(unique(df_ns[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_ns[,"a1_a0"]))
-              r0_unique <- sort(unique(df_ns[,"r0"]))
+              r0_unique <- sort(unique(df_ns[,"rho0"]))
               r1_r0_unique <- sort(unique(df_ns[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -6809,15 +6809,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total): ", ns,
                                          "<br>Clusters on treatment: ", ceiling(ns*w),"<br>Clusters on control: ", ceiling(ns*(1-w)),
                                          "<br>Cluster size (per period): ", m,
@@ -6835,15 +6835,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total): ", ns,
                                          "<br>Clusters on treatment: ", ceiling(ns*w),"<br>Clusters on control: ", ceiling(ns*(1-w)),
                                          "<br>Cluster size (per period): ", m,
@@ -6872,7 +6872,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), minimum a0 (", oicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -6883,7 +6883,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), and maximum a0 (", oicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -6893,7 +6893,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), "), r1/r0 (", cicc_ratio_est_swd(),"), and a0 (", oicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), "), \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -6914,7 +6914,7 @@ shinyServer(function(input, output, session) {
         }else if(cohort() == "closed"){
           if(sensitivity_swd_react() == "est_only"){
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,
-                                 a0=#c(oicc_wperiod_min_swd(),
+                                 alpha0=#c(oicc_wperiod_min_swd(),
                                    oicc_wperiod_est_swd_cc(),
                                  # oicc_wperiod_max_swd()),
                                  a1_a0=#c(oicc_ratio_min_swd(),
@@ -6923,7 +6923,7 @@ shinyServer(function(input, output, session) {
                                  a2=#c(oicc_windiv_min_swd_cc(),
                                    oicc_windiv_est_swd_cc(),
                                  # oicc_windiv_max_swd_cc()),
-                                 r0=#c(cicc_wperiod_min_swd_cc(),
+                                 rho0=#c(cicc_wperiod_min_swd_cc(),
                                    cicc_wperiod_est_swd_cc(),
                                  # cicc_wperiod_max_swd_cc()),
                                  var_y=var_y, #(input$sd_outcome)^2,
@@ -6934,7 +6934,7 @@ shinyServer(function(input, output, session) {
             
           }else{
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,
-                                 a0=c(oicc_wperiod_min_swd_cc(),
+                                 alpha0=c(oicc_wperiod_min_swd_cc(),
                                       oicc_wperiod_est_swd_cc(),
                                       oicc_wperiod_max_swd_cc()),
                                  a1_a0=c(oicc_ratio_min_swd_cc(),
@@ -6943,7 +6943,7 @@ shinyServer(function(input, output, session) {
                                  a2=c(oicc_windiv_min_swd_cc(),
                                       oicc_windiv_est_swd_cc(),
                                       oicc_windiv_max_swd_cc()),
-                                 r0=c(cicc_wperiod_min_swd_cc(),
+                                 rho0=c(cicc_wperiod_min_swd_cc(),
                                       cicc_wperiod_est_swd_cc(),
                                       cicc_wperiod_max_swd_cc()),
                                  var_y=var_y, #(input$sd_outcome)^2,
@@ -6960,8 +6960,8 @@ shinyServer(function(input, output, session) {
             ns_hte_col[i,] <- unlist(ns_hte_parallel_m(desmat,m=df_ns[i,"m"],
                                                        #J=df_ns[i,"J"],
                                                        var_y=df_ns[i,"var_y"], var_x=df_ns[i,"var_x"],w=df_ns[i,"w"],
-                                                       a0=df_ns[i,"a0"], a1_a0=df_ns[i,"a1_a0"],
-                                                       a2=df_ns[i,"a2"], r0=df_ns[i,"r0"],
+                                                       alpha0=df_ns[i,"alpha0"], a1_a0=df_ns[i,"a1_a0"],
+                                                       a2=df_ns[i,"a2"], rho0=df_ns[i,"rho0"],
                                                        d=df_ns[i,"d"],
                                                        cohort=df_ns[i,"cohort"],
                                                        a=df_ns[i,"a"],
@@ -6974,17 +6974,17 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_ns %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
-                            a0 == oicc_wperiod_est_swd_cc(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
+                            alpha0 == oicc_wperiod_est_swd_cc(),
                             a1_a0 == oicc_ratio_est_swd_cc(),
                             a2 == oicc_windiv_est_swd_cc()) %>%
-              mutate(r0=factor(r0)) %>%
-              plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                      linetype=~r0, color=~r0,legendgroup=~r0,
+              mutate(rho0=factor(rho0)) %>%
+              plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                      linetype=~rho0, color=~rho0,legendgroup=~rho0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
-                                   "; <br>within-period covariate ICC (r0): ", r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                    "<br>Clusters (total): ", ns,
                                    "<br>Clusters on treatment: ", ceiling(ns*w),"<br>Clusters on control: ", ceiling(ns*(1-w)),
                                    "<br>Cluster size (per period): ", m,
@@ -7009,7 +7009,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(), "), and r0 (", cicc_wperiod_est_swd_cc(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(), "), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -7026,10 +7026,10 @@ shinyServer(function(input, output, session) {
             if(input$icc_display_swd == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
               
-              a0_unique <- sort(unique(df_ns[,"a0"]))
+              a0_unique <- sort(unique(df_ns[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_ns[,"a1_a0"]))
               a2_unique <- sort(unique(df_ns[,"a2"]))
-              r0_unique <- sort(unique(df_ns[,"r0"]))
+              r0_unique <- sort(unique(df_ns[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
               for(i in seq(length(r0_unique))){
@@ -7038,16 +7038,16 @@ shinyServer(function(input, output, session) {
                   # outcome ICCs #
                   p_o[[i]] <- df_ns %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0, showlegend=F,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total): ", ns,
                                          "<br>Clusters on treatment: ", ceiling(ns*w),"<br>Clusters on control: ", ceiling(ns*(1-w)),
                                          "<br>Cluster size (per period): ", m,
@@ -7064,16 +7064,16 @@ shinyServer(function(input, output, session) {
                 }else{
                   p_o[[i]] <- df_ns %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total): ", ns,
                                          "<br>Clusters on treatment: ", ceiling(ns*w),"<br>Clusters on control: ", ceiling(ns*(1-w)),
                                          "<br>Cluster size (per period): ", m,
@@ -7102,7 +7102,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum r0 (", cicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -7113,7 +7113,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum r0 (", cicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -7123,7 +7123,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and r0 (", cicc_wperiod_est_swd_cc(),")</i>"),                      xref = "paper",
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(),")</i>"),                      xref = "paper",
                     yref = "paper",
                     xanchor = "center",
                     yanchor = "bottom",
@@ -7138,10 +7138,10 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_ns[,"a0"]))
+              a0_unique <- sort(unique(df_ns[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_ns[,"a1_a0"]))
               a2_unique <- sort(unique(df_ns[,"a2"]))
-              r0_unique <- sort(unique(df_ns[,"r0"]))
+              r0_unique <- sort(unique(df_ns[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
               for(i in seq(length(a0_unique))){
@@ -7151,15 +7151,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total): ", ns,
                                          "<br>Clusters on treatment: ", ceiling(ns*w),"<br>Clusters on control: ", ceiling(ns*(1-w)),
                                          "<br>Cluster size (per period): ", m,
@@ -7177,15 +7177,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total): ", ns,
                                          "<br>Clusters on treatment: ", ceiling(ns*w),"<br>Clusters on control: ", ceiling(ns*(1-w)),
                                          "<br>Cluster size (per period): ", m,
@@ -7214,7 +7214,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum a0 (", oicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -7225,7 +7225,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum a0 (", oicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -7235,7 +7235,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and a0 (", oicc_wperiod_est_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -7307,13 +7307,13 @@ shinyServer(function(input, output, session) {
           
           if(sensitivity_swd_react() == "est_only"){
             df_power <- expand.grid(n_seq=n_seq, m=m_range, J=J,seqs=seqs,
-                                    a0=#c(oicc_wperiod_min_swd(),
+                                    alpha0=#c(oicc_wperiod_min_swd(),
                                       oicc_wperiod_est_swd(),
                                     #oicc_wperiod_max_swd()),
                                     a1_a0=#c(oicc_ratio_min_swd(),
                                       oicc_ratio_est_swd(),
                                     # oicc_ratio_max_swd()),
-                                    r0=#c(cicc_wperiod_min_swd(),
+                                    rho0=#c(cicc_wperiod_min_swd(),
                                       cicc_wperiod_est_swd(),
                                     # cicc_wperiod_max_swd()),
                                     r1_r0=#c(cicc_ratio_min_swd(),
@@ -7325,13 +7325,13 @@ shinyServer(function(input, output, session) {
                                     d=input$mean_diff_HTE, a=input$sig)
           }else{
             df_power <- expand.grid(n_seq=n_seq, m=m_range, J=J,seqs=seqs,
-                                    a0=c(oicc_wperiod_min_swd(),
+                                    alpha0=c(oicc_wperiod_min_swd(),
                                          oicc_wperiod_est_swd(),
                                          oicc_wperiod_max_swd()),
                                     a1_a0=c(oicc_ratio_min_swd(),
                                             oicc_ratio_est_swd(),
                                             oicc_ratio_max_swd()),
-                                    r0=c(cicc_wperiod_min_swd(),
+                                    rho0=c(cicc_wperiod_min_swd(),
                                          cicc_wperiod_est_swd(),
                                          cicc_wperiod_max_swd()),
                                     r1_r0=c(cicc_ratio_min_swd(),
@@ -7349,8 +7349,8 @@ shinyServer(function(input, output, session) {
             power_hte_col[i] <- power_hte_ownDes(desmat, n_seq=df_power[i,"n_seq"],
                                                  m=df_power[i,"m"],# J=df_power[i,"J"],
                                                  var_y=df_power[i,"var_y"], var_x=df_power[i,"var_x"],
-                                                 a0=df_power[i,"a0"], a1_a0=df_power[i,"a1_a0"],
-                                                 r0=df_power[i,"r0"], r1_r0=df_power[i,"r1_r0"],
+                                                 alpha0=df_power[i,"alpha0"], a1_a0=df_power[i,"a1_a0"],
+                                                 rho0=df_power[i,"rho0"], r1_r0=df_power[i,"r1_r0"],
                                                  cohort=df_power[i,"cohort"],
                                                  d=df_power[i,"d"], a=df_power[i,"a"])
           }
@@ -7360,17 +7360,17 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_power %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                             r1_r0 == cicc_ratio_est_swd(),
-                            a0 == oicc_wperiod_est_swd(),
+                            alpha0 == oicc_wperiod_est_swd(),
                             a1_a0 == oicc_ratio_est_swd()) %>%
               mutate(r1_r0=factor(r1_r0)) %>%
               plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                       linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                   "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/rho0): ", r1_r0,
                                    "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                    "<br>Sequences (steps): ", seqs,
                                    "<br>HTE power: ", round(power_hte_col,4)),
@@ -7393,7 +7393,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), r0 (", cicc_wperiod_est_swd(),") and r1/r0 (", cicc_ratio_est_swd(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -7410,9 +7410,9 @@ shinyServer(function(input, output, session) {
             if(input$icc_display_swd == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
               
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"\U1D6FC<sub>0</sub>"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
               
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
@@ -7424,15 +7424,15 @@ shinyServer(function(input, output, session) {
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -7448,15 +7448,15 @@ shinyServer(function(input, output, session) {
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -7483,7 +7483,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), minimum r0 (", cicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -7494,7 +7494,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), and maximum r0 (", cicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -7504,7 +7504,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), and r0 (", cicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -7520,9 +7520,9 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -7533,15 +7533,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -7557,15 +7557,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -7592,7 +7592,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), minimum a0 (", oicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -7603,7 +7603,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), and maximum a0 (", oicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -7613,7 +7613,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), "), r1/r0 (", cicc_ratio_est_swd(),"), and a0 (", oicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), "), \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -7634,7 +7634,7 @@ shinyServer(function(input, output, session) {
         }else if(cohort() == "closed"){
           if(sensitivity_swd_react() == "est_only"){
             df_power <- expand.grid(n_seq=n_seq, m=m_range, J=J,seqs=seqs,
-                                    a0=#c(oicc_wperiod_min_swd_cc(),
+                                    alpha0=#c(oicc_wperiod_min_swd_cc(),
                                       oicc_wperiod_est_swd_cc(),
                                     # oicc_wperiod_max_swd_cc()),
                                     a1_a0=#c(oicc_ratio_min_swd_cc(),
@@ -7643,7 +7643,7 @@ shinyServer(function(input, output, session) {
                                     a2=#c(oicc_windiv_min_swd_cc(),
                                       oicc_windiv_est_swd_cc(),
                                     # oicc_windiv_max_swd_cc()),
-                                    r0=#c(cicc_wperiod_min_swd_cc(),
+                                    rho0=#c(cicc_wperiod_min_swd_cc(),
                                       cicc_wperiod_est_swd_cc(),
                                     # cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
@@ -7652,7 +7652,7 @@ shinyServer(function(input, output, session) {
                                     d=input$mean_diff_HTE, a=input$sig)
           }else{
             df_power <- expand.grid(n_seq=n_seq, m=m_range, J=J,seqs=seqs,
-                                    a0=c(oicc_wperiod_min_swd_cc(),
+                                    alpha0=c(oicc_wperiod_min_swd_cc(),
                                          oicc_wperiod_est_swd_cc(),
                                          oicc_wperiod_max_swd_cc()),
                                     a1_a0=c(oicc_ratio_min_swd_cc(),
@@ -7661,7 +7661,7 @@ shinyServer(function(input, output, session) {
                                     a2=c(oicc_windiv_min_swd_cc(),
                                          oicc_windiv_est_swd_cc(),
                                          oicc_windiv_max_swd_cc()),
-                                    r0=c(cicc_wperiod_min_swd_cc(),
+                                    rho0=c(cicc_wperiod_min_swd_cc(),
                                          cicc_wperiod_est_swd_cc(),
                                          cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
@@ -7676,9 +7676,9 @@ shinyServer(function(input, output, session) {
             power_hte_col[i] <- power_hte_ownDes(desmat,n_seq=df_power[i,"n_seq"],
                                                  m=df_power[i,"m"],# J=df_power[i,"J"],
                                                  var_y=df_power[i,"var_y"], var_x=df_power[i,"var_x"],
-                                                 a0=df_power[i,"a0"], a1_a0=df_power[i,"a1_a0"],
+                                                 alpha0=df_power[i,"alpha0"], a1_a0=df_power[i,"a1_a0"],
                                                  a2=df_power[i,"a2"],
-                                                 r0=df_power[i,"r0"],
+                                                 rho0=df_power[i,"rho0"],
                                                  cohort=df_power[i,"cohort"],
                                                  d=df_power[i,"d"], a=df_power[i,"a"])
             # if(is.nan(power_hte_col[i])) print(i)
@@ -7689,17 +7689,17 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_power %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
-                            a0 == oicc_wperiod_est_swd_cc(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
+                            alpha0 == oicc_wperiod_est_swd_cc(),
                             a1_a0 == oicc_ratio_est_swd_cc(),
                             a2 == oicc_windiv_est_swd_cc()) %>%
-              mutate(r0=factor(r0)) %>%
-              plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                      linetype=~r0, color=~r0,legendgroup=~r0,
+              mutate(rho0=factor(rho0)) %>%
+              plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                      linetype=~rho0, color=~rho0,legendgroup=~rho0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
-                                   "; <br>within-period covariate ICC (r0): ", r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                    "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                    "<br>Sequences (steps): ", seqs,
                                    "<br>HTE power: ", round(power_hte_col,4)),
@@ -7722,7 +7722,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), a2 (", oicc_windiv_est_swd_cc(), "), and r0 (", cicc_wperiod_est_swd(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), a2 (", oicc_windiv_est_swd_cc(), "), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -7737,10 +7737,10 @@ shinyServer(function(input, output, session) {
               )
           }else if(sensitivity_swd_react() == "sensitivity"){
             if(input$icc_display_swd == "oICC_constant"){
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
               a2_unique <- sort(unique(df_power[,"a2"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -7750,16 +7750,16 @@ shinyServer(function(input, output, session) {
                   # outcome ICCs #
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0, showlegend=F,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (total): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -7774,16 +7774,16 @@ shinyServer(function(input, output, session) {
                 }else{
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (total): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -7809,7 +7809,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum r0 (", cicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -7820,7 +7820,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum r0 (", cicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -7830,7 +7830,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and r0 (", cicc_wperiod_est_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -7846,10 +7846,10 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
               a2_unique <- sort(unique(df_power[,"a2"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
               for(i in seq(length(a0_unique))){
@@ -7859,15 +7859,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -7883,15 +7883,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -7918,7 +7918,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum a0 (", oicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -7929,7 +7929,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum a0 (", oicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -7939,7 +7939,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and a0 (", oicc_wperiod_est_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -7969,13 +7969,13 @@ shinyServer(function(input, output, session) {
           
           if(sensitivity_swd_react() == "est_only"){
             df_power <- expand.grid(n_seq=ns_range, m=input$m_swd,J=J,seqs=seqs,
-                                    a0=#c(oicc_wperiod_min_swd(),
+                                    alpha0=#c(oicc_wperiod_min_swd(),
                                       oicc_wperiod_est_swd(),
                                     # oicc_wperiod_max_swd()),
                                     a1_a0=#c(oicc_ratio_min_swd(),
                                       oicc_ratio_est_swd(),
                                     #  oicc_ratio_max_swd()),
-                                    r0=#c(cicc_wperiod_min_swd(),
+                                    rho0=#c(cicc_wperiod_min_swd(),
                                       cicc_wperiod_est_swd(),
                                     # cicc_wperiod_max_swd()),
                                     r1_r0=#c(cicc_ratio_min_swd(),
@@ -7988,13 +7988,13 @@ shinyServer(function(input, output, session) {
             
           }else{
             df_power <- expand.grid(n_seq=ns_range, m=input$m_swd,J=J,seqs=seqs,
-                                    a0=c(oicc_wperiod_min_swd(),
+                                    alpha0=c(oicc_wperiod_min_swd(),
                                          oicc_wperiod_est_swd(),
                                          oicc_wperiod_max_swd()),
                                     a1_a0=c(oicc_ratio_min_swd(),
                                             oicc_ratio_est_swd(),
                                             oicc_ratio_max_swd()),
-                                    r0=c(cicc_wperiod_min_swd(),
+                                    rho0=c(cicc_wperiod_min_swd(),
                                          cicc_wperiod_est_swd(),
                                          cicc_wperiod_max_swd()),
                                     r1_r0=c(cicc_ratio_min_swd(),
@@ -8012,8 +8012,8 @@ shinyServer(function(input, output, session) {
             power_hte_col[i] <- power_hte_ownDes(desmat,n_seq=df_power[i,"n_seq"],
                                                  m=df_power[i,"m"],# J=df_power[i,"J"],
                                                  var_y=df_power[i,"var_y"], var_x=df_power[i,"var_x"],
-                                                 a0=df_power[i,"a0"], a1_a0=df_power[i,"a1_a0"],
-                                                 r0=df_power[i,"r0"], r1_r0=df_power[i,"r1_r0"],
+                                                 alpha0=df_power[i,"alpha0"], a1_a0=df_power[i,"a1_a0"],
+                                                 rho0=df_power[i,"rho0"], r1_r0=df_power[i,"r1_r0"],
                                                  cohort=df_power[i,"cohort"],
                                                  d=df_power[i,"d"], a=df_power[i,"a"])
           }
@@ -8023,17 +8023,17 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_power %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                             r1_r0 == cicc_ratio_est_swd(),
-                            a0 == oicc_wperiod_est_swd(),
+                            alpha0 == oicc_wperiod_est_swd(),
                             a1_a0 == oicc_ratio_est_swd()) %>%
               mutate(r1_r0=factor(r1_r0)) %>%
               plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                       linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                   "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                    "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                    "<br>Sequences (steps): ", seqs,
                                    "<br>HTE power: ", round(power_hte_col,4)),
@@ -8056,7 +8056,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), r0 (", cicc_wperiod_est_swd(),") and r1/r0 (", cicc_ratio_est_swd(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -8073,9 +8073,9 @@ shinyServer(function(input, output, session) {
             if(input$icc_display_three == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
               
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -8086,15 +8086,15 @@ shinyServer(function(input, output, session) {
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -8110,15 +8110,15 @@ shinyServer(function(input, output, session) {
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -8145,7 +8145,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), minimum r0 (", cicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -8156,7 +8156,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), and maximum r0 (", cicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -8166,7 +8166,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), and r0 (", cicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -8182,9 +8182,9 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -8195,15 +8195,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -8219,15 +8219,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -8254,7 +8254,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), minimum a0 (", oicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -8265,7 +8265,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), and maximum a0 (", oicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -8275,7 +8275,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), "), r1/r0 (", cicc_ratio_est_swd(),"), and a0 (", oicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), "), \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -8297,7 +8297,7 @@ shinyServer(function(input, output, session) {
           
           if(sensitivity_swd_react() == "est_only"){
             df_power <- expand.grid(n_seq=ns_range, m=input$m_swd,J=J,seqs=seqs,
-                                    a0=#c(oicc_wperiod_min_swd(),
+                                    alpha0=#c(oicc_wperiod_min_swd(),
                                       oicc_wperiod_est_swd_cc(),
                                     # oicc_wperiod_max_swd()),
                                     a1_a0=#c(oicc_ratio_min_swd(),
@@ -8306,7 +8306,7 @@ shinyServer(function(input, output, session) {
                                     a2=#c(oicc_windiv_min_swd_cc(),
                                       oicc_windiv_est_swd_cc(),
                                     # oicc_windiv_max_swd_cc()),
-                                    r0=#c(cicc_wperiod_min_swd_cc(),
+                                    rho0=#c(cicc_wperiod_min_swd_cc(),
                                       cicc_wperiod_est_swd_cc(),
                                     # cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
@@ -8316,7 +8316,7 @@ shinyServer(function(input, output, session) {
             
           }else{
             df_power <- expand.grid(n_seq=ns_range, m=input$m_swd,J=J,seqs=seqs,
-                                    a0=c(oicc_wperiod_min_swd_cc(),
+                                    alpha0=c(oicc_wperiod_min_swd_cc(),
                                          oicc_wperiod_est_swd_cc(),
                                          oicc_wperiod_max_swd_cc()),
                                     a1_a0=c(oicc_ratio_min_swd_cc(),
@@ -8325,7 +8325,7 @@ shinyServer(function(input, output, session) {
                                     a2=c(oicc_windiv_min_swd_cc(),
                                          oicc_windiv_est_swd_cc(),
                                          oicc_windiv_max_swd_cc()),
-                                    r0=c(cicc_wperiod_min_swd_cc(),
+                                    rho0=c(cicc_wperiod_min_swd_cc(),
                                          cicc_wperiod_est_swd_cc(),
                                          cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
@@ -8335,16 +8335,16 @@ shinyServer(function(input, output, session) {
             
           }
           
-          # df_power <- df_power <- cbind(df_power, a1=df_power$a0*df_power$a1_a0)
-          # df_power <- df_power[which(df_power$a1 <=  df_power$a0),]
+          # df_power <- df_power <- cbind(df_power, alpha1=df_power$alpha0*df_power$a1_a0)
+          # df_power <- df_power[which(df_power$alpha1 <=  df_power$alpha0),]
           
           power_hte_col <- rep(NA, nrow(df_power))
           for(i in seq(nrow(df_power))){
             power_hte_col[i] <- power_hte_ownDes(desmat,n_seq=df_power[i,"n_seq"],
                                                  m=df_power[i,"m"], #J=df_power[i,"J"],
                                                  var_y=df_power[i,"var_y"], var_x=df_power[i,"var_x"],
-                                                 a0=df_power[i,"a0"], a1_a0=df_power[i,"a1_a0"],
-                                                 a2=df_power[i,"a2"], r0=df_power[i,"r0"],
+                                                 alpha0=df_power[i,"alpha0"], a1_a0=df_power[i,"a1_a0"],
+                                                 a2=df_power[i,"a2"], rho0=df_power[i,"rho0"],
                                                  cohort=df_power[i,"cohort"],
                                                  d=df_power[i,"d"], a=df_power[i,"a"])
           }
@@ -8354,17 +8354,17 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_power %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
-                            a0 == oicc_wperiod_est_swd_cc(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
+                            alpha0 == oicc_wperiod_est_swd_cc(),
                             a1_a0 == oicc_ratio_est_swd_cc(),
                             a2 == oicc_windiv_est_swd_cc()) %>%
-              mutate(r0=factor(r0)) %>%
-              plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                      linetype=~r0, color=~r0,legendgroup=~r0,
+              mutate(rho0=factor(rho0)) %>%
+              plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                      linetype=~rho0, color=~rho0,legendgroup=~rho0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
-                                   "; <br>within-period covariate ICC (r0): ", r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                    "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                    "<br>Sequences (steps): ", seqs,
                                    "<br>HTE power: ", round(power_hte_col,4)),
@@ -8387,7 +8387,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(), "), and r0 (", cicc_wperiod_est_swd_cc(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(), "), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -8404,10 +8404,10 @@ shinyServer(function(input, output, session) {
             if(input$icc_display_three == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
               
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
               a2_unique <- sort(unique(df_power[,"a2"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
               for(i in seq(length(r0_unique))){
@@ -8416,16 +8416,16 @@ shinyServer(function(input, output, session) {
                   # outcome ICCs #
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0, showlegend=F,
+                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (total): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -8440,16 +8440,16 @@ shinyServer(function(input, output, session) {
                 }else{
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0,
+                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (total): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -8476,7 +8476,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum r0 (", cicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -8487,7 +8487,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum r0 (", cicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -8497,7 +8497,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and r0 (", cicc_wperiod_est_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -8513,10 +8513,10 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
               a2_unique <- sort(unique(df_power[,"a2"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
               for(i in seq(length(a0_unique))){
@@ -8526,15 +8526,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -8550,15 +8550,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -8585,7 +8585,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum a0 (", oicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -8596,7 +8596,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum a0 (", oicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -8606,7 +8606,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and a0 (", oicc_wperiod_est_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -8634,13 +8634,13 @@ shinyServer(function(input, output, session) {
         if(cohort() == "cross"){
           if(sensitivity_swd_react() == "est_only"){
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,seqs=seqs,
-                                 a0=#c(oicc_wperiod_min_swd(),
+                                 alpha0=#c(oicc_wperiod_min_swd(),
                                    oicc_wperiod_est_swd(),
                                  # oicc_wperiod_max_swd()),
                                  a1_a0=#c(oicc_ratio_min_swd(),
                                    oicc_ratio_est_swd(),
                                  # oicc_ratio_max_swd()),
-                                 r0=#c(cicc_wperiod_min_swd(),
+                                 rho0=#c(cicc_wperiod_min_swd(),
                                    cicc_wperiod_est_swd(),
                                  # cicc_wperiod_max_swd()),
                                  r1_r0=#c(cicc_ratio_min_swd(),
@@ -8653,13 +8653,13 @@ shinyServer(function(input, output, session) {
             
           }else{
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,seqs=seqs,
-                                 a0=c(oicc_wperiod_min_swd(),
+                                 alpha0=c(oicc_wperiod_min_swd(),
                                       oicc_wperiod_est_swd(),
                                       oicc_wperiod_max_swd()),
                                  a1_a0=c(oicc_ratio_min_swd(),
                                          oicc_ratio_est_swd(),
                                          oicc_ratio_max_swd()),
-                                 r0=c(cicc_wperiod_min_swd(),
+                                 rho0=c(cicc_wperiod_min_swd(),
                                       cicc_wperiod_est_swd(),
                                       cicc_wperiod_max_swd()),
                                  r1_r0=c(cicc_ratio_min_swd(),
@@ -8678,8 +8678,8 @@ shinyServer(function(input, output, session) {
             ns_hte_col[i,] <- unlist(ns_hte_ownDes(desmat, m=df_ns[i,"m"],
                                                    #J=df_ns[i,"J"],
                                                    var_y=df_ns[i,"var_y"], var_x=df_ns[i,"var_x"],
-                                                   a0=df_ns[i,"a0"], a1_a0=df_ns[i,"a1_a0"],
-                                                   r0=df_ns[i,"r0"], r1_r0=df_ns[i,"r1_r0"],
+                                                   alpha0=df_ns[i,"alpha0"], a1_a0=df_ns[i,"a1_a0"],
+                                                   rho0=df_ns[i,"rho0"], r1_r0=df_ns[i,"r1_r0"],
                                                    d=df_ns[i,"d"],
                                                    cohort=df_ns[i,"cohort"],
                                                    a=df_ns[i,"a"],
@@ -8692,17 +8692,17 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_ns %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                             r1_r0 == cicc_ratio_est_swd(),
-                            a0 == oicc_wperiod_est_swd(),
+                            alpha0 == oicc_wperiod_est_swd(),
                             a1_a0 == oicc_ratio_est_swd()) %>%
               mutate(r1_r0=factor(r1_r0)) %>%
               plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                       linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                   "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                    "<br>Clusters (total):", ns*seqs, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                    "<br>Sequences (steps): ", seqs,
                                    "<br>HTE power: ", round(power_emp,4)),
@@ -8725,7 +8725,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), r0 (", cicc_wperiod_est_swd(),") and r1/r0 (", cicc_ratio_est_swd(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -8742,9 +8742,9 @@ shinyServer(function(input, output, session) {
             if(input$icc_display_swd == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
               
-              a0_unique <- sort(unique(df_ns[,"a0"]))
+              a0_unique <- sort(unique(df_ns[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_ns[,"a1_a0"]))
-              r0_unique <- sort(unique(df_ns[,"r0"]))
+              r0_unique <- sort(unique(df_ns[,"rho0"]))
               r1_r0_unique <- sort(unique(df_ns[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -8755,15 +8755,15 @@ shinyServer(function(input, output, session) {
                   p_o[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", ns*seqs, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -8779,15 +8779,15 @@ shinyServer(function(input, output, session) {
                   p_o[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", ns*seqs, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -8814,7 +8814,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), minimum r0 (", cicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -8825,7 +8825,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), and maximum r0 (", cicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -8835,7 +8835,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), and r0 (", cicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -8851,9 +8851,9 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_ns[,"a0"]))
+              a0_unique <- sort(unique(df_ns[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_ns[,"a1_a0"]))
-              r0_unique <- sort(unique(df_ns[,"r0"]))
+              r0_unique <- sort(unique(df_ns[,"rho0"]))
               r1_r0_unique <- sort(unique(df_ns[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -8864,15 +8864,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", ns*seqs, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -8888,15 +8888,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", ns*seqs, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -8923,7 +8923,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), minimum a0 (", oicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -8934,7 +8934,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), and maximum a0 (", oicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -8944,7 +8944,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), "), r1/r0 (", cicc_ratio_est_swd(),"), and a0 (", oicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), "), \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -8965,7 +8965,7 @@ shinyServer(function(input, output, session) {
         }else if(cohort() == "closed"){
           if(sensitivity_swd_react() == "est_only"){
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,seqs=seqs,
-                                 a0=#c(oicc_wperiod_min_swd(),
+                                 alpha0=#c(oicc_wperiod_min_swd(),
                                    oicc_wperiod_est_swd_cc(),
                                  # oicc_wperiod_max_swd()),
                                  a1_a0=#c(oicc_ratio_min_swd(),
@@ -8974,7 +8974,7 @@ shinyServer(function(input, output, session) {
                                  a2=#c(oicc_windiv_min_swd_cc(),
                                    oicc_windiv_est_swd_cc(),
                                  # oicc_windiv_max_swd_cc()),
-                                 r0=#c(cicc_wperiod_min_swd_cc(),
+                                 rho0=#c(cicc_wperiod_min_swd_cc(),
                                    cicc_wperiod_est_swd_cc(),
                                  # cicc_wperiod_max_swd_cc()),
                                  var_y=var_y, #(input$sd_outcome)^2,
@@ -8984,7 +8984,7 @@ shinyServer(function(input, output, session) {
             
           }else{
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,seqs=seqs,
-                                 a0=c(oicc_wperiod_min_swd_cc(),
+                                 alpha0=c(oicc_wperiod_min_swd_cc(),
                                       oicc_wperiod_est_swd_cc(),
                                       oicc_wperiod_max_swd_cc()),
                                  a1_a0=c(oicc_ratio_min_swd_cc(),
@@ -8993,7 +8993,7 @@ shinyServer(function(input, output, session) {
                                  a2=c(oicc_windiv_min_swd_cc(),
                                       oicc_windiv_est_swd_cc(),
                                       oicc_windiv_max_swd_cc()),
-                                 r0=c(cicc_wperiod_min_swd_cc(),
+                                 rho0=c(cicc_wperiod_min_swd_cc(),
                                       cicc_wperiod_est_swd_cc(),
                                       cicc_wperiod_max_swd_cc()),
                                  var_y=var_y, #(input$sd_outcome)^2,
@@ -9009,8 +9009,8 @@ shinyServer(function(input, output, session) {
             ns_hte_col[i,] <- unlist(ns_hte_ownDes(desmat,m=df_ns[i,"m"],
                                                    #J=df_ns[i,"J"],
                                                    var_y=df_ns[i,"var_y"], var_x=df_ns[i,"var_x"],
-                                                   a0=df_ns[i,"a0"], a1_a0=df_ns[i,"a1_a0"],
-                                                   a2=df_ns[i,"a2"], r0=df_ns[i,"r0"],
+                                                   alpha0=df_ns[i,"alpha0"], a1_a0=df_ns[i,"a1_a0"],
+                                                   a2=df_ns[i,"a2"], rho0=df_ns[i,"rho0"],
                                                    d=df_ns[i,"d"],
                                                    cohort=df_ns[i,"cohort"],
                                                    a=df_ns[i,"a"],
@@ -9023,17 +9023,17 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_ns %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
-                            a0 == oicc_wperiod_est_swd_cc(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
+                            alpha0 == oicc_wperiod_est_swd_cc(),
                             a1_a0 == oicc_ratio_est_swd_cc(),
                             a2 == oicc_windiv_est_swd_cc()) %>%
-              mutate(r0=factor(r0)) %>%
-              plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                      linetype=~r0, color=~r0,legendgroup=~r0,
+              mutate(rho0=factor(rho0)) %>%
+              plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                      linetype=~rho0, color=~rho0,legendgroup=~rho0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
-                                   "; <br>within-period covariate ICC (r0): ", r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                    "<br>Clusters (total):", ns*seqs, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                    "<br>Sequences (steps): ", seqs,
                                    "<br>HTE power: ", round(power_emp,4)),
@@ -9056,7 +9056,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(), "), and r0 (", cicc_wperiod_est_swd_cc(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(), "), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -9073,10 +9073,10 @@ shinyServer(function(input, output, session) {
             if(input$icc_display_swd == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
               
-              a0_unique <- sort(unique(df_ns[,"a0"]))
+              a0_unique <- sort(unique(df_ns[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_ns[,"a1_a0"]))
               a2_unique <- sort(unique(df_ns[,"a2"]))
-              r0_unique <- sort(unique(df_ns[,"r0"]))
+              r0_unique <- sort(unique(df_ns[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
               for(i in seq(length(r0_unique))){
@@ -9085,16 +9085,16 @@ shinyServer(function(input, output, session) {
                   # outcome ICCs #
                   p_o[[i]] <- df_ns %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0, showlegend=F,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", ns*seqs, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -9109,16 +9109,16 @@ shinyServer(function(input, output, session) {
                 }else{
                   p_o[[i]] <- df_ns %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", ns*seqs, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -9145,7 +9145,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum r0 (", cicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -9156,7 +9156,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum r0 (", cicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -9166,7 +9166,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and r0 (", cicc_wperiod_est_swd_cc(),")</i>"),                      xref = "paper",
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(),")</i>"),                      xref = "paper",
                     yref = "paper",
                     xanchor = "center",
                     yanchor = "bottom",
@@ -9181,10 +9181,10 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_ns[,"a0"]))
+              a0_unique <- sort(unique(df_ns[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_ns[,"a1_a0"]))
               a2_unique <- sort(unique(df_ns[,"a2"]))
-              r0_unique <- sort(unique(df_ns[,"r0"]))
+              r0_unique <- sort(unique(df_ns[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
               for(i in seq(length(a0_unique))){
@@ -9194,15 +9194,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", ns*seqs, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -9218,15 +9218,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", ns*seqs, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Sequences (steps): ", seqs,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -9253,7 +9253,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum a0 (", oicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -9264,7 +9264,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum a0 (", oicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -9274,7 +9274,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and a0 (", oicc_wperiod_est_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -9344,13 +9344,13 @@ shinyServer(function(input, output, session) {
           
           if(sensitivity_swd_react() == "est_only"){
             df_power <- expand.grid(n_seq=n_seq, m=m_range, J=J,
-                                    a0=#c(oicc_wperiod_min_swd(),
+                                    alpha0=#c(oicc_wperiod_min_swd(),
                                       oicc_wperiod_est_swd(),
                                     #oicc_wperiod_max_swd()),
                                     a1_a0=#c(oicc_ratio_min_swd(),
                                       oicc_ratio_est_swd(),
                                     # oicc_ratio_max_swd()),
-                                    r0=#c(cicc_wperiod_min_swd(),
+                                    rho0=#c(cicc_wperiod_min_swd(),
                                       cicc_wperiod_est_swd(),
                                     # cicc_wperiod_max_swd()),
                                     r1_r0=#c(cicc_ratio_min_swd(),
@@ -9362,13 +9362,13 @@ shinyServer(function(input, output, session) {
                                     d=input$mean_diff_HTE, a=input$sig)
           }else{
             df_power <- expand.grid(n_seq=n_seq, m=m_range, J=J,
-                                    a0=c(oicc_wperiod_min_swd(),
+                                    alpha0=c(oicc_wperiod_min_swd(),
                                          oicc_wperiod_est_swd(),
                                          oicc_wperiod_max_swd()),
                                     a1_a0=c(oicc_ratio_min_swd(),
                                             oicc_ratio_est_swd(),
                                             oicc_ratio_max_swd()),
-                                    r0=c(cicc_wperiod_min_swd(),
+                                    rho0=c(cicc_wperiod_min_swd(),
                                          cicc_wperiod_est_swd(),
                                          cicc_wperiod_max_swd()),
                                     r1_r0=c(cicc_ratio_min_swd(),
@@ -9386,8 +9386,8 @@ shinyServer(function(input, output, session) {
             power_hte_col[i] <- power_hte_crossover(n_seq=df_power[i,"n_seq"],
                                                     m=df_power[i,"m"], J=df_power[i,"J"],
                                                     var_y=df_power[i,"var_y"], var_x=df_power[i,"var_x"],
-                                                    a0=df_power[i,"a0"], a1_a0=df_power[i,"a1_a0"],
-                                                    r0=df_power[i,"r0"], r1_r0=df_power[i,"r1_r0"],
+                                                    alpha0=df_power[i,"alpha0"], a1_a0=df_power[i,"a1_a0"],
+                                                    rho0=df_power[i,"rho0"], r1_r0=df_power[i,"r1_r0"],
                                                     cohort=df_power[i,"cohort"],
                                                     d=df_power[i,"d"], a=df_power[i,"a"])
           }
@@ -9397,17 +9397,17 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_power %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                             r1_r0 == cicc_ratio_est_swd(),
-                            a0 == oicc_wperiod_est_swd(),
+                            alpha0 == oicc_wperiod_est_swd(),
                             a1_a0 == oicc_ratio_est_swd()) %>%
               mutate(r1_r0=factor(r1_r0)) %>%
               plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                       linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                   "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                    "<br>Clusters (total):", n_seq*2, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                    "<br>Periods (J): ", J,
                                    "<br>HTE power: ", round(power_hte_col,4)),
@@ -9430,7 +9430,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), r0 (", cicc_wperiod_est_swd(),") and r1/r0 (", cicc_ratio_est_swd(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -9447,9 +9447,9 @@ shinyServer(function(input, output, session) {
             if(input$icc_display_swd == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
               
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"\U1D70C<sub>0</sub>"]))
               r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
               
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
@@ -9461,15 +9461,15 @@ shinyServer(function(input, output, session) {
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n_seq*2, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br>Periods (J): ", J,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -9485,15 +9485,15 @@ shinyServer(function(input, output, session) {
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n_seq*2, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br>Periods (J): ", J,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -9520,7 +9520,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), minimum r0 (", cicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -9531,7 +9531,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), and maximum r0 (", cicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -9541,7 +9541,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), and r0 (", cicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -9557,9 +9557,9 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -9570,15 +9570,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n_seq*2, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br>Periods (J): ", J,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -9594,15 +9594,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n_seq*2, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br>Periods (J): ", J,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -9629,7 +9629,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), minimum a0 (", oicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -9640,7 +9640,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), and maximum a0 (", oicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -9650,7 +9650,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), "), r1/r0 (", cicc_ratio_est_swd(),"), and a0 (", oicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), "), \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -9671,7 +9671,7 @@ shinyServer(function(input, output, session) {
         }else if(cohort() == "closed"){
           if(sensitivity_swd_react() == "est_only"){
             df_power <- expand.grid(n_seq=n_seq, m=m_range, J=J,
-                                    a0=#c(oicc_wperiod_min_swd_cc(),
+                                    alpha0=#c(oicc_wperiod_min_swd_cc(),
                                       oicc_wperiod_est_swd_cc(),
                                     # oicc_wperiod_max_swd_cc()),
                                     a1_a0=#c(oicc_ratio_min_swd_cc(),
@@ -9680,7 +9680,7 @@ shinyServer(function(input, output, session) {
                                     a2=#c(oicc_windiv_min_swd_cc(),
                                       oicc_windiv_est_swd_cc(),
                                     # oicc_windiv_max_swd_cc()),
-                                    r0=#c(cicc_wperiod_min_swd_cc(),
+                                    rho0=#c(cicc_wperiod_min_swd_cc(),
                                       cicc_wperiod_est_swd_cc(),
                                     # cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
@@ -9689,7 +9689,7 @@ shinyServer(function(input, output, session) {
                                     d=input$mean_diff_HTE, a=input$sig)
           }else{
             df_power <- expand.grid(n_seq=n_seq, m=m_range, J=J,
-                                    a0=c(oicc_wperiod_min_swd_cc(),
+                                    alpha0=c(oicc_wperiod_min_swd_cc(),
                                          oicc_wperiod_est_swd_cc(),
                                          oicc_wperiod_max_swd_cc()),
                                     a1_a0=c(oicc_ratio_min_swd_cc(),
@@ -9698,7 +9698,7 @@ shinyServer(function(input, output, session) {
                                     a2=c(oicc_windiv_min_swd_cc(),
                                          oicc_windiv_est_swd_cc(),
                                          oicc_windiv_max_swd_cc()),
-                                    r0=c(cicc_wperiod_min_swd_cc(),
+                                    rho0=c(cicc_wperiod_min_swd_cc(),
                                          cicc_wperiod_est_swd_cc(),
                                          cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
@@ -9713,9 +9713,9 @@ shinyServer(function(input, output, session) {
             power_hte_col[i] <- power_hte_crossover(n_seq=df_power[i,"n_seq"],
                                                     m=df_power[i,"m"], J=df_power[i,"J"],
                                                     var_y=df_power[i,"var_y"], var_x=df_power[i,"var_x"],
-                                                    a0=df_power[i,"a0"], a1_a0=df_power[i,"a1_a0"],
+                                                    alpha0=df_power[i,"alpha0"], a1_a0=df_power[i,"a1_a0"],
                                                     a2=df_power[i,"a2"],
-                                                    r0=df_power[i,"r0"],
+                                                    rho0=df_power[i,"rho0"],
                                                     cohort=df_power[i,"cohort"],
                                                     d=df_power[i,"d"], a=df_power[i,"a"])
             # if(is.nan(power_hte_col[i])) print(i)
@@ -9726,17 +9726,17 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_power %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
-                            a0 == oicc_wperiod_est_swd_cc(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
+                            alpha0 == oicc_wperiod_est_swd_cc(),
                             a1_a0 == oicc_ratio_est_swd_cc(),
                             a2 == oicc_windiv_est_swd_cc()) %>%
-              mutate(r0=factor(r0)) %>%
-              plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                      linetype=~r0, color=~r0,legendgroup=~r0,
+              mutate(rho0=factor(rho0)) %>%
+              plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                      linetype=~rho0, color=~rho0,legendgroup=~rho0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
-                                   "; <br>within-period covariate ICC (r0): ", r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                    "<br>Clusters (total):", n_seq*2, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                    "<br>Periods (J): ", J,
                                    "<br>HTE power: ", round(power_hte_col,4)),
@@ -9759,7 +9759,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), a2 (", oicc_windiv_est_swd_cc(), "), and r0 (", cicc_wperiod_est_swd(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), a2 (", oicc_windiv_est_swd_cc(), "), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -9774,10 +9774,10 @@ shinyServer(function(input, output, session) {
               )
           }else if(sensitivity_swd_react() == "sensitivity"){
             if(input$icc_display_swd == "oICC_constant"){
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
               a2_unique <- sort(unique(df_power[,"a2"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -9787,16 +9787,16 @@ shinyServer(function(input, output, session) {
                   # outcome ICCs #
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0, showlegend=F,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n_seq*2, "; Clusters (per sequence):", n_seq,"<br>Cluster size (total): ", m,
                                          "<br>Periods (J): ", J,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -9811,16 +9811,16 @@ shinyServer(function(input, output, session) {
                 }else{
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0,
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n_seq*2, "; Clusters (per sequence):", n_seq,"<br>Cluster size (total): ", m,
                                          "<br>Periods (J): ", J,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -9847,7 +9847,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum r0 (", cicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -9858,7 +9858,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum r0 (", cicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -9868,7 +9868,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and r0 (", cicc_wperiod_est_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -9884,10 +9884,10 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
               a2_unique <- sort(unique(df_power[,"a2"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
               for(i in seq(length(a0_unique))){
@@ -9897,15 +9897,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n_seq*2, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br> Periods (J): ", J,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -9921,15 +9921,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n_seq*2, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br>Periods (J): ", J,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -9956,7 +9956,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum a0 (", oicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -9967,7 +9967,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum a0 (", oicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -9977,7 +9977,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and a0 (", oicc_wperiod_est_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -10006,13 +10006,13 @@ shinyServer(function(input, output, session) {
           
           if(sensitivity_swd_react() == "est_only"){
             df_power <- expand.grid(n_seq=ns_range, m=input$m_swd,J=J,
-                                    a0=#c(oicc_wperiod_min_swd(),
+                                    alpha0=#c(oicc_wperiod_min_swd(),
                                       oicc_wperiod_est_swd(),
                                     # oicc_wperiod_max_swd()),
                                     a1_a0=#c(oicc_ratio_min_swd(),
                                       oicc_ratio_est_swd(),
                                     #  oicc_ratio_max_swd()),
-                                    r0=#c(cicc_wperiod_min_swd(),
+                                    rho0=#c(cicc_wperiod_min_swd(),
                                       cicc_wperiod_est_swd(),
                                     # cicc_wperiod_max_swd()),
                                     r1_r0=#c(cicc_ratio_min_swd(),
@@ -10025,13 +10025,13 @@ shinyServer(function(input, output, session) {
             
           }else{
             df_power <- expand.grid(n_seq=ns_range, m=input$m_swd,J=J,
-                                    a0=c(oicc_wperiod_min_swd(),
+                                    alpha0=c(oicc_wperiod_min_swd(),
                                          oicc_wperiod_est_swd(),
                                          oicc_wperiod_max_swd()),
                                     a1_a0=c(oicc_ratio_min_swd(),
                                             oicc_ratio_est_swd(),
                                             oicc_ratio_max_swd()),
-                                    r0=c(cicc_wperiod_min_swd(),
+                                    rho0=c(cicc_wperiod_min_swd(),
                                          cicc_wperiod_est_swd(),
                                          cicc_wperiod_max_swd()),
                                     r1_r0=c(cicc_ratio_min_swd(),
@@ -10049,8 +10049,8 @@ shinyServer(function(input, output, session) {
             power_hte_col[i] <- power_hte_crossover(n_seq=df_power[i,"n_seq"],
                                                     m=df_power[i,"m"], J=df_power[i,"J"],
                                                     var_y=df_power[i,"var_y"], var_x=df_power[i,"var_x"],
-                                                    a0=df_power[i,"a0"], a1_a0=df_power[i,"a1_a0"],
-                                                    r0=df_power[i,"r0"], r1_r0=df_power[i,"r1_r0"],
+                                                    alpha0=df_power[i,"alpha0"], a1_a0=df_power[i,"a1_a0"],
+                                                    rho0=df_power[i,"rho0"], r1_r0=df_power[i,"r1_r0"],
                                                     cohort=df_power[i,"cohort"],
                                                     d=df_power[i,"d"], a=df_power[i,"a"])
           }
@@ -10060,17 +10060,17 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_power %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                             r1_r0 == cicc_ratio_est_swd(),
-                            a0 == oicc_wperiod_est_swd(),
+                            alpha0 == oicc_wperiod_est_swd(),
                             a1_a0 == oicc_ratio_est_swd()) %>%
               mutate(r1_r0=factor(r1_r0)) %>%
               plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                       linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                   "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                    "<br>Clusters (total):", n_seq*2, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                    "<br>Periods (J): ", J,
                                    "<br>HTE power: ", round(power_hte_col,4)),
@@ -10093,7 +10093,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), r0 (", cicc_wperiod_est_swd(),") and r1/r0 (", cicc_ratio_est_swd(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -10110,9 +10110,9 @@ shinyServer(function(input, output, session) {
             if(input$icc_display_three == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
               
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -10123,15 +10123,15 @@ shinyServer(function(input, output, session) {
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n_seq*2, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br>Periods (J): ", J,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -10147,15 +10147,15 @@ shinyServer(function(input, output, session) {
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n_seq*2, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br>Periods (J): ", J,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -10182,7 +10182,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), minimum r0 (", cicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -10193,7 +10193,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), and maximum r0 (", cicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -10203,7 +10203,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), and r0 (", cicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -10219,9 +10219,9 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -10232,15 +10232,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n_seq*2, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br>Periods (J): ", J,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -10256,15 +10256,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", n_seq*2, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br>Periods (J): ", J,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -10291,7 +10291,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), minimum a0 (", oicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -10302,7 +10302,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), and maximum a0 (", oicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -10312,7 +10312,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), "), r1/r0 (", cicc_ratio_est_swd(),"), and a0 (", oicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), "), \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -10334,7 +10334,7 @@ shinyServer(function(input, output, session) {
           
           if(sensitivity_swd_react() == "est_only"){
             df_power <- expand.grid(n_seq=ns_range, m=input$m_swd,J=J,
-                                    a0=#c(oicc_wperiod_min_swd(),
+                                    alpha0=#c(oicc_wperiod_min_swd(),
                                       oicc_wperiod_est_swd_cc(),
                                     # oicc_wperiod_max_swd()),
                                     a1_a0=#c(oicc_ratio_min_swd(),
@@ -10343,7 +10343,7 @@ shinyServer(function(input, output, session) {
                                     a2=#c(oicc_windiv_min_swd_cc(),
                                       oicc_windiv_est_swd_cc(),
                                     # oicc_windiv_max_swd_cc()),
-                                    r0=#c(cicc_wperiod_min_swd_cc(),
+                                    rho0=#c(cicc_wperiod_min_swd_cc(),
                                       cicc_wperiod_est_swd_cc(),
                                     # cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
@@ -10353,7 +10353,7 @@ shinyServer(function(input, output, session) {
             
           }else{
             df_power <- expand.grid(n_seq=ns_range, m=input$m_swd,J=J,
-                                    a0=c(oicc_wperiod_min_swd_cc(),
+                                    alpha0=c(oicc_wperiod_min_swd_cc(),
                                          oicc_wperiod_est_swd_cc(),
                                          oicc_wperiod_max_swd_cc()),
                                     a1_a0=c(oicc_ratio_min_swd_cc(),
@@ -10362,7 +10362,7 @@ shinyServer(function(input, output, session) {
                                     a2=c(oicc_windiv_min_swd_cc(),
                                          oicc_windiv_est_swd_cc(),
                                          oicc_windiv_max_swd_cc()),
-                                    r0=c(cicc_wperiod_min_swd_cc(),
+                                    rho0=c(cicc_wperiod_min_swd_cc(),
                                          cicc_wperiod_est_swd_cc(),
                                          cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
@@ -10372,16 +10372,16 @@ shinyServer(function(input, output, session) {
             
           }
           
-          # df_power <- df_power <- cbind(df_power, a1=df_power$a0*df_power$a1_a0)
-          # df_power <- df_power[which(df_power$a1 <=  df_power$a0),]
+          # df_power <- df_power <- cbind(df_power, alpha1=df_power$alpha0*df_power$a1_a0)
+          # df_power <- df_power[which(df_power$alpha1 <=  df_power$alpha0),]
           
           power_hte_col <- rep(NA, nrow(df_power))
           for(i in seq(nrow(df_power))){
             power_hte_col[i] <- power_hte_crossover(n_seq=df_power[i,"n_seq"],
                                                     m=df_power[i,"m"], J=df_power[i,"J"],
                                                     var_y=df_power[i,"var_y"], var_x=df_power[i,"var_x"],
-                                                    a0=df_power[i,"a0"], a1_a0=df_power[i,"a1_a0"],
-                                                    a2=df_power[i,"a2"], r0=df_power[i,"r0"],
+                                                    alpha0=df_power[i,"alpha0"], a1_a0=df_power[i,"a1_a0"],
+                                                    a2=df_power[i,"a2"], rho0=df_power[i,"rho0"],
                                                     cohort=df_power[i,"cohort"],
                                                     d=df_power[i,"d"], a=df_power[i,"a"])
           }
@@ -10391,17 +10391,17 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_power %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
-                            a0 == oicc_wperiod_est_swd_cc(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
+                            alpha0 == oicc_wperiod_est_swd_cc(),
                             a1_a0 == oicc_ratio_est_swd_cc(),
                             a2 == oicc_windiv_est_swd_cc()) %>%
-              mutate(r0=factor(r0)) %>%
-              plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                      linetype=~r0, color=~r0,legendgroup=~r0,
+              mutate(rho0=factor(rho0)) %>%
+              plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                      linetype=~rho0, color=~rho0,legendgroup=~rho0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
-                                   "; <br>within-period covariate ICC (r0): ", r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                    "<br>Clusters (total):", n_seq*2, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                    "<br>Periods (J): ", J,
                                    "<br>HTE power: ", round(power_hte_col,4)),
@@ -10424,7 +10424,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(), "), and r0 (", cicc_wperiod_est_swd_cc(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(), "), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -10441,10 +10441,10 @@ shinyServer(function(input, output, session) {
             if(input$icc_display_three == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
               
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
               a2_unique <- sort(unique(df_power[,"a2"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
               for(i in seq(length(r0_unique))){
@@ -10453,16 +10453,16 @@ shinyServer(function(input, output, session) {
                   # outcome ICCs #
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0, showlegend=F,
+                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n_seq*2, "; Clusters (per sequence):", n_seq,"<br>Cluster size (total): ", m,
                                          "<br>Periods (J): ", J,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -10477,16 +10477,16 @@ shinyServer(function(input, output, session) {
                 }else{
                   p_o[[i]] <- df_power %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0,
+                    plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n_seq*2, "; Clusters (per sequence):", n_seq,"<br>Cluster size (total): ", m,
                                          "<br>Periods (J): ", J,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -10513,7 +10513,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum r0 (", cicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -10524,7 +10524,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum r0 (", cicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -10534,7 +10534,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and r0 (", cicc_wperiod_est_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -10550,10 +10550,10 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_power[,"a0"]))
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
               a2_unique <- sort(unique(df_power[,"a2"]))
-              r0_unique <- sort(unique(df_power[,"r0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
               for(i in seq(length(a0_unique))){
@@ -10563,15 +10563,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n_seq*2, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br>Periods (J): ", J,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -10587,15 +10587,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_power %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~n_seq,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", n_seq*2, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
                                          "<br>Periods (J): ", J,
                                          "<br>HTE power: ", round(power_hte_col,4)),
@@ -10622,7 +10622,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum a0 (", oicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -10633,7 +10633,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum a0 (", oicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -10643,7 +10643,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and a0 (", oicc_wperiod_est_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -10671,13 +10671,13 @@ shinyServer(function(input, output, session) {
         if(cohort() == "cross"){
           if(sensitivity_swd_react() == "est_only"){
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,
-                                 a0=#c(oicc_wperiod_min_swd(),
+                                 alpha0=#c(oicc_wperiod_min_swd(),
                                    oicc_wperiod_est_swd(),
                                  # oicc_wperiod_max_swd()),
                                  a1_a0=#c(oicc_ratio_min_swd(),
                                    oicc_ratio_est_swd(),
                                  # oicc_ratio_max_swd()),
-                                 r0=#c(cicc_wperiod_min_swd(),
+                                 rho0=#c(cicc_wperiod_min_swd(),
                                    cicc_wperiod_est_swd(),
                                  # cicc_wperiod_max_swd()),
                                  r1_r0=#c(cicc_ratio_min_swd(),
@@ -10690,13 +10690,13 @@ shinyServer(function(input, output, session) {
             
           }else{
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,
-                                 a0=c(oicc_wperiod_min_swd(),
+                                 alpha0=c(oicc_wperiod_min_swd(),
                                       oicc_wperiod_est_swd(),
                                       oicc_wperiod_max_swd()),
                                  a1_a0=c(oicc_ratio_min_swd(),
                                          oicc_ratio_est_swd(),
                                          oicc_ratio_max_swd()),
-                                 r0=c(cicc_wperiod_min_swd(),
+                                 rho0=c(cicc_wperiod_min_swd(),
                                       cicc_wperiod_est_swd(),
                                       cicc_wperiod_max_swd()),
                                  r1_r0=c(cicc_ratio_min_swd(),
@@ -10715,8 +10715,8 @@ shinyServer(function(input, output, session) {
             ns_hte_col[i,] <- unlist(ns_hte_crossover(m=df_ns[i,"m"],
                                                       J=df_ns[i,"J"],
                                                       var_y=df_ns[i,"var_y"], var_x=df_ns[i,"var_x"],
-                                                      a0=df_ns[i,"a0"], a1_a0=df_ns[i,"a1_a0"],
-                                                      r0=df_ns[i,"r0"], r1_r0=df_ns[i,"r1_r0"],
+                                                      alpha0=df_ns[i,"alpha0"], a1_a0=df_ns[i,"a1_a0"],
+                                                      rho0=df_ns[i,"rho0"], r1_r0=df_ns[i,"r1_r0"],
                                                       d=df_ns[i,"d"],
                                                       cohort=df_ns[i,"cohort"],
                                                       a=df_ns[i,"a"],
@@ -10729,17 +10729,17 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_ns %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                             r1_r0 == cicc_ratio_est_swd(),
-                            a0 == oicc_wperiod_est_swd(),
+                            alpha0 == oicc_wperiod_est_swd(),
                             a1_a0 == oicc_ratio_est_swd()) %>%
               mutate(r1_r0=factor(r1_r0)) %>%
               plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                       linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                   "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                    "<br>Clusters (total):", ns*2, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                    "<br>Periods (J): ", J,
                                    "<br>HTE power: ", round(power_emp,4)),
@@ -10762,7 +10762,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), r0 (", cicc_wperiod_est_swd(),") and r1/r0 (", cicc_ratio_est_swd(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -10779,9 +10779,9 @@ shinyServer(function(input, output, session) {
             if(input$icc_display_swd == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
               
-              a0_unique <- sort(unique(df_ns[,"a0"]))
+              a0_unique <- sort(unique(df_ns[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_ns[,"a1_a0"]))
-              r0_unique <- sort(unique(df_ns[,"r0"]))
+              r0_unique <- sort(unique(df_ns[,"rho0"]))
               r1_r0_unique <- sort(unique(df_ns[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -10792,15 +10792,15 @@ shinyServer(function(input, output, session) {
                   p_o[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", ns*2, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Periods (J): ", J,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -10816,15 +10816,15 @@ shinyServer(function(input, output, session) {
                   p_o[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(r1_r0=factor(r1_r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd(),
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
                                   a1_a0 == oicc_ratio_est_swd(),
-                                  r0 == r0_unique[i]) %>%
+                                  rho0 == r0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
                             linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", ns*2, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Periods (J): ", J,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -10851,7 +10851,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), minimum r0 (", cicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -10862,7 +10862,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), ") and a1/a0 (", oicc_ratio_est_swd(),"), and maximum r0 (", cicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -10872,7 +10872,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd(), "), a1/a0 (", oicc_ratio_est_swd(),"), and r0 (", cicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -10888,9 +10888,9 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_ns[,"a0"]))
+              a0_unique <- sort(unique(df_ns[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_ns[,"a1_a0"]))
-              r0_unique <- sort(unique(df_ns[,"r0"]))
+              r0_unique <- sort(unique(df_ns[,"rho0"]))
               r1_r0_unique <- sort(unique(df_ns[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
@@ -10901,15 +10901,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", ns*2, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Periods (J): ", J,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -10925,15 +10925,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
                                   r1_r0 == cicc_ratio_est_swd(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,
-                                         "; <br>within-period covariate ICC (r0): ", r0, "; <br>covariate CAC (r1/r0): ", r1_r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
                                          "<br>Clusters (total):", ns*2, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Periods (J): ", J,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -10960,7 +10960,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), minimum a0 (", oicc_wperiod_min_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -10971,7 +10971,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), ") and r1/r0 (", cicc_ratio_est_swd(),"), and maximum a0 (", oicc_wperiod_max_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -10981,7 +10981,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd(), "), r1/r0 (", cicc_ratio_est_swd(),"), and a0 (", oicc_wperiod_est_swd(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), "), \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -11002,7 +11002,7 @@ shinyServer(function(input, output, session) {
         }else if(cohort() == "closed"){
           if(sensitivity_swd_react() == "est_only"){
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,
-                                 a0=#c(oicc_wperiod_min_swd(),
+                                 alpha0=#c(oicc_wperiod_min_swd(),
                                    oicc_wperiod_est_swd_cc(),
                                  # oicc_wperiod_max_swd()),
                                  a1_a0=#c(oicc_ratio_min_swd(),
@@ -11011,7 +11011,7 @@ shinyServer(function(input, output, session) {
                                  a2=#c(oicc_windiv_min_swd_cc(),
                                    oicc_windiv_est_swd_cc(),
                                  # oicc_windiv_max_swd_cc()),
-                                 r0=#c(cicc_wperiod_min_swd_cc(),
+                                 rho0=#c(cicc_wperiod_min_swd_cc(),
                                    cicc_wperiod_est_swd_cc(),
                                  # cicc_wperiod_max_swd_cc()),
                                  var_y=var_y, #(input$sd_outcome)^2,
@@ -11021,7 +11021,7 @@ shinyServer(function(input, output, session) {
             
           }else{
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,
-                                 a0=c(oicc_wperiod_min_swd_cc(),
+                                 alpha0=c(oicc_wperiod_min_swd_cc(),
                                       oicc_wperiod_est_swd_cc(),
                                       oicc_wperiod_max_swd_cc()),
                                  a1_a0=c(oicc_ratio_min_swd_cc(),
@@ -11030,7 +11030,7 @@ shinyServer(function(input, output, session) {
                                  a2=c(oicc_windiv_min_swd_cc(),
                                       oicc_windiv_est_swd_cc(),
                                       oicc_windiv_max_swd_cc()),
-                                 r0=c(cicc_wperiod_min_swd_cc(),
+                                 rho0=c(cicc_wperiod_min_swd_cc(),
                                       cicc_wperiod_est_swd_cc(),
                                       cicc_wperiod_max_swd_cc()),
                                  var_y=var_y, #(input$sd_outcome)^2,
@@ -11046,8 +11046,8 @@ shinyServer(function(input, output, session) {
             ns_hte_col[i,] <- unlist(ns_hte_crossover(m=df_ns[i,"m"],
                                                       J=df_ns[i,"J"],
                                                       var_y=df_ns[i,"var_y"], var_x=df_ns[i,"var_x"],
-                                                      a0=df_ns[i,"a0"], a1_a0=df_ns[i,"a1_a0"],
-                                                      a2=df_ns[i,"a2"], r0=df_ns[i,"r0"],
+                                                      alpha0=df_ns[i,"alpha0"], a1_a0=df_ns[i,"a1_a0"],
+                                                      a2=df_ns[i,"a2"], rho0=df_ns[i,"rho0"],
                                                       d=df_ns[i,"d"],
                                                       cohort=df_ns[i,"cohort"],
                                                       a=df_ns[i,"a"],
@@ -11060,17 +11060,17 @@ shinyServer(function(input, output, session) {
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_ns %>%
               as.data.frame() %>%
-              dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
-                            a0 == oicc_wperiod_est_swd_cc(),
+              dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
+                            alpha0 == oicc_wperiod_est_swd_cc(),
                             a1_a0 == oicc_ratio_est_swd_cc(),
                             a2 == oicc_windiv_est_swd_cc()) %>%
-              mutate(r0=factor(r0)) %>%
-              plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                      linetype=~r0, color=~r0,legendgroup=~r0,
+              mutate(rho0=factor(rho0)) %>%
+              plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                      linetype=~rho0, color=~rho0,legendgroup=~rho0,
                       colors=colors_plot,
                       hoverinfo="text",
-                      text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
-                                   "; <br>within-period covariate ICC (r0): ", r0,
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                    "<br>Clusters (total):", ns*2, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                    "<br>Periods (J): ", J,
                                    "<br>HTE power: ", round(power_emp,4)),
@@ -11093,7 +11093,7 @@ shinyServer(function(input, output, session) {
                 list(
                   x = 0.485,
                   y = 1.03,#0.97,
-                  text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(), "), and r0 (", cicc_wperiod_est_swd_cc(),")</i>"),
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(), "), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(),")</i>"),
                   xref = "paper",
                   yref = "paper",
                   xanchor = "center",
@@ -11110,10 +11110,10 @@ shinyServer(function(input, output, session) {
             if(input$icc_display_swd == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
               
-              a0_unique <- sort(unique(df_ns[,"a0"]))
+              a0_unique <- sort(unique(df_ns[,"\U1D6FC<sub>0</sub>"]))
               a1_a0_unique <- sort(unique(df_ns[,"a1_a0"]))
               a2_unique <- sort(unique(df_ns[,"a2"]))
-              r0_unique <- sort(unique(df_ns[,"r0"]))
+              r0_unique <- sort(unique(df_ns[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
               for(i in seq(length(r0_unique))){
@@ -11122,16 +11122,16 @@ shinyServer(function(input, output, session) {
                   # outcome ICCs #
                   p_o[[i]] <- df_ns %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0, showlegend=F,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", ns*2, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Periods (J): ", J,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -11146,16 +11146,16 @@ shinyServer(function(input, output, session) {
                 }else{
                   p_o[[i]] <- df_ns %>%
                     as.data.frame() %>%
-                    mutate(r0=factor(r0)) %>%
-                    dplyr::filter(a0 == oicc_wperiod_est_swd_cc(),
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
                                   a1_a0 == oicc_ratio_est_swd_cc(),
                                   a2 == a2_unique[i]) %>%
-                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~r0,
-                            linetype=~r0, color=~r0,legendgroup=~r0,
+                    plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", ns*2, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Periods (J): ", J,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -11182,7 +11182,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum r0 (", cicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -11193,7 +11193,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum r0 (", cicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and a2 (", oicc_windiv_est_swd_cc(),"), maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -11203,7 +11203,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed a0 (", oicc_wperiod_est_swd_cc(), "), a1/a0 (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and r0 (", cicc_wperiod_est_swd_cc(),")</i>"),                      xref = "paper",
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(),")</i>"),                      xref = "paper",
                     yref = "paper",
                     xanchor = "center",
                     yanchor = "bottom",
@@ -11218,10 +11218,10 @@ shinyServer(function(input, output, session) {
               
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
-              a0_unique <- sort(unique(df_ns[,"a0"]))
+              a0_unique <- sort(unique(df_ns[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_ns[,"a1_a0"]))
               a2_unique <- sort(unique(df_ns[,"a2"]))
-              r0_unique <- sort(unique(df_ns[,"r0"]))
+              r0_unique <- sort(unique(df_ns[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
               
               for(i in seq(length(a0_unique))){
@@ -11231,15 +11231,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", ns*2, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Periods (J): ", J,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -11255,15 +11255,15 @@ shinyServer(function(input, output, session) {
                   p_c[[i]] <- df_ns %>%
                     as.data.frame() %>%
                     mutate(a1_a0=factor(a1_a0)) %>%
-                    dplyr::filter(r0 == cicc_wperiod_est_swd_cc(),
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
                                   a2 == oicc_windiv_est_swd_cc(),
-                                  a0 == a0_unique[i]) %>%
+                                  alpha0 == a0_unique[i]) %>%
                     plot_ly(x=~m,y=~ns, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
                             linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
                             colors=colors_plot,
                             hoverinfo="text",
-                            text=~paste0("within-period outcome ICC (a0): ", a0, "; <br>outcome CAC (a1/a0): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
-                                         "; <br>within-period covariate ICC (r0): ", r0,
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
                                          "<br>Clusters (total):", ns*2, "; Clusters (per sequence):", ns,"<br>Cluster size (per period): ", m,
                                          "<br>Periods (J): ", J,
                                          "<br>HTE power: ", round(power_emp,4)),
@@ -11290,7 +11290,7 @@ shinyServer(function(input, output, session) {
                     x = 0.23,
                     y = 1.03,
                     #yshift=-30,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum a0 (", oicc_wperiod_min_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -11301,7 +11301,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.23,
                     y = 0.43,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum a0 (", oicc_wperiod_max_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and a2 (", oicc_windiv_est_swd_cc(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
@@ -11311,7 +11311,7 @@ shinyServer(function(input, output, session) {
                   list(
                     x = 0.77,
                     y = 1.03,
-                    text = paste0("<i>Assumed r0 (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and a0 (", oicc_wperiod_est_swd_cc(),")</i>"),
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), "), a2 (", oicc_windiv_est_swd_cc(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(),")</i>"),
                     xref = "paper",
                     yref = "paper",
                     xanchor = "center",
