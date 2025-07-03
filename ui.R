@@ -719,9 +719,16 @@ shinyUI(fluidPage(
         
         # numeric n #
         conditionalPanel(
-          condition = "input.plot_display == 'm_v_power'",
+          condition = "input.plot_display == 'm_v_power' & input.trial != 'parallel_m'",
           numericInput(inputId="ns_swd",
                        label="Number of clusters (per sequence)",
+                       1, min=1, max=9999999999)
+        ),
+        # numeric n #
+        conditionalPanel(
+          condition = "input.plot_display == 'm_v_power' & input.trial == 'parallel_m'",
+          numericInput(inputId="ns_parallel_m",
+                       label="Total number of clusters",
                        1, min=1, max=9999999999)
         ),
         # m range #
@@ -732,17 +739,32 @@ shinyUI(fluidPage(
                       min=1, max=3000,
                       value=c(5,100))
         ),
-        #numeric m, n range #
+        #numeric m range #
         conditionalPanel(
           condition = "input.plot_display == 'n_v_power'",
           numericInput(inputId="m_swd",
                        label="Cluster size (per period)",
                        20, min=1, max=9999999999),
+          
+        ),
+        #numeric n range #
+        conditionalPanel(
+          condition = "input.plot_display == 'n_v_power' & input.trial != 'parallel_m'",
           sliderInput(inputId="ns_swd_range",
                       label="Plot number of clusters (per sequence) range",
                       min=1, max=3000,
                       value=c(5,100))
         ),
+        
+        #numeric n range #
+        conditionalPanel(
+          condition = "input.plot_display == 'n_v_power' & input.trial == 'parallel_m'",
+          sliderInput(inputId="ns_parallel_m_range",
+                      label="Plot total number of clusters range",
+                      min=1, max=3000,
+                      value=c(5,100))
+        ),
+        
         # numeric power #
         conditionalPanel(
           condition = "input.plot_display == 'fixed_power'",
@@ -915,7 +937,8 @@ shinyUI(fluidPage(
       numericInput(inputId="mean_diff_HTE",
                    label="Assumed HTE",
                    1, min=0, max=999999),
-      helpText("Specify the target effect size for the treatment effect modification, e.g., the treatment interaction .", style="margin-top:-0.5em; margin-bottom:1em;"),
+      helpText("Specify the target effect size for the treatment effect modification/interaction, e.g., the difference in treatment effects between subgroups.",#"Specify the target effect size for the treatment effect modification, e.g., the treatment interaction.",
+               style="margin-top:-0.5em; margin-bottom:1em;"),
       # covariate sd for continuous #
       conditionalPanel(
         condition = "input.covar == 'continuous'",
@@ -934,11 +957,11 @@ shinyUI(fluidPage(
       
       #treatment allocation #
       conditionalPanel(
-        condition = "input.trial == 'parallel' || input.trial == 'three_level'",
+        condition = "input.trial == 'parallel' || input.trial == 'three_level' || input.trial == 'parallel_m'",
         numericInput(inputId="w",
                      label="Intervention randomization proportion",
                      0.5, min=0.000001, max=1, step=0.001),
-        helpText("Enter the proportion of total clusters randomized to the intervention or treatment arm.", style="margin-top:-0.5em; margin-bottom:1em;"),
+        helpText("Enter the proportion of total clusters to be randomized to the intervention or treatment arm.", style="margin-top:-0.5em; margin-bottom:1em;"),
       ),
       # sig level #
       numericInput(inputId="sig",
