@@ -998,7 +998,8 @@ shinyUI(fluidPage(
                  plotlyOutput("powerPlot_hte")),
           tabPanel("Precision",#br(),
                    conditionalPanel(condition = "input.plot_display != 'fixed_power' & input.plot_display != 'm_v_nc'",
-                                   plotlyOutput("precisionPlot_hte")),
+                                    p(em("Precision is defined here as 1/variance of the HTE.")),
+                                    plotlyOutput("precisionPlot_hte")),
                    conditionalPanel(condition = "input.plot_display == 'fixed_power' || input.plot_display == 'm_v_nc'",
                                    h4("Precision is only available for varying power levels. Please select a difference plot display option."))
                    ),
