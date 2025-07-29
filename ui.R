@@ -995,7 +995,13 @@ shinyUI(fluidPage(
       
       tabsetPanel(
         tabPanel("Power",#br(),
-                 plotlyOutput("powerPlot_hte")), 
+                 plotlyOutput("powerPlot_hte")),
+          tabPanel("Precision",#br(),
+                   conditionalPanel(condition = "input.plot_display != 'fixed_power' & input.plot_display != 'm_v_nc'",
+                                   plotlyOutput("precisionPlot_hte")),
+                   conditionalPanel(condition = "input.plot_display == 'fixed_power' || input.plot_display == 'm_v_nc'",
+                                   h4("Precision is only available for varying power levels. Please select a difference plot display option."))
+                   ),
         tabPanel("Design Matrix",#br(),
                  tableOutput("design_matrix")),
         tabPanel("References and Resources", 
@@ -1016,21 +1022,8 @@ shinyUI(fluidPage(
                  br(),
                  p("To calculate ATE power for CRTs, please visit The Shiny CRT Calculator developed by Karla Hemming (University of Birmingham UK) and Jesica Kasza (Monash University Australia):",a("https://clusterrcts.shinyapps.io/rshinyapp/", href="https://clusterrcts.shinyapps.io/rshinyapp/"), style = "font-size:13pt;")
         )
-      )
+      )# end tabsetPanel
       
-      
-      
-      # fluidRow(
-      #   splitLayout(cellWidths = c("50%", "50%"),
-      #               plotlyOutput("powerPlot_hte_n"), plotlyOutput("powerPlot_hte_m"))
-      # ),
-      # fluidRow(
-      #   HTML("<br>")
-      # ),
-      # fluidRow(
-      #   splitLayout(cellWidths = c("50%", "50%"),
-      #               plotlyOutput("powerPlot_hte_m"), plotlyOutput("powerPlot_hte_m"))
-      # )
-    )
-  )
+    )# end manPanel
+  )# end sidebarLayout
 ))
