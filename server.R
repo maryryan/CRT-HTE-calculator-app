@@ -11083,7 +11083,680 @@ shinyServer(function(input, output, session) {
         }#end cross/closed
         
         
-      }#end fixed power
+      }else if(plot_display_react() == "hte_v_power"){
+        d_range <- seq(input$hte_min, input$hte_max, by=(input$hte_max*0.001))
+        m <- input$m_swd
+        n_seq <- input$ns_swd
+        #J <- input$J_1 + 1
+        #n <- input$ns_swd*input$J_1
+        
+        if(cohort()=="cross"){
+          
+          if(sensitivity_swd_react() == "est_only"){
+            df_power <- expand.grid(n_seq=n_seq, m=m, J=J,seqs=seqs,
+                                    alpha0=#c(oicc_wperiod_min_swd(),
+                                      oicc_wperiod_est_swd(),
+                                    #oicc_wperiod_max_swd()),
+                                    a1_a0=#c(oicc_ratio_min_swd(),
+                                      oicc_ratio_est_swd(),
+                                    # oicc_ratio_max_swd()),
+                                    rho0=#c(cicc_wperiod_min_swd(),
+                                      cicc_wperiod_est_swd(),
+                                    # cicc_wperiod_max_swd()),
+                                    r1_r0=#c(cicc_ratio_min_swd(),
+                                      cicc_ratio_est_swd(),
+                                    # cicc_ratio_max_swd()),
+                                    var_y=var_y, #(input$sd_outcome)^2,
+                                    var_x=var_x,#(input$sd_covar)^2,
+                                    cohort=cohort(),
+                                    d=d_range, a=input$sig)
+          }else{
+            df_power <- expand.grid(n_seq=n_seq, m=m, J=J,seqs=seqs,
+                                    alpha0=c(oicc_wperiod_min_swd(),
+                                             oicc_wperiod_est_swd(),
+                                             oicc_wperiod_max_swd()),
+                                    a1_a0=c(oicc_ratio_min_swd(),
+                                            oicc_ratio_est_swd(),
+                                            oicc_ratio_max_swd()),
+                                    rho0=c(cicc_wperiod_min_swd(),
+                                           cicc_wperiod_est_swd(),
+                                           cicc_wperiod_max_swd()),
+                                    r1_r0=c(cicc_ratio_min_swd(),
+                                            cicc_ratio_est_swd(),
+                                            cicc_ratio_max_swd()),
+                                    var_y=var_y, #(input$sd_outcome)^2,
+                                    var_x=var_x,#(input$sd_covar)^2,
+                                    cohort=cohort(),
+                                    d=d_range, a=input$sig)
+          }
+          
+          
+          power_hte_col <- rep(NA, nrow(df_power))
+          for(i in seq(nrow(df_power))){
+            power_hte_col[i] <- power_hte_ownDes(desmat, n_seq=df_power[i,"n_seq"],
+                                                 m=df_power[i,"m"],# J=df_power[i,"J"],
+                                                 var_y=df_power[i,"var_y"], var_x=df_power[i,"var_x"],
+                                                 alpha0=df_power[i,"alpha0"], a1_a0=df_power[i,"a1_a0"],
+                                                 rho0=df_power[i,"rho0"], r1_r0=df_power[i,"r1_r0"],
+                                                 cohort=df_power[i,"cohort"],
+                                                 d=df_power[i,"d"], a=df_power[i,"a"])
+          }
+          
+          df_power <- cbind(df_power, power_hte_col)
+          
+          if(sensitivity_swd_react() == "est_only"){
+            p_est <- df_power %>%
+              as.data.frame() %>%
+              dplyr::filter(rho0 == cicc_wperiod_est_swd(),
+                            r1_r0 == cicc_ratio_est_swd(),
+                            alpha0 == oicc_wperiod_est_swd(),
+                            a1_a0 == oicc_ratio_est_swd()) %>%
+              mutate(r1_r0=factor(r1_r0)) %>%
+              plot_ly(x=~d,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
+                      linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
+                      colors=colors_plot,
+                      hoverinfo="text",
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/rho0): ", r1_r0,
+                                   "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
+                                   "<br>Sequences (steps): ", seqs,
+                                   "<br>HTE power: ", round(power_hte_col,4),
+                                   "<br>HTE size: ", d),
+                      height=input$dimension[2]*0.8) %>%
+              layout(title=paste("within-period covariate ICC = ", cicc_wperiod_est_swd()),
+                     #subtitle=paste("within-subcluster outcome ICC = ", oicc_wperiod_est_swd(), ", outcome ICC ratio = ", oicc_ratio_est_swd()),
+                     xaxis=list(title="HTE size"),
+                     yaxis=list(title="HTE Power"),
+                     legend=list(title=list(text="covariate ICC ratio")),
+                     margin=0.001)
+            
+            subplot(p_est,# nrows=2, widths = c(0.5,0.5),
+                    margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
+              layout(title = list(
+                text='HTE size vs HTE power',
+                font=list(size=17)
+              ),
+              #margin=list(pad=50),
+              annotations = list(
+                list(
+                  x = 0.485,
+                  y = 1.03,#0.97,
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),")</i>"),
+                  xref = "paper",
+                  yref = "paper",
+                  xanchor = "center",
+                  yanchor = "bottom",
+                  showarrow = FALSE, font=list(size=13)
+                )
+              ),
+              legend=list(orientation="h",
+                          yanchor="center",
+                          y=0.25,
+                          x=0.5)
+              )
+          }else if(sensitivity_swd_react() == "sensitivity"){
+            if(input$icc_display_swd == "oICC_constant"){
+              #legend_title <- latex2exp::TeX("$\\rho_x$")
+              
+              a0_unique <- sort(unique(df_power[,"\U1D6FC<sub>0</sub>"]))
+              a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
+              r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
+              
+              p_o <- p_c <- vector(mode="list", length=length(a0_unique))
+              
+              for(i in seq(length(r0_unique))){
+                
+                if(i != 3){
+                  # outcome ICCs #
+                  p_o[[i]] <- df_power %>%
+                    as.data.frame() %>%
+                    mutate(r1_r0=factor(r1_r0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
+                                  a1_a0 == oicc_ratio_est_swd(),
+                                  rho0 == r0_unique[i]) %>%
+                    plot_ly(x=~d,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
+                            linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
+                            colors=colors_plot,
+                            hoverinfo="text",
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
+                                         "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
+                                         "<br>Sequences (steps): ", seqs,
+                                         "<br>HTE power: ", round(power_hte_col,4),
+                                         "<br>HTE size: ", d),
+                            height=input$dimension[2]*0.8) %>%
+                    layout(title=paste("within-period covariate ICC = ", r0_unique[i]),
+                           #subtitle=paste("within-subcluster outcome ICC = ", oicc_wperiod_est_swd(), ", outcome ICC ratio = ", oicc_ratio_est_swd()),
+                           xaxis=list(title="HTE size"),
+                           yaxis=list(title="HTE Power"),
+                           legend=list(title=list(text="covariate CAC")),
+                           margin=0.01)
+                  
+                }else{
+                  p_o[[i]] <- df_power %>%
+                    as.data.frame() %>%
+                    mutate(r1_r0=factor(r1_r0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd(),
+                                  a1_a0 == oicc_ratio_est_swd(),
+                                  rho0 == r0_unique[i]) %>%
+                    plot_ly(x=~m,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
+                            linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
+                            colors=colors_plot,
+                            hoverinfo="text",
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
+                                         "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
+                                         "<br>Sequences (steps): ", seqs,
+                                         "<br>HTE power: ", round(power_hte_col,4),
+                                         "<br>HTE size: ", d),
+                            height=input$dimension[2]*0.8) %>%
+                    layout(title=paste("within-period covariate ICC = ", r0_unique[i]),
+                           #subtitle=paste("within-subcluster outcome ICC = ", oicc_wperiod_est_swd(), ", outcome ICC ratio = ", oicc_ratio_est_swd()),
+                           xaxis=list(title="HTE size"),
+                           yaxis=list(title="HTE Power"),
+                           legend=list(title=list(text="covariate CAC")),
+                           margin=0.01)
+                }
+                
+              }
+              
+              subplot(p_o[[1]], p_o[[2]],p_o[[3]], nrows=2, widths = c(0.5,0.5),
+                      margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
+                layout(title = list(
+                  text='HTE size vs HTE power',
+                  font=list(size=17)
+                ),
+                #margin=list(pad=50),
+                annotations = list(
+                  list(
+                    x = 0.23,
+                    y = 1.03,
+                    #yshift=-30,
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd(),")</i>"),
+                    xref = "paper",
+                    yref = "paper",
+                    xanchor = "center",
+                    yanchor = "bottom",
+                    showarrow = FALSE#,
+                    #font=list(size=13)
+                  ),
+                  list(
+                    x = 0.23,
+                    y = 0.43,
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd(),")</i>"),
+                    xref = "paper",
+                    yref = "paper",
+                    xanchor = "center",
+                    yanchor = "bottom",
+                    showarrow = FALSE, font=list(size=13)
+                  ),
+                  list(
+                    x = 0.77,
+                    y = 1.03,
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),")</i>"),
+                    xref = "paper",
+                    yref = "paper",
+                    xanchor = "center",
+                    yanchor = "bottom",
+                    showarrow = FALSE, font=list(size=13)
+                  )
+                ),
+                legend=list(orientation="h",
+                            yanchor="center",
+                            y=0.25,
+                            x=0.5)
+                )
+              
+            }else if(input$icc_display_swd == "cICC_constant"){
+              #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
+              a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
+              r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
+              p_o <- p_c <- vector(mode="list", length=length(a0_unique))
+              
+              for(i in seq(length(a0_unique))){
+                
+                if(i != 3){
+                  # outcome ICCs #
+                  p_c[[i]] <- df_power %>%
+                    as.data.frame() %>%
+                    mutate(a1_a0=factor(a1_a0)) %>%
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
+                                  r1_r0 == cicc_ratio_est_swd(),
+                                  alpha0 == a0_unique[i]) %>%
+                    plot_ly(x=~d,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
+                            linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
+                            colors=colors_plot,
+                            hoverinfo="text",
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
+                                         "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
+                                         "<br>Sequences (steps): ", seqs,
+                                         "<br>HTE power: ", round(power_hte_col,4),
+                                         "<br>HTE size: ", d),
+                            height=input$dimension[2]*0.8) %>%
+                    layout(title=paste("within-period outcome ICC = ", a0_unique[i]),
+                           #subtitle=paste("within-subcluster covariate ICC = ", cicc_wperiod_est_swd(), ", covariate ICC ratio = ", cicc_ratio_est_swd()),
+                           xaxis=list(title="HTE size"),
+                           yaxis=list(title="HTE Power"),
+                           legend=list(title=list(text="outcome CAC")),
+                           margin=0.01)
+                  
+                }else{
+                  p_c[[i]] <- df_power %>%
+                    as.data.frame() %>%
+                    mutate(a1_a0=factor(a1_a0)) %>%
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd(),
+                                  r1_r0 == cicc_ratio_est_swd(),
+                                  alpha0 == a0_unique[i]) %>%
+                    plot_ly(x=~d,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
+                            linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
+                            colors=colors_plot,
+                            hoverinfo="text",
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
+                                         "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
+                                         "<br>Sequences (steps): ", seqs,
+                                         "<br>HTE power: ", round(power_hte_col,4),
+                                         "<br>HTE size: ", d),
+                            height=input$dimension[2]*0.8) %>%
+                    layout(title=paste("within-period outcome ICC = ", a0_unique[i]),
+                           #subtitle=paste("within-subcluster covariate ICC = ", cicc_wperiod_est_swd(), ", covariate ICC ratio = ", cicc_ratio_est_swd()),
+                           xaxis=list(title="HTE size"),
+                           yaxis=list(title="HTE Power"),
+                           legend=list(title=list(text="outcome CAC")),
+                           margin=0.01)
+                }
+                
+              }
+              
+              subplot(p_c[[1]], p_c[[2]],p_c[[3]], nrows=2, widths = c(0.5,0.5),
+                      margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
+                layout(title = list(
+                  text='HTE size vs HTE power',
+                  font=list(size=17)
+                ),
+                #margin=list(pad=50),
+                annotations = list(
+                  list(
+                    x = 0.23,
+                    y = 1.03,
+                    #yshift=-30,
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd(),")</i>"),
+                    xref = "paper",
+                    yref = "paper",
+                    xanchor = "center",
+                    yanchor = "bottom",
+                    showarrow = FALSE#,
+                    #font=list(size=13)
+                  ),
+                  list(
+                    x = 0.23,
+                    y = 0.43,
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd(),")</i>"),
+                    xref = "paper",
+                    yref = "paper",
+                    xanchor = "center",
+                    yanchor = "bottom",
+                    showarrow = FALSE, font=list(size=13)
+                  ),
+                  list(
+                    x = 0.77,
+                    y = 1.03,
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(), "), \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_swd(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(),")</i>"),
+                    xref = "paper",
+                    yref = "paper",
+                    xanchor = "center",
+                    yanchor = "bottom",
+                    showarrow = FALSE, font=list(size=13)
+                  )
+                ),
+                legend=list(orientation="h",
+                            yanchor="center",
+                            y=0.25,
+                            x=0.5)
+                )
+              
+            }
+          }# end sensitivity if/else
+          
+          
+        }else if(cohort() == "closed"){
+          if(sensitivity_swd_react() == "est_only"){
+            df_power <- expand.grid(n_seq=n_seq, m=m, J=J,seqs=seqs,
+                                    alpha0=#c(oicc_wperiod_min_swd_cc(),
+                                      oicc_wperiod_est_swd_cc(),
+                                    # oicc_wperiod_max_swd_cc()),
+                                    a1_a0=#c(oicc_ratio_min_swd_cc(),
+                                      oicc_ratio_est_swd_cc(),
+                                    # oicc_ratio_max_swd_cc()),
+                                    a2=#c(oicc_windiv_min_swd_cc(),
+                                      oicc_windiv_est_swd_cc(),
+                                    # oicc_windiv_max_swd_cc()),
+                                    rho0=#c(cicc_wperiod_min_swd_cc(),
+                                      cicc_wperiod_est_swd_cc(),
+                                    # cicc_wperiod_max_swd_cc()),
+                                    var_y=var_y, #(input$sd_outcome)^2,
+                                    var_x=var_x,#(input$sd_covar)^2,
+                                    cohort=cohort(),
+                                    d=d_range, a=input$sig)
+          }else{
+            df_power <- expand.grid(n_seq=n_seq, m=m, J=J,seqs=seqs,
+                                    alpha0=c(oicc_wperiod_min_swd_cc(),
+                                             oicc_wperiod_est_swd_cc(),
+                                             oicc_wperiod_max_swd_cc()),
+                                    a1_a0=c(oicc_ratio_min_swd_cc(),
+                                            oicc_ratio_est_swd_cc(),
+                                            oicc_ratio_max_swd_cc()),
+                                    a2=c(oicc_windiv_min_swd_cc(),
+                                         oicc_windiv_est_swd_cc(),
+                                         oicc_windiv_max_swd_cc()),
+                                    rho0=c(cicc_wperiod_min_swd_cc(),
+                                           cicc_wperiod_est_swd_cc(),
+                                           cicc_wperiod_max_swd_cc()),
+                                    var_y=var_y, #(input$sd_outcome)^2,
+                                    var_x=var_x,#(input$sd_covar)^2,
+                                    cohort=cohort(),
+                                    d=d_range, a=input$sig)
+          }
+          
+          
+          power_hte_col <- rep(NA, nrow(df_power))
+          for(i in seq(nrow(df_power))){
+            power_hte_col[i] <- power_hte_ownDes(desmat,n_seq=df_power[i,"n_seq"],
+                                                 m=df_power[i,"m"],# J=df_power[i,"J"],
+                                                 var_y=df_power[i,"var_y"], var_x=df_power[i,"var_x"],
+                                                 alpha0=df_power[i,"alpha0"], a1_a0=df_power[i,"a1_a0"],
+                                                 a2=df_power[i,"a2"],
+                                                 rho0=df_power[i,"rho0"],
+                                                 cohort=df_power[i,"cohort"],
+                                                 d=df_power[i,"d"], a=df_power[i,"a"])
+            # if(is.nan(power_hte_col[i])) print(i)
+          }
+          
+          df_power <- cbind(df_power, power_hte_col)
+          
+          if(sensitivity_swd_react() == "est_only"){
+            p_est <- df_power %>%
+              as.data.frame() %>%
+              dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
+                            alpha0 == oicc_wperiod_est_swd_cc(),
+                            a1_a0 == oicc_ratio_est_swd_cc(),
+                            a2 == oicc_windiv_est_swd_cc()) %>%
+              mutate(rho0=factor(rho0)) %>%
+              plot_ly(x=~d,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                      linetype=~rho0, color=~rho0,legendgroup=~rho0,
+                      colors=colors_plot,
+                      hoverinfo="text",
+                      text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0, "; <br>within-individual outcome ICC (a2): ", a2,
+                                   "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
+                                   "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
+                                   "<br>Sequences (steps): ", seqs,
+                                   "<br>HTE power: ", round(power_hte_col,4),
+                                   "<br>HTE size: ", d),
+                      height=input$dimension[2]*0.8) %>%
+              layout(title=paste("within-individual outcome ICC = ", oicc_windiv_est_swd_cc()),
+                     #subtitle=paste("within-subcluster outcome ICC = ", oicc_wperiod_est_swd(), ", outcome ICC ratio = ", oicc_ratio_est_swd()),
+                     xaxis=list(title="HTE size"),
+                     yaxis=list(title="HTE Power"),
+                     legend=list(title=list(text="covariate ICC")),
+                     margin=0.001)
+            
+            subplot(p_est,# nrows=2, widths = c(0.5,0.5),
+                    margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
+              layout(title = list(
+                text='HTE size vs HTE power',
+                font=list(size=17)
+              ),
+              #margin=list(pad=50),
+              annotations = list(
+                list(
+                  x = 0.485,
+                  y = 1.03,#0.97,
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd(),"), \U1D6FC<sub>2</sub> (", oicc_windiv_est_swd_cc(), "), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd(),")</i>"),
+                  xref = "paper",
+                  yref = "paper",
+                  xanchor = "center",
+                  yanchor = "bottom",
+                  showarrow = FALSE, font=list(size=13)
+                )
+              ),
+              legend=list(orientation="h",
+                          yanchor="center",
+                          y=0.25,
+                          x=0.5)
+              )
+          }else if(sensitivity_swd_react() == "sensitivity"){
+            if(input$icc_display_swd == "oICC_constant"){
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
+              a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
+              a2_unique <- sort(unique(df_power[,"a2"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
+              
+              p_o <- p_c <- vector(mode="list", length=length(a0_unique))
+              
+              for(i in seq(length(r0_unique))){
+                
+                if(i != 3){
+                  # outcome ICCs #
+                  p_o[[i]] <- df_power %>%
+                    as.data.frame() %>%
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
+                                  a1_a0 == oicc_ratio_est_swd_cc(),
+                                  a2 == a2_unique[i]) %>%
+                    plot_ly(x=~d,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0, showlegend=F,
+                            colors=colors_plot,
+                            hoverinfo="text",
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
+                                         "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (total): ", m,
+                                         "<br>Sequences (steps): ", seqs,
+                                         "<br>HTE power: ", round(power_hte_col,4),
+                                         "<br>HTE size: ", d),
+                            height=input$dimension[2]*0.8) %>%
+                    layout(title=paste("within-individual outcome ICC = ", a2_unique[i]),
+                           #subtitle=paste("within-subcluster outcome ICC = ", oicc_wperiod_est_swd(), ", outcome ICC ratio = ", oicc_ratio_est_swd()),
+                           xaxis=list(title="HTE size"),
+                           yaxis=list(title="HTE Power"),
+                           legend=list(title=list(text="covariate ICC")),
+                           margin=0.01)
+                  
+                }else{
+                  p_o[[i]] <- df_power %>%
+                    as.data.frame() %>%
+                    mutate(rho0=factor(rho0)) %>%
+                    dplyr::filter(alpha0 == oicc_wperiod_est_swd_cc(),
+                                  a1_a0 == oicc_ratio_est_swd_cc(),
+                                  a2 == a2_unique[i]) %>%
+                    plot_ly(x=~d,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~rho0,
+                            linetype=~rho0, color=~rho0,legendgroup=~rho0,
+                            colors=colors_plot,
+                            hoverinfo="text",
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
+                                         "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (total): ", m,
+                                         "<br>Sequences (steps): ", seqs,
+                                         "<br>HTE power: ", round(power_hte_col,4),
+                                         "<br>HTE size: ", d),
+                            height=input$dimension[2]*0.8) %>%
+                    layout(title=paste("within-individual outcome ICC = ", a2_unique[i]),
+                           #subtitle=paste("within-subcluster outcome ICC = ", oicc_wperiod_est_swd(), ", outcome ICC ratio = ", oicc_ratio_est_swd()),
+                           xaxis=list(title="HTE size"),
+                           yaxis=list(title="HTE Power"),
+                           legend=list(title=list(text="covariate ICC")),
+                           margin=0.01)
+                }
+                
+              } 
+              subplot(p_o[[1]], p_o[[2]],p_o[[3]], nrows=2, widths = c(0.5,0.5),
+                      margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
+                layout(title = list(
+                  text='HTE size vs HTE power',
+                  font=list(size=17)
+                ),
+                #margin=list(pad=50),
+                annotations = list(
+                  list(
+                    x = 0.23,
+                    y = 1.03,
+                    #yshift=-30,
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and \U1D6FC<sub>2</sub> (", oicc_windiv_est_swd_cc(),"), minimum \U1D70C<sub>0</sub> (", cicc_wperiod_min_swd_cc(),")</i>"),
+                    xref = "paper",
+                    yref = "paper",
+                    xanchor = "center",
+                    yanchor = "bottom",
+                    showarrow = FALSE#,
+                    #font=list(size=13)
+                  ),
+                  list(
+                    x = 0.23,
+                    y = 0.43,
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), and \U1D6FC<sub>2</sub> (", oicc_windiv_est_swd_cc(),"), maximum \U1D70C<sub>0</sub> (", cicc_wperiod_max_swd_cc(),")</i>"),
+                    xref = "paper",
+                    yref = "paper",
+                    xanchor = "center",
+                    yanchor = "bottom",
+                    showarrow = FALSE, font=list(size=13)
+                  ),
+                  list(
+                    x = 0.77,
+                    y = 1.03,
+                    text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_swd_cc(),"), \U1D6FC<sub>2</sub> (", oicc_windiv_est_swd_cc(),"), and \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(),")</i>"),
+                    xref = "paper",
+                    yref = "paper",
+                    xanchor = "center",
+                    yanchor = "bottom",
+                    showarrow = FALSE, font=list(size=13)
+                  )
+                ),
+                legend=list(orientation="h",
+                            yanchor="center",
+                            y=0.25,
+                            x=0.5)
+                )
+              
+            }else if(input$icc_display_swd == "cICC_constant"){
+              #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
+              a0_unique <- sort(unique(df_power[,"alpha0"]))
+              a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
+              a2_unique <- sort(unique(df_power[,"a2"]))
+              r0_unique <- sort(unique(df_power[,"rho0"]))
+              p_o <- p_c <- vector(mode="list", length=length(a0_unique))
+              
+              for(i in seq(length(a0_unique))){
+                
+                if(i != 3){
+                  # outcome ICCs #
+                  p_c[[i]] <- df_power %>%
+                    as.data.frame() %>%
+                    mutate(a1_a0=factor(a1_a0)) %>%
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
+                                  a2 == oicc_windiv_est_swd_cc(),
+                                  alpha0 == a0_unique[i]) %>%
+                    plot_ly(x=~d,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
+                            linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
+                            colors=colors_plot,
+                            hoverinfo="text",
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
+                                         "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
+                                         "<br>Sequences (steps): ", seqs,
+                                         "<br>HTE power: ", round(power_hte_col,4),
+                                         "<br>HTE size: ", d),
+                            height=input$dimension[2]*0.8) %>%
+                    layout(title=paste("within-period outcome ICC = ", a0_unique[i]),
+                           #subtitle=paste("within-subcluster covariate ICC = ", cicc_wperiod_est_swd(), ", covariate ICC ratio = ", cicc_ratio_est_swd()),
+                           xaxis=list(title="HTE size"),
+                           yaxis=list(title="HTE Power"),
+                           legend=list(title=list(text="outcome CAC")),
+                           margin=0.01)
+                  
+                }else{
+                  p_c[[i]] <- df_power %>%
+                    as.data.frame() %>%
+                    mutate(a1_a0=factor(a1_a0)) %>%
+                    dplyr::filter(rho0 == cicc_wperiod_est_swd_cc(),
+                                  a2 == oicc_windiv_est_swd_cc(),
+                                  alpha0 == a0_unique[i]) %>%
+                    plot_ly(x=~d,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
+                            linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
+                            colors=colors_plot,
+                            hoverinfo="text",
+                            text=~paste0("within-period outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,"; <br>within-individual outcome ICC (a2): ", a2,
+                                         "; <br>within-period covariate ICC (\U1D70C<sub>0</sub>): ", rho0,
+                                         "<br>Clusters (total):", n_seq*seqs, "; Clusters (per sequence):", n_seq,"<br>Cluster size (per period): ", m,
+                                         "<br>Sequences (steps): ", seqs,
+                                         "<br>HTE power: ", round(power_hte_col,4),
+                                         "<br>HTE size: ", d),
+                            height=input$dimension[2]*0.8) %>%
+                    layout(title=paste("within-period outcome ICC = ", a0_unique[i]),
+                           #subtitle=paste("within-subcluster covariate ICC = ", cicc_wperiod_est_swd(), ", covariate ICC ratio = ", cicc_ratio_est_swd()),
+                           xaxis=list(title="HTE size"),
+                           yaxis=list(title="HTE Power"),
+                           legend=list(title=list(text="outcome CAC")),
+                           margin=0.01)
+                }
+                
+              }
+              
+              subplot(p_c[[1]], p_c[[2]],p_c[[3]], nrows=2, widths = c(0.5,0.5),
+                      margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
+                layout(title = list(
+                  text='HTE size vs HTE power',
+                  font=list(size=17)
+                ),
+                #margin=list(pad=50),
+                annotations = list(
+                  list(
+                    x = 0.23,
+                    y = 1.03,
+                    #yshift=-30,
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and \U1D6FC<sub>2</sub> (", oicc_windiv_est_swd_cc(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wperiod_min_swd_cc(),")</i>"),
+                    xref = "paper",
+                    yref = "paper",
+                    xanchor = "center",
+                    yanchor = "bottom",
+                    showarrow = FALSE#,
+                    #font=list(size=13)
+                  ),
+                  list(
+                    x = 0.23,
+                    y = 0.43,
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), ") and \U1D6FC<sub>2</sub> (", oicc_windiv_est_swd_cc(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wperiod_max_swd_cc(),")</i>"),
+                    xref = "paper",
+                    yref = "paper",
+                    xanchor = "center",
+                    yanchor = "bottom",
+                    showarrow = FALSE, font=list(size=13)
+                  ),
+                  list(
+                    x = 0.77,
+                    y = 1.03,
+                    text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wperiod_est_swd_cc(), "), \U1D6FC<sub>2</sub> (", oicc_windiv_est_swd_cc(),"), and \U1D6FC<sub>0</sub> (", oicc_wperiod_est_swd_cc(),")</i>"),
+                    xref = "paper",
+                    yref = "paper",
+                    xanchor = "center",
+                    yanchor = "bottom",
+                    showarrow = FALSE, font=list(size=13)
+                  )
+                ),
+                legend=list(orientation="h",
+                            yanchor="center",
+                            y=0.25,
+                            x=0.5)
+                )
+              
+            }
+          }# end sensitivity if/else
+          
+          
+        }#end cross/closed if/else
+        
+      }#end plot display
       
       #### TWO-PERIOD AND MULTI-PERIOD CROSSOVERS ####
     }else if(trial_react() == "crossover_2" | trial_react() == "crossover_m"){
