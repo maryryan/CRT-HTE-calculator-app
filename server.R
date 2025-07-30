@@ -312,7 +312,7 @@ shinyServer(function(input, output, session) {
       
       rho1 <- r1_r0*rho0
       var_hte <- var_hte_swd_cs(n,m,J,var_y,var_x,alpha0,alpha1,rho0,rho1)
-    
+      
     }else if(cohort=="closed"){
       var_hte <- var_hte_swd_cc(n,m,J,var_y,var_x,alpha0,alpha1,a2,rho0)
     }
@@ -915,7 +915,7 @@ shinyServer(function(input, output, session) {
     }else if (cohort=="closed"){
       var_4 <- var_hte_crossover_cc(n_seq,m,J,var_y,var_x,alpha0,alpha1,a2,rho0)
     }
-
+    
     precision_result <- 1/var_4
     
     return(precision_result)
@@ -999,7 +999,7 @@ shinyServer(function(input, output, session) {
   }
   
   
-    power_irgt <- function(m1,m0,n1,n0, oicc1,oicc0, cicc=0, var_y1,var_y0, var_x, d, a=0.05){
+  power_irgt <- function(m1,m0,n1,n0, oicc1,oicc0, cicc=0, var_y1,var_y0, var_x, d, a=0.05){
     n <- n1+n0
     
     z <- qnorm(1 - a/2)
@@ -1115,13 +1115,15 @@ shinyServer(function(input, output, session) {
                                            #"Subclusters vs Power (fixed clusters and individuals)",
                                            "Clusters vs Power (fixed subclusters and individuals)",
                                            #"Subclusters vs Clusters (fixed power and individuals)",
-                                           "Individuals vs Clusters (fixed power and subclusters)"#,
+                                           "Individuals vs Clusters (fixed power and subclusters)",
                                            #"Individuals vs Subclusters (fixed power and clusters)"
+                                           "HTE size vs Power"
                            ),#,
                            #"Number of clusters vs Cluster size (fixed power)"),
                            choiceValues=c("m_v_power", #"ns_v_power",
                                           "nc_v_power", #"ns_v_nc",
-                                          "m_v_nc"#,"m_v_ns"
+                                          "m_v_nc",#"m_v_ns"
+                                          "hte_v_power"
                            )
         )
         
@@ -1147,7 +1149,7 @@ shinyServer(function(input, output, session) {
                              choiceValues=c("m_v_power", "n_v_power", "fixed_power", "hte_v_power")
           )
         }
-
+        
         
       }else if((input$trial == 'parallel_m' || input$trial == 'crossover_2' || input$trial == 'crossover_m' || input$trial == "SWD" || input$trial == "upload" ) & input$cohort == "closed"){
         if(input$trial == 'parallel_m'){
@@ -2503,13 +2505,13 @@ shinyServer(function(input, output, session) {
                           y=0.25,
                           x=0.5)
               )
-              
-            }# end constant icc if/else
             
-            
-          }# end sensitivity if/else
+          }# end constant icc if/else
           
-        }# end plot display if/else
+          
+        }# end sensitivity if/else
+        
+      }# end plot display if/else
       
       #### THREE LEVEL ####
     }else if(trial_react() == "three_level"){
@@ -2567,14 +2569,14 @@ shinyServer(function(input, output, session) {
         }else{
           df_power <- expand.grid(nc=input$nc, ns=input$ns, m=m_range,
                                   alpha0=c(oicc_wsub_min_three(),
-                                       oicc_wsub_est_three(),
-                                       oicc_wsub_max_three()),
+                                           oicc_wsub_est_three(),
+                                           oicc_wsub_max_three()),
                                   a1_a0=c(oicc_ratio_min_three(),
                                           oicc_ratio_est_three(),
                                           oicc_ratio_max_three()),
                                   rho0=c(cicc_wsub_min_three(),
-                                       cicc_wsub_est_three(),
-                                       cicc_wsub_max_three()),
+                                         cicc_wsub_est_three(),
+                                         cicc_wsub_max_three()),
                                   r1_r0=c(cicc_ratio_min_three(),
                                           cicc_ratio_est_three(),
                                           cicc_ratio_max_three()),
@@ -2894,14 +2896,14 @@ shinyServer(function(input, output, session) {
         }else{
           df_power <- expand.grid(nc=nc_range, ns=input$ns, m=input$m_three,
                                   alpha0=c(oicc_wsub_min_three(),
-                                       oicc_wsub_est_three(),
-                                       oicc_wsub_max_three()),
+                                           oicc_wsub_est_three(),
+                                           oicc_wsub_max_three()),
                                   a1_a0=c(oicc_ratio_min_three(),
                                           oicc_ratio_est_three(),
                                           oicc_ratio_max_three()),
                                   rho0=c(cicc_wsub_min_three(),
-                                       cicc_wsub_est_three(),
-                                       cicc_wsub_max_three()),
+                                         cicc_wsub_est_three(),
+                                         cicc_wsub_max_three()),
                                   r1_r0=c(cicc_ratio_min_three(),
                                           cicc_ratio_est_three(),
                                           cicc_ratio_max_three()),
@@ -3224,14 +3226,14 @@ shinyServer(function(input, output, session) {
           df_nc <- expand.grid(power=input$power_three, m=m_range,
                                ns=input$ns,
                                alpha0=c(oicc_wsub_min_three(),
-                                    oicc_wsub_est_three(),
-                                    oicc_wsub_max_three()),
+                                        oicc_wsub_est_three(),
+                                        oicc_wsub_max_three()),
                                a1_a0=c(oicc_ratio_min_three(),
                                        oicc_ratio_est_three(),
                                        oicc_ratio_max_three()),
                                rho0=c(cicc_wsub_min_three(),
-                                    cicc_wsub_est_three(),
-                                    cicc_wsub_max_three()),
+                                      cicc_wsub_est_three(),
+                                      cicc_wsub_max_three()),
                                r1_r0=c(cicc_ratio_min_three(),
                                        cicc_ratio_est_three(),
                                        cicc_ratio_max_three()),
@@ -3527,6 +3529,339 @@ shinyServer(function(input, output, session) {
         }# end sensitivity if/else
         
         
+      }else if(plot_display_react() == "hte_v_power"){
+        m <- input$m_three
+        d_range <- seq(input$hte_min, input$hte_max, by=(input$hte_max*0.001))
+        
+        if(sensitivity_three_react() == "est_only"){
+          df_power <- expand.grid(nc=input$nc, ns=input$ns, m=m,
+                                  alpha0=#c(oicc_wsub_min_three(),
+                                    oicc_wsub_est_three(),
+                                  # oicc_wsub_max_three()),
+                                  a1_a0=#c(oicc_ratio_min_three(),
+                                    oicc_ratio_est_three(),
+                                  # oicc_ratio_max_three()),
+                                  rho0=#c(cicc_wsub_min_three(),
+                                    cicc_wsub_est_three(),
+                                  # cicc_wsub_max_three()),
+                                  r1_r0=#c(cicc_ratio_min_three(),
+                                    cicc_ratio_est_three(),
+                                  # cicc_ratio_max_three()),
+                                  var_y=var_y, #(input$sd_outcome)^2,
+                                  var_x=var_x,#(input$sd_covar)^2,
+                                  pw=input$w,
+                                  d=d_range, a=input$sig,
+                                  rand=input$randomization_three)
+        }else{
+          df_power <- expand.grid(nc=input$nc, ns=input$ns, m=m,
+                                  alpha0=c(oicc_wsub_min_three(),
+                                           oicc_wsub_est_three(),
+                                           oicc_wsub_max_three()),
+                                  a1_a0=c(oicc_ratio_min_three(),
+                                          oicc_ratio_est_three(),
+                                          oicc_ratio_max_three()),
+                                  rho0=c(cicc_wsub_min_three(),
+                                         cicc_wsub_est_three(),
+                                         cicc_wsub_max_three()),
+                                  r1_r0=c(cicc_ratio_min_three(),
+                                          cicc_ratio_est_three(),
+                                          cicc_ratio_max_three()),
+                                  var_y=var_y, #(input$sd_outcome)^2,
+                                  var_x=var_x,#(input$sd_covar)^2,
+                                  pw=input$w,
+                                  d=d_range, a=input$sig,
+                                  rand=input$randomization_three)
+        }
+        
+        
+        power_hte_col <- rep(NA, nrow(df_power))
+        for(i in seq(nrow(df_power))){
+          power_hte_col[i] <- power_hte_three(nc=df_power[i,"nc"], ns=df_power[i,"ns"],
+                                              m=df_power[i,"m"],
+                                              pw=df_power[i,"pw"],
+                                              var_y=df_power[i,"var_y"], var_x=df_power[i,"var_x"],
+                                              alpha0=df_power[i,"alpha0"], a1_a0=df_power[i,"a1_a0"],
+                                              rho0=df_power[i,"rho0"], r1_r0=df_power[i,"r1_r0"],
+                                              rand=df_power[i,"rand"],
+                                              d=df_power[i,"d"], a=df_power[i,"a"])
+        }
+        
+        df_power <- cbind(df_power, power_hte_col)
+        
+        if(sensitivity_three_react() == "est_only"){
+          p_est <- df_power %>%
+            as.data.frame() %>%
+            dplyr::filter(rho0 == cicc_wsub_est_three(),
+                          r1_r0 == cicc_ratio_est_three(),
+                          alpha0 == oicc_wsub_est_three(),
+                          a1_a0 == oicc_ratio_est_three()) %>%
+            mutate(r1_r0=factor(r1_r0)) %>%
+            plot_ly(x=~d,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
+                    linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
+                    colors=colors_plot,
+                    hoverinfo="text",
+                    text=~paste0("within-subcluster outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                 "; <br>within-subcluster covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
+                                 "<br>Clusters (nc):", nc, "; Subclusters (ns):", ns,"<br>Cluster size (m): ", m,
+                                 "<br>HTE power: ", round(power_hte_col,4),
+                                 "<br>HTE size: ", d),
+                    height=input$dimension[2]*0.8) %>%
+            layout(title=paste("within-subcluster covariate ICC = ", cicc_wsub_est_three()),
+                   #subtitle=paste("within-subcluster outcome ICC = ", oicc_wsub_est_three(), ", outcome ICC ratio = ", oicc_ratio_est_three()),
+                   xaxis=list(title="HTE size"),
+                   yaxis=list(title="HTE Power"),
+                   legend=list(title=list(text="covariate ICC ratio")),
+                   margin=0.001)
+          
+          subplot(p_est,# nrows=2, widths = c(0.5,0.5),
+                  margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
+            layout(title = list(
+              text='HTE size vs HTE power',
+              font=list(size=17)
+            ),
+            #margin=list(pad=50),
+            annotations = list(
+              list(
+                x = 0.485,
+                y = 1.03,#0.97,
+                text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wsub_est_three(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_three(),"), \U1D70C<sub>0</sub> (", cicc_wsub_est_three(),") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_three(),")</i>"),
+                xref = "paper",
+                yref = "paper",
+                xanchor = "center",
+                yanchor = "bottom",
+                showarrow = FALSE, font=list(size=13)
+              )
+            ),
+            legend=list(orientation="h",
+                        yanchor="center",
+                        y=0.25,
+                        x=0.5)
+            )
+        }else if(sensitivity_three_react() == "sensitivity"){
+          if(input$icc_display_three == "oICC_constant"){
+            #legend_title <- latex2exp::TeX("$\\rho_x$")
+            
+            a0_unique <- sort(unique(df_power[,"alpha0"]))
+            a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
+            r0_unique <- sort(unique(df_power[,"rho0"]))
+            r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
+            p_o <- p_c <- vector(mode="list", length=length(a0_unique))
+            
+            for(i in seq(length(r0_unique))){
+              
+              if(i != 3){
+                # outcome ICCs #
+                p_o[[i]] <- df_power %>%
+                  as.data.frame() %>%
+                  mutate(r1_r0=factor(r1_r0)) %>%
+                  dplyr::filter(alpha0 == oicc_wsub_est_three(),
+                                a1_a0 == oicc_ratio_est_three(),
+                                rho0 == r0_unique[i]) %>%
+                  plot_ly(x=~d,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
+                          linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0, showlegend=F,
+                          colors=colors_plot,
+                          hoverinfo="text",
+                          text=~paste0("within-subcluster outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                       "; <br>within-subcluster covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
+                                       "<br>Clusters (nc):", nc, "; Subclusters (ns):", ns,"<br>Cluster size (m): ", m,
+                                       "<br>HTE power: ", round(power_hte_col,4),
+                                       "<br>HTE size: ", d),
+                          height=input$dimension[2]*0.8) %>%
+                  layout(title=paste("within-subcluster covariate ICC = ", r0_unique[i]),
+                         #subtitle=paste("within-subcluster outcome ICC = ", oicc_wsub_est_three(), ", outcome ICC ratio = ", oicc_ratio_est_three()),
+                         xaxis=list(title="HTE size"),
+                         yaxis=list(title="HTE Power"),
+                         legend=list(title=list(text="covariate CAC")),
+                         margin=0.01)
+                
+              }else{
+                p_o[[i]] <- df_power %>%
+                  as.data.frame() %>%
+                  mutate(r1_r0=factor(r1_r0)) %>%
+                  dplyr::filter(alpha0 == oicc_wsub_est_three(),
+                                a1_a0 == oicc_ratio_est_three(),
+                                rho0 == r0_unique[i]) %>%
+                  plot_ly(x=~d,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~r1_r0,
+                          linetype=~r1_r0, color=~r1_r0,legendgroup=~r1_r0,
+                          colors=colors_plot,
+                          hoverinfo="text",
+                          text=~paste0("within-subcluster outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                       "; <br>within-subcluster covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
+                                       "<br>Clusters (nc):", nc, "; Subclusters (ns):", ns,"<br>Cluster size (m): ", m,
+                                       "<br>HTE power: ", round(power_hte_col,4),
+                                       "<br>HTE size: ", d),
+                          height=input$dimension[2]*0.8) %>%
+                  layout(title=paste("within-subcluster covariate ICC = ", r0_unique[i]),
+                         #subtitle=paste("within-subcluster outcome ICC = ", oicc_wsub_est_three(), ", outcome ICC ratio = ", oicc_ratio_est_three()),
+                         xaxis=list(title="HTE size"),
+                         yaxis=list(title="HTE Power"),
+                         legend=list(title=list(text="covariate CAC")),
+                         margin=0.01)
+              }
+              
+            }
+            
+            subplot(p_o[[1]], p_o[[2]],p_o[[3]], nrows=2, widths = c(0.5,0.5),
+                    margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
+              layout(title = list(
+                text='HTE size vs HTE power',
+                font=list(size=17)
+              ),
+              #margin=list(pad=50),
+              annotations = list(
+                list(
+                  x = 0.23,
+                  y = 1.03,
+                  #yshift=-30,
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wsub_est_three(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_three(),"), minimum \U1D70C<sub>0</sub> (", cicc_wsub_min_three(),")</i>"),
+                  xref = "paper",
+                  yref = "paper",
+                  xanchor = "center",
+                  yanchor = "bottom",
+                  showarrow = FALSE#,
+                  #font=list(size=13)
+                ),
+                list(
+                  x = 0.23,
+                  y = 0.43,
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wsub_est_three(), ") and \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_three(),"), and maximum \U1D70C<sub>0</sub> (", cicc_wsub_max_three(),")</i>"),
+                  xref = "paper",
+                  yref = "paper",
+                  xanchor = "center",
+                  yanchor = "bottom",
+                  showarrow = FALSE, font=list(size=13)
+                ),
+                list(
+                  x = 0.77,
+                  y = 1.03,
+                  text = paste0("<i>Assumed \U1D6FC<sub>0</sub> (", oicc_wsub_est_three(), "), \U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub> (", oicc_ratio_est_three(),"), and \U1D70C<sub>0</sub> (", cicc_wsub_est_three(),")</i>"),
+                  xref = "paper",
+                  yref = "paper",
+                  xanchor = "center",
+                  yanchor = "bottom",
+                  showarrow = FALSE, font=list(size=13)
+                )
+              ),
+              legend=list(orientation="h",
+                          yanchor="center",
+                          y=0.25,
+                          x=0.5)
+              )
+            
+          }else if(input$icc_display_three == "cICC_constant"){
+            #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
+            a0_unique <- sort(unique(df_power[,"alpha0"]))
+            a1_a0_unique <- sort(unique(df_power[,"a1_a0"]))
+            r0_unique <- sort(unique(df_power[,"rho0"]))
+            r1_r0_unique <- sort(unique(df_power[,"r1_r0"]))
+            p_o <- p_c <- vector(mode="list", length=length(a0_unique))
+            
+            for(i in seq(length(a0_unique))){
+              
+              if(i != 3){
+                # outcome ICCs #
+                p_c[[i]] <- df_power %>%
+                  as.data.frame() %>%
+                  mutate(a1_a0=factor(a1_a0)) %>%
+                  dplyr::filter(rho0 == cicc_wsub_est_three(),
+                                r1_r0 == cicc_ratio_est_three(),
+                                alpha0 == a0_unique[i]) %>%
+                  plot_ly(x=~d,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
+                          linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0, showlegend=F,
+                          colors=colors_plot,
+                          hoverinfo="text",
+                          text=~paste0("within-subcluster outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                       "; <br>within-subcluster covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
+                                       "<br>Clusters (nc):", nc, "; Subclusters (ns):", ns,"<br>Cluster size (m): ", m,
+                                       "<br>HTE power: ", round(power_hte_col,4),
+                                       "<br>HTE size: ", d),
+                          height=input$dimension[2]*0.8) %>%
+                  layout(title=paste("within-subcluster outcome ICC = ", a0_unique[i]),
+                         #subtitle=paste("within-subcluster covariate ICC = ", cicc_wsub_est_three(), ", covariate ICC ratio = ", cicc_ratio_est_three()),
+                         xaxis=list(title="HTE size"),
+                         yaxis=list(title="HTE Power"),
+                         legend=list(title=list(text="outcome CAC")),
+                         margin=0.01)
+                
+              }else{
+                p_c[[i]] <- df_power %>%
+                  as.data.frame() %>%
+                  mutate(a1_a0=factor(a1_a0)) %>%
+                  dplyr::filter(rho0 == cicc_wsub_est_three(),
+                                r1_r0 == cicc_ratio_est_three(),
+                                alpha0 == a0_unique[i]) %>%
+                  plot_ly(x=~d,y=~power_hte_col, type='scatter', mode='lines', line=list(width=3), name=~a1_a0,
+                          linetype=~a1_a0, color=~a1_a0,legendgroup=~a1_a0,
+                          colors=colors_plot,
+                          hoverinfo="text",
+                          text=~paste0("within-subcluster outcome ICC (\U1D6FC<sub>0</sub>): ", alpha0, "; <br>outcome CAC (\U1D6FC<sub>1</sub>/\U1D6FC<sub>0</sub>): ", a1_a0,
+                                       "; <br>within-subcluster covariate ICC (\U1D70C<sub>0</sub>): ", rho0, "; <br>covariate CAC (\U1D70C<sub>1</sub>/\U1D70C<sub>0</sub>): ", r1_r0,
+                                       "<br>Clusters (nc):", nc, "; Subclusters (ns):", ns,"<br>Cluster size (m): ", m,
+                                       "<br>HTE power: ", round(power_hte_col,4),
+                                       "<br>HTE size: ", d),
+                          height=input$dimension[2]*0.8) %>%
+                  layout(title=paste("within-subcluster outcome ICC = ", a0_unique[i]),
+                         #subtitle=paste("within-subcluster covariate ICC = ", cicc_wsub_est_three(), ", covariate ICC ratio = ", cicc_ratio_est_three()),
+                         xaxis=list(title="HTE size"),
+                         yaxis=list(title="HTE Power"),
+                         legend=list(title=list(text="outcome CAC")),
+                         margin=0.01)
+              }
+              
+            }
+            
+            subplot(p_c[[1]], p_c[[2]],p_c[[3]], nrows=2, widths = c(0.5,0.5),
+                    margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
+              layout(title = list(
+                text='HTE size vs HTE power',
+                font=list(size=17)
+              ),
+              #margin=list(pad=50),
+              annotations = list(
+                list(
+                  x = 0.23,
+                  y = 1.03,
+                  #yshift=-30,
+                  text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wsub_est_three(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_three(),"), minimum \U1D6FC<sub>0</sub> (", oicc_wsub_min_three(),")</i>"),
+                  xref = "paper",
+                  yref = "paper",
+                  xanchor = "center",
+                  yanchor = "bottom",
+                  showarrow = FALSE#,
+                  #font=list(size=13)
+                ),
+                list(
+                  x = 0.23,
+                  y = 0.43,
+                  text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wsub_est_three(), ") and \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_three(),"), and maximum \U1D6FC<sub>0</sub> (", oicc_wsub_max_three(),")</i>"),
+                  xref = "paper",
+                  yref = "paper",
+                  xanchor = "center",
+                  yanchor = "bottom",
+                  showarrow = FALSE, font=list(size=13)
+                ),
+                list(
+                  x = 0.77,
+                  y = 1.03,
+                  text = paste0("<i>Assumed \U1D70C<sub>0</sub> (", cicc_wsub_est_three(), "), \U1D70C<sub>1</sub>/\U1D70C<sub>0</sub> (", cicc_ratio_est_three(),"), and \U1D6FC<sub>0</sub> (", oicc_wsub_est_three(),")</i>"),
+                  xref = "paper",
+                  yref = "paper",
+                  xanchor = "center",
+                  yanchor = "bottom",
+                  showarrow = FALSE, font=list(size=13)
+                )
+              ),
+              legend=list(orientation="h",
+                          yanchor="center",
+                          y=0.25,
+                          x=0.5)
+              )
+            
+          }
+          
+        }# end sensitivity if/else
+        
+        
       }# end plot display if/else
       
       #### SWD ####
@@ -3588,14 +3923,14 @@ shinyServer(function(input, output, session) {
           }else{
             df_power <- expand.grid(n=n, m=m_range, J=J,
                                     alpha0=c(oicc_wperiod_min_swd(),
-                                         oicc_wperiod_est_swd(),
-                                         oicc_wperiod_max_swd()),
+                                             oicc_wperiod_est_swd(),
+                                             oicc_wperiod_max_swd()),
                                     a1_a0=c(oicc_ratio_min_swd(),
                                             oicc_ratio_est_swd(),
                                             oicc_ratio_max_swd()),
                                     rho0=c(cicc_wperiod_min_swd(),
-                                         cicc_wperiod_est_swd(),
-                                         cicc_wperiod_max_swd()),
+                                           cicc_wperiod_est_swd(),
+                                           cicc_wperiod_max_swd()),
                                     r1_r0=c(cicc_ratio_min_swd(),
                                             cicc_ratio_est_swd(),
                                             cicc_ratio_max_swd()),
@@ -3915,8 +4250,8 @@ shinyServer(function(input, output, session) {
           }else{
             df_power <- expand.grid(n=n, m=m_range, J=J,
                                     alpha0=c(oicc_wperiod_min_swd_cc(),
-                                         oicc_wperiod_est_swd_cc(),
-                                         oicc_wperiod_max_swd_cc()),
+                                             oicc_wperiod_est_swd_cc(),
+                                             oicc_wperiod_max_swd_cc()),
                                     a1_a0=c(oicc_ratio_min_swd_cc(),
                                             oicc_ratio_est_swd_cc(),
                                             oicc_ratio_max_swd_cc()),
@@ -3924,8 +4259,8 @@ shinyServer(function(input, output, session) {
                                          oicc_windiv_est_swd_cc(),
                                          oicc_windiv_max_swd_cc()),
                                     rho0=c(cicc_wperiod_min_swd_cc(),
-                                         cicc_wperiod_est_swd_cc(),
-                                         cicc_wperiod_max_swd_cc()),
+                                           cicc_wperiod_est_swd_cc(),
+                                           cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
                                     var_x=var_x,#(input$sd_covar)^2,
                                     cohort=cohort(),
@@ -4252,14 +4587,14 @@ shinyServer(function(input, output, session) {
           }else{
             df_power <- expand.grid(n=n_range, m=input$m_swd,J=J,
                                     alpha0=c(oicc_wperiod_min_swd(),
-                                         oicc_wperiod_est_swd(),
-                                         oicc_wperiod_max_swd()),
+                                             oicc_wperiod_est_swd(),
+                                             oicc_wperiod_max_swd()),
                                     a1_a0=c(oicc_ratio_min_swd(),
                                             oicc_ratio_est_swd(),
                                             oicc_ratio_max_swd()),
                                     rho0=c(cicc_wperiod_min_swd(),
-                                         cicc_wperiod_est_swd(),
-                                         cicc_wperiod_max_swd()),
+                                           cicc_wperiod_est_swd(),
+                                           cicc_wperiod_max_swd()),
                                     r1_r0=c(cicc_ratio_min_swd(),
                                             cicc_ratio_est_swd(),
                                             cicc_ratio_max_swd()),
@@ -4585,8 +4920,8 @@ shinyServer(function(input, output, session) {
           }else{
             df_power <- expand.grid(n=n_range, m=input$m_swd,J=J,
                                     alpha0=c(oicc_wperiod_min_swd_cc(),
-                                         oicc_wperiod_est_swd_cc(),
-                                         oicc_wperiod_max_swd_cc()),
+                                             oicc_wperiod_est_swd_cc(),
+                                             oicc_wperiod_max_swd_cc()),
                                     a1_a0=c(oicc_ratio_min_swd_cc(),
                                             oicc_ratio_est_swd_cc(),
                                             oicc_ratio_max_swd_cc()),
@@ -4594,8 +4929,8 @@ shinyServer(function(input, output, session) {
                                          oicc_windiv_est_swd_cc(),
                                          oicc_windiv_max_swd_cc()),
                                     rho0=c(cicc_wperiod_min_swd_cc(),
-                                         cicc_wperiod_est_swd_cc(),
-                                         cicc_wperiod_max_swd_cc()),
+                                           cicc_wperiod_est_swd_cc(),
+                                           cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
                                     var_x=var_x,#(input$sd_covar)^2,
                                     cohort=cohort(),
@@ -4926,14 +5261,14 @@ shinyServer(function(input, output, session) {
           }else{
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,
                                  alpha0=c(oicc_wperiod_min_swd(),
-                                      oicc_wperiod_est_swd(),
-                                      oicc_wperiod_max_swd()),
+                                          oicc_wperiod_est_swd(),
+                                          oicc_wperiod_max_swd()),
                                  a1_a0=c(oicc_ratio_min_swd(),
                                          oicc_ratio_est_swd(),
                                          oicc_ratio_max_swd()),
                                  rho0=c(cicc_wperiod_min_swd(),
-                                      cicc_wperiod_est_swd(),
-                                      cicc_wperiod_max_swd()),
+                                        cicc_wperiod_est_swd(),
+                                        cicc_wperiod_max_swd()),
                                  r1_r0=c(cicc_ratio_min_swd(),
                                          cicc_ratio_est_swd(),
                                          cicc_ratio_max_swd()),
@@ -5257,8 +5592,8 @@ shinyServer(function(input, output, session) {
           }else{
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,
                                  alpha0=c(oicc_wperiod_min_swd_cc(),
-                                      oicc_wperiod_est_swd_cc(),
-                                      oicc_wperiod_max_swd_cc()),
+                                          oicc_wperiod_est_swd_cc(),
+                                          oicc_wperiod_max_swd_cc()),
                                  a1_a0=c(oicc_ratio_min_swd_cc(),
                                          oicc_ratio_est_swd_cc(),
                                          oicc_ratio_max_swd_cc()),
@@ -5266,8 +5601,8 @@ shinyServer(function(input, output, session) {
                                       oicc_windiv_est_swd_cc(),
                                       oicc_windiv_max_swd_cc()),
                                  rho0=c(cicc_wperiod_min_swd_cc(),
-                                      cicc_wperiod_est_swd_cc(),
-                                      cicc_wperiod_max_swd_cc()),
+                                        cicc_wperiod_est_swd_cc(),
+                                        cicc_wperiod_max_swd_cc()),
                                  var_y=var_y, #(input$sd_outcome)^2,
                                  var_x=var_x,#(input$sd_covar)^2,
                                  cohort=cohort(),
@@ -6307,14 +6642,14 @@ shinyServer(function(input, output, session) {
           }else{
             df_power <- expand.grid(n=n, m=m_range, J=J,
                                     alpha0=c(oicc_wperiod_min_swd(),
-                                         oicc_wperiod_est_swd(),
-                                         oicc_wperiod_max_swd()),
+                                             oicc_wperiod_est_swd(),
+                                             oicc_wperiod_max_swd()),
                                     a1_a0=c(oicc_ratio_min_swd(),
                                             oicc_ratio_est_swd(),
                                             oicc_ratio_max_swd()),
                                     rho0=c(cicc_wperiod_min_swd(),
-                                         cicc_wperiod_est_swd(),
-                                         cicc_wperiod_max_swd()),
+                                           cicc_wperiod_est_swd(),
+                                           cicc_wperiod_max_swd()),
                                     r1_r0=c(cicc_ratio_min_swd(),
                                             cicc_ratio_est_swd(),
                                             cicc_ratio_max_swd()),
@@ -6646,8 +6981,8 @@ shinyServer(function(input, output, session) {
           }else{
             df_power <- expand.grid(n=n, m=m_range, J=J,
                                     alpha0=c(oicc_wperiod_min_swd_cc(),
-                                         oicc_wperiod_est_swd_cc(),
-                                         oicc_wperiod_max_swd_cc()),
+                                             oicc_wperiod_est_swd_cc(),
+                                             oicc_wperiod_max_swd_cc()),
                                     a1_a0=c(oicc_ratio_min_swd_cc(),
                                             oicc_ratio_est_swd_cc(),
                                             oicc_ratio_max_swd_cc()),
@@ -6655,8 +6990,8 @@ shinyServer(function(input, output, session) {
                                          oicc_windiv_est_swd_cc(),
                                          oicc_windiv_max_swd_cc()),
                                     rho0=c(cicc_wperiod_min_swd_cc(),
-                                         cicc_wperiod_est_swd_cc(),
-                                         cicc_wperiod_max_swd_cc()),
+                                           cicc_wperiod_est_swd_cc(),
+                                           cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
                                     var_x=var_x,#(input$sd_covar)^2,
                                     w=input$w,
@@ -6995,14 +7330,14 @@ shinyServer(function(input, output, session) {
           }else{
             df_power <- expand.grid(n=ns_range, m=input$m_swd,J=J,
                                     alpha0=c(oicc_wperiod_min_swd(),
-                                         oicc_wperiod_est_swd(),
-                                         oicc_wperiod_max_swd()),
+                                             oicc_wperiod_est_swd(),
+                                             oicc_wperiod_max_swd()),
                                     a1_a0=c(oicc_ratio_min_swd(),
                                             oicc_ratio_est_swd(),
                                             oicc_ratio_max_swd()),
                                     rho0=c(cicc_wperiod_min_swd(),
-                                         cicc_wperiod_est_swd(),
-                                         cicc_wperiod_max_swd()),
+                                           cicc_wperiod_est_swd(),
+                                           cicc_wperiod_max_swd()),
                                     r1_r0=c(cicc_ratio_min_swd(),
                                             cicc_ratio_est_swd(),
                                             cicc_ratio_max_swd()),
@@ -7335,8 +7670,8 @@ shinyServer(function(input, output, session) {
           }else{
             df_power <- expand.grid(n=ns_range, m=input$m_swd,J=J,
                                     alpha0=c(oicc_wperiod_min_swd_cc(),
-                                         oicc_wperiod_est_swd_cc(),
-                                         oicc_wperiod_max_swd_cc()),
+                                             oicc_wperiod_est_swd_cc(),
+                                             oicc_wperiod_max_swd_cc()),
                                     a1_a0=c(oicc_ratio_min_swd_cc(),
                                             oicc_ratio_est_swd_cc(),
                                             oicc_ratio_max_swd_cc()),
@@ -7344,8 +7679,8 @@ shinyServer(function(input, output, session) {
                                          oicc_windiv_est_swd_cc(),
                                          oicc_windiv_max_swd_cc()),
                                     rho0=c(cicc_wperiod_min_swd_cc(),
-                                         cicc_wperiod_est_swd_cc(),
-                                         cicc_wperiod_max_swd_cc()),
+                                           cicc_wperiod_est_swd_cc(),
+                                           cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
                                     var_x=var_x,#(input$sd_covar)^2,
                                     w=input$w,
@@ -7684,14 +8019,14 @@ shinyServer(function(input, output, session) {
           }else{
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,
                                  alpha0=c(oicc_wperiod_min_swd(),
-                                      oicc_wperiod_est_swd(),
-                                      oicc_wperiod_max_swd()),
+                                          oicc_wperiod_est_swd(),
+                                          oicc_wperiod_max_swd()),
                                  a1_a0=c(oicc_ratio_min_swd(),
                                          oicc_ratio_est_swd(),
                                          oicc_ratio_max_swd()),
                                  rho0=c(cicc_wperiod_min_swd(),
-                                      cicc_wperiod_est_swd(),
-                                      cicc_wperiod_max_swd()),
+                                        cicc_wperiod_est_swd(),
+                                        cicc_wperiod_max_swd()),
                                  r1_r0=c(cicc_ratio_min_swd(),
                                          cicc_ratio_est_swd(),
                                          cicc_ratio_max_swd()),
@@ -8027,8 +8362,8 @@ shinyServer(function(input, output, session) {
           }else{
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,
                                  alpha0=c(oicc_wperiod_min_swd_cc(),
-                                      oicc_wperiod_est_swd_cc(),
-                                      oicc_wperiod_max_swd_cc()),
+                                          oicc_wperiod_est_swd_cc(),
+                                          oicc_wperiod_max_swd_cc()),
                                  a1_a0=c(oicc_ratio_min_swd_cc(),
                                          oicc_ratio_est_swd_cc(),
                                          oicc_ratio_max_swd_cc()),
@@ -8036,8 +8371,8 @@ shinyServer(function(input, output, session) {
                                       oicc_windiv_est_swd_cc(),
                                       oicc_windiv_max_swd_cc()),
                                  rho0=c(cicc_wperiod_min_swd_cc(),
-                                      cicc_wperiod_est_swd_cc(),
-                                      cicc_wperiod_max_swd_cc()),
+                                        cicc_wperiod_est_swd_cc(),
+                                        cicc_wperiod_max_swd_cc()),
                                  var_y=var_y, #(input$sd_outcome)^2,
                                  var_x=var_x,#(input$sd_covar)^2,
                                  w=input$w,
@@ -9115,14 +9450,14 @@ shinyServer(function(input, output, session) {
           }else{
             df_power <- expand.grid(n_seq=n_seq, m=m_range, J=J,seqs=seqs,
                                     alpha0=c(oicc_wperiod_min_swd(),
-                                         oicc_wperiod_est_swd(),
-                                         oicc_wperiod_max_swd()),
+                                             oicc_wperiod_est_swd(),
+                                             oicc_wperiod_max_swd()),
                                     a1_a0=c(oicc_ratio_min_swd(),
                                             oicc_ratio_est_swd(),
                                             oicc_ratio_max_swd()),
                                     rho0=c(cicc_wperiod_min_swd(),
-                                         cicc_wperiod_est_swd(),
-                                         cicc_wperiod_max_swd()),
+                                           cicc_wperiod_est_swd(),
+                                           cicc_wperiod_max_swd()),
                                     r1_r0=c(cicc_ratio_min_swd(),
                                             cicc_ratio_est_swd(),
                                             cicc_ratio_max_swd()),
@@ -9442,8 +9777,8 @@ shinyServer(function(input, output, session) {
           }else{
             df_power <- expand.grid(n_seq=n_seq, m=m_range, J=J,seqs=seqs,
                                     alpha0=c(oicc_wperiod_min_swd_cc(),
-                                         oicc_wperiod_est_swd_cc(),
-                                         oicc_wperiod_max_swd_cc()),
+                                             oicc_wperiod_est_swd_cc(),
+                                             oicc_wperiod_max_swd_cc()),
                                     a1_a0=c(oicc_ratio_min_swd_cc(),
                                             oicc_ratio_est_swd_cc(),
                                             oicc_ratio_max_swd_cc()),
@@ -9451,8 +9786,8 @@ shinyServer(function(input, output, session) {
                                          oicc_windiv_est_swd_cc(),
                                          oicc_windiv_max_swd_cc()),
                                     rho0=c(cicc_wperiod_min_swd_cc(),
-                                         cicc_wperiod_est_swd_cc(),
-                                         cicc_wperiod_max_swd_cc()),
+                                           cicc_wperiod_est_swd_cc(),
+                                           cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
                                     var_x=var_x,#(input$sd_covar)^2,
                                     cohort=cohort(),
@@ -9778,14 +10113,14 @@ shinyServer(function(input, output, session) {
           }else{
             df_power <- expand.grid(n_seq=ns_range, m=input$m_swd,J=J,seqs=seqs,
                                     alpha0=c(oicc_wperiod_min_swd(),
-                                         oicc_wperiod_est_swd(),
-                                         oicc_wperiod_max_swd()),
+                                             oicc_wperiod_est_swd(),
+                                             oicc_wperiod_max_swd()),
                                     a1_a0=c(oicc_ratio_min_swd(),
                                             oicc_ratio_est_swd(),
                                             oicc_ratio_max_swd()),
                                     rho0=c(cicc_wperiod_min_swd(),
-                                         cicc_wperiod_est_swd(),
-                                         cicc_wperiod_max_swd()),
+                                           cicc_wperiod_est_swd(),
+                                           cicc_wperiod_max_swd()),
                                     r1_r0=c(cicc_ratio_min_swd(),
                                             cicc_ratio_est_swd(),
                                             cicc_ratio_max_swd()),
@@ -10106,8 +10441,8 @@ shinyServer(function(input, output, session) {
           }else{
             df_power <- expand.grid(n_seq=ns_range, m=input$m_swd,J=J,seqs=seqs,
                                     alpha0=c(oicc_wperiod_min_swd_cc(),
-                                         oicc_wperiod_est_swd_cc(),
-                                         oicc_wperiod_max_swd_cc()),
+                                             oicc_wperiod_est_swd_cc(),
+                                             oicc_wperiod_max_swd_cc()),
                                     a1_a0=c(oicc_ratio_min_swd_cc(),
                                             oicc_ratio_est_swd_cc(),
                                             oicc_ratio_max_swd_cc()),
@@ -10115,8 +10450,8 @@ shinyServer(function(input, output, session) {
                                          oicc_windiv_est_swd_cc(),
                                          oicc_windiv_max_swd_cc()),
                                     rho0=c(cicc_wperiod_min_swd_cc(),
-                                         cicc_wperiod_est_swd_cc(),
-                                         cicc_wperiod_max_swd_cc()),
+                                           cicc_wperiod_est_swd_cc(),
+                                           cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
                                     var_x=var_x,#(input$sd_covar)^2,
                                     cohort=cohort(),
@@ -10443,14 +10778,14 @@ shinyServer(function(input, output, session) {
           }else{
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,seqs=seqs,
                                  alpha0=c(oicc_wperiod_min_swd(),
-                                      oicc_wperiod_est_swd(),
-                                      oicc_wperiod_max_swd()),
+                                          oicc_wperiod_est_swd(),
+                                          oicc_wperiod_max_swd()),
                                  a1_a0=c(oicc_ratio_min_swd(),
                                          oicc_ratio_est_swd(),
                                          oicc_ratio_max_swd()),
                                  rho0=c(cicc_wperiod_min_swd(),
-                                      cicc_wperiod_est_swd(),
-                                      cicc_wperiod_max_swd()),
+                                        cicc_wperiod_est_swd(),
+                                        cicc_wperiod_max_swd()),
                                  r1_r0=c(cicc_ratio_min_swd(),
                                          cicc_ratio_est_swd(),
                                          cicc_ratio_max_swd()),
@@ -10774,8 +11109,8 @@ shinyServer(function(input, output, session) {
           }else{
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,seqs=seqs,
                                  alpha0=c(oicc_wperiod_min_swd_cc(),
-                                      oicc_wperiod_est_swd_cc(),
-                                      oicc_wperiod_max_swd_cc()),
+                                          oicc_wperiod_est_swd_cc(),
+                                          oicc_wperiod_max_swd_cc()),
                                  a1_a0=c(oicc_ratio_min_swd_cc(),
                                          oicc_ratio_est_swd_cc(),
                                          oicc_ratio_max_swd_cc()),
@@ -10783,8 +11118,8 @@ shinyServer(function(input, output, session) {
                                       oicc_windiv_est_swd_cc(),
                                       oicc_windiv_max_swd_cc()),
                                  rho0=c(cicc_wperiod_min_swd_cc(),
-                                      cicc_wperiod_est_swd_cc(),
-                                      cicc_wperiod_max_swd_cc()),
+                                        cicc_wperiod_est_swd_cc(),
+                                        cicc_wperiod_max_swd_cc()),
                                  var_y=var_y, #(input$sd_outcome)^2,
                                  var_x=var_x,#(input$sd_covar)^2,
                                  cohort=cohort(),
@@ -11825,14 +12160,14 @@ shinyServer(function(input, output, session) {
           }else{
             df_power <- expand.grid(n_seq=n_seq, m=m_range, J=J,
                                     alpha0=c(oicc_wperiod_min_swd(),
-                                         oicc_wperiod_est_swd(),
-                                         oicc_wperiod_max_swd()),
+                                             oicc_wperiod_est_swd(),
+                                             oicc_wperiod_max_swd()),
                                     a1_a0=c(oicc_ratio_min_swd(),
                                             oicc_ratio_est_swd(),
                                             oicc_ratio_max_swd()),
                                     rho0=c(cicc_wperiod_min_swd(),
-                                         cicc_wperiod_est_swd(),
-                                         cicc_wperiod_max_swd()),
+                                           cicc_wperiod_est_swd(),
+                                           cicc_wperiod_max_swd()),
                                     r1_r0=c(cicc_ratio_min_swd(),
                                             cicc_ratio_est_swd(),
                                             cicc_ratio_max_swd()),
@@ -12152,8 +12487,8 @@ shinyServer(function(input, output, session) {
           }else{
             df_power <- expand.grid(n_seq=n_seq, m=m_range, J=J,
                                     alpha0=c(oicc_wperiod_min_swd_cc(),
-                                         oicc_wperiod_est_swd_cc(),
-                                         oicc_wperiod_max_swd_cc()),
+                                             oicc_wperiod_est_swd_cc(),
+                                             oicc_wperiod_max_swd_cc()),
                                     a1_a0=c(oicc_ratio_min_swd_cc(),
                                             oicc_ratio_est_swd_cc(),
                                             oicc_ratio_max_swd_cc()),
@@ -12161,8 +12496,8 @@ shinyServer(function(input, output, session) {
                                          oicc_windiv_est_swd_cc(),
                                          oicc_windiv_max_swd_cc()),
                                     rho0=c(cicc_wperiod_min_swd_cc(),
-                                         cicc_wperiod_est_swd_cc(),
-                                         cicc_wperiod_max_swd_cc()),
+                                           cicc_wperiod_est_swd_cc(),
+                                           cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
                                     var_x=var_x,#(input$sd_covar)^2,
                                     cohort=cohort(),
@@ -12488,14 +12823,14 @@ shinyServer(function(input, output, session) {
           }else{
             df_power <- expand.grid(n_seq=ns_range, m=input$m_swd,J=J,
                                     alpha0=c(oicc_wperiod_min_swd(),
-                                         oicc_wperiod_est_swd(),
-                                         oicc_wperiod_max_swd()),
+                                             oicc_wperiod_est_swd(),
+                                             oicc_wperiod_max_swd()),
                                     a1_a0=c(oicc_ratio_min_swd(),
                                             oicc_ratio_est_swd(),
                                             oicc_ratio_max_swd()),
                                     rho0=c(cicc_wperiod_min_swd(),
-                                         cicc_wperiod_est_swd(),
-                                         cicc_wperiod_max_swd()),
+                                           cicc_wperiod_est_swd(),
+                                           cicc_wperiod_max_swd()),
                                     r1_r0=c(cicc_ratio_min_swd(),
                                             cicc_ratio_est_swd(),
                                             cicc_ratio_max_swd()),
@@ -12816,8 +13151,8 @@ shinyServer(function(input, output, session) {
           }else{
             df_power <- expand.grid(n_seq=ns_range, m=input$m_swd,J=J,
                                     alpha0=c(oicc_wperiod_min_swd_cc(),
-                                         oicc_wperiod_est_swd_cc(),
-                                         oicc_wperiod_max_swd_cc()),
+                                             oicc_wperiod_est_swd_cc(),
+                                             oicc_wperiod_max_swd_cc()),
                                     a1_a0=c(oicc_ratio_min_swd_cc(),
                                             oicc_ratio_est_swd_cc(),
                                             oicc_ratio_max_swd_cc()),
@@ -12825,8 +13160,8 @@ shinyServer(function(input, output, session) {
                                          oicc_windiv_est_swd_cc(),
                                          oicc_windiv_max_swd_cc()),
                                     rho0=c(cicc_wperiod_min_swd_cc(),
-                                         cicc_wperiod_est_swd_cc(),
-                                         cicc_wperiod_max_swd_cc()),
+                                           cicc_wperiod_est_swd_cc(),
+                                           cicc_wperiod_max_swd_cc()),
                                     var_y=var_y, #(input$sd_outcome)^2,
                                     var_x=var_x,#(input$sd_covar)^2,
                                     cohort=cohort(),
@@ -13153,14 +13488,14 @@ shinyServer(function(input, output, session) {
           }else{
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,
                                  alpha0=c(oicc_wperiod_min_swd(),
-                                      oicc_wperiod_est_swd(),
-                                      oicc_wperiod_max_swd()),
+                                          oicc_wperiod_est_swd(),
+                                          oicc_wperiod_max_swd()),
                                  a1_a0=c(oicc_ratio_min_swd(),
                                          oicc_ratio_est_swd(),
                                          oicc_ratio_max_swd()),
                                  rho0=c(cicc_wperiod_min_swd(),
-                                      cicc_wperiod_est_swd(),
-                                      cicc_wperiod_max_swd()),
+                                        cicc_wperiod_est_swd(),
+                                        cicc_wperiod_max_swd()),
                                  r1_r0=c(cicc_ratio_min_swd(),
                                          cicc_ratio_est_swd(),
                                          cicc_ratio_max_swd()),
@@ -13484,8 +13819,8 @@ shinyServer(function(input, output, session) {
           }else{
             df_ns <- expand.grid(power=input$power_swd, m=m_range, J=J,
                                  alpha0=c(oicc_wperiod_min_swd_cc(),
-                                      oicc_wperiod_est_swd_cc(),
-                                      oicc_wperiod_max_swd_cc()),
+                                          oicc_wperiod_est_swd_cc(),
+                                          oicc_wperiod_max_swd_cc()),
                                  a1_a0=c(oicc_ratio_min_swd_cc(),
                                          oicc_ratio_est_swd_cc(),
                                          oicc_ratio_max_swd_cc()),
@@ -13493,8 +13828,8 @@ shinyServer(function(input, output, session) {
                                       oicc_windiv_est_swd_cc(),
                                       oicc_windiv_max_swd_cc()),
                                  rho0=c(cicc_wperiod_min_swd_cc(),
-                                      cicc_wperiod_est_swd_cc(),
-                                      cicc_wperiod_max_swd_cc()),
+                                        cicc_wperiod_est_swd_cc(),
+                                        cicc_wperiod_max_swd_cc()),
                                  var_y=var_y, #(input$sd_outcome)^2,
                                  var_x=var_x,#(input$sd_covar)^2,
                                  cohort=cohort(),
@@ -16690,7 +17025,7 @@ shinyServer(function(input, output, session) {
                                    var_y0=var_y0,
                                    var_x=var_x,
                                    d=d_range, a=input$sig)
-
+          
         }
         
         power1_hte_col <- rep(NA, nrow(df1_power))
@@ -16799,7 +17134,7 @@ shinyServer(function(input, output, session) {
                          yaxis=list(title="HTE Power"),
                          legend=list(title=list(text="Control-arm outcome ICC")),
                          margin=0.01)
-
+                
               }else{
                 
                 # m1 on x-axis #
@@ -21331,7 +21666,7 @@ shinyServer(function(input, output, session) {
         }# end sensitivity
       }else if(plot_display_react() == "hte_v_power"){
         d_range <- seq(input$hte_min, input$hte_max, by=(input$hte_max*0.001))
-          
+        
         #m1_range <- seq(input$m1_slide_het[1],input$m1_slide_het[2])
         m1_fix <- input$m1_fix_het
         
@@ -22241,36 +22576,36 @@ shinyServer(function(input, output, session) {
         if(sensitivity_react() == "est_only"){
           df_precision <- expand.grid(n=input$n,
                                       m=m_range,
-                                  oicc=#c(oicc_min(),
-                                    oicc_est(),
-                                  # oicc_max()),
-                                  cicc=#c(cicc_min(),
-                                    cicc_est(),
-                                  #   cicc_max()),
-                                  var_y=var_y, #(input$sd_outcome)^2,
-                                  var_x=var_x,#(input$sd_covar)^2,
-                                  var_w=(input$w)*(1-input$w)#,
-                                  #d=input$mean_diff_HTE, a=input$sig
-                                  )
+                                      oicc=#c(oicc_min(),
+                                        oicc_est(),
+                                      # oicc_max()),
+                                      cicc=#c(cicc_min(),
+                                        cicc_est(),
+                                      #   cicc_max()),
+                                      var_y=var_y, #(input$sd_outcome)^2,
+                                      var_x=var_x,#(input$sd_covar)^2,
+                                      var_w=(input$w)*(1-input$w)#,
+                                      #d=input$mean_diff_HTE, a=input$sig
+          )
         }else{
           df_precision <- expand.grid(n=input$n,
                                       m=m_range,
-                                  oicc=c(oicc_min(), oicc_est(), oicc_max()),
-                                  cicc=c(cicc_min(), cicc_est(), cicc_max()),
-                                  var_y=var_y, #(input$sd_outcome)^2,
-                                  var_x=var_x,#(input$sd_covar)^2,
-                                  var_w=(input$w)*(1-input$w)
-                                  #d=input$mean_diff_HTE, a=input$sig
-                                  )
+                                      oicc=c(oicc_min(), oicc_est(), oicc_max()),
+                                      cicc=c(cicc_min(), cicc_est(), cicc_max()),
+                                      var_y=var_y, #(input$sd_outcome)^2,
+                                      var_x=var_x,#(input$sd_covar)^2,
+                                      var_w=(input$w)*(1-input$w)
+                                      #d=input$mean_diff_HTE, a=input$sig
+          )
         }
         
         
         precision_hte_col <- rep(NA, nrow(df_precision))
         for(i in seq(nrow(df_precision))){
           precision_hte_col[i] <- precision_hte(oicc=df_precision[i,"oicc"], cicc=df_precision[i,"cicc"],
-                                        m=df_precision[i,"m"], n=df_precision[i,"n"],
-                                        var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
-                                        var_w=df_precision[i,"var_w"])
+                                                m=df_precision[i,"m"], n=df_precision[i,"n"],
+                                                var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
+                                                var_w=df_precision[i,"var_w"])
         }
         
         df_precision <- cbind(df_precision, precision_hte_col)
@@ -22520,45 +22855,45 @@ shinyServer(function(input, output, session) {
         }# end sensitivity if/else
         
       }else if(plot_display_react() == "n_v_power"){
-
+        
         n_range <- seq(input$n_range[1],input$n_range[2])
         if(sensitivity_react() == "est_only"){
           df_precision <- expand.grid(n=n_range, m=input$m,
-                                  oicc=#c(oicc_min(),
-                                    oicc_est(),
-                                  # oicc_max()),
-                                  cicc=#c(cicc_min(),
-                                    cicc_est(),
-                                  # cicc_max()),
-                                  var_y=var_y,
-                                  var_x=var_x,
-                                  var_w=(input$w)*(1-input$w),
-                                  d=input$mean_diff_HTE, a=input$sig)
+                                      oicc=#c(oicc_min(),
+                                        oicc_est(),
+                                      # oicc_max()),
+                                      cicc=#c(cicc_min(),
+                                        cicc_est(),
+                                      # cicc_max()),
+                                      var_y=var_y,
+                                      var_x=var_x,
+                                      var_w=(input$w)*(1-input$w),
+                                      d=input$mean_diff_HTE, a=input$sig)
         }else{
           df_precision <- expand.grid(n=n_range, m=input$m,
-                                  oicc=c(oicc_min(), oicc_est(), oicc_max()),
-                                  cicc=c(cicc_min(), cicc_est(), cicc_max()),
-                                  var_y=var_y,
-                                  var_x=var_x,
-                                  var_w=(input$w)*(1-input$w),
-                                  d=input$mean_diff_HTE, a=input$sig)
+                                      oicc=c(oicc_min(), oicc_est(), oicc_max()),
+                                      cicc=c(cicc_min(), cicc_est(), cicc_max()),
+                                      var_y=var_y,
+                                      var_x=var_x,
+                                      var_w=(input$w)*(1-input$w),
+                                      d=input$mean_diff_HTE, a=input$sig)
         }
-
-
+        
+        
         precision_hte_col <- rep(NA, nrow(df_precision))
         for(i in seq(nrow(df_precision))){
           precision_hte_col[i] <- precision_hte(oicc=df_precision[i,"oicc"], cicc=df_precision[i,"cicc"],
-                                        m=df_precision[i,"m"],n=df_precision[i,"n"],
-                                        var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
-                                        var_w=df_precision[i,"var_w"]
-                                        #d=df_precision[i,"d"], a=df_precision[i,"a"]
-                                        )
+                                                m=df_precision[i,"m"],n=df_precision[i,"n"],
+                                                var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
+                                                var_w=df_precision[i,"var_w"]
+                                                #d=df_precision[i,"d"], a=df_precision[i,"a"]
+          )
         }
-
+        
         df_precision <- cbind(df_precision, precision_hte_col)
-
+        
         if(sensitivity_react() == "est_only"){
-
+          
           p_est <- df_precision %>%
             as.data.frame() %>%
             dplyr::filter(oicc == oicc_est(),#oicc_unique[2],
@@ -22578,7 +22913,7 @@ shinyServer(function(input, output, session) {
                    yaxis=list(title="HTE Precision"),
                    legend=list(title=list(text="covariate ICC")),
                    margin=0.001)
-
+          
           subplot(p_est,# nrows=2, widths = c(0.5,0.5),
                   margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
             layout(title = list(
@@ -22603,18 +22938,18 @@ shinyServer(function(input, output, session) {
                         y=0.25,
                         x=0.5)
             )
-
+          
         }else if(sensitivity_react() == "sensitivity"){
-
+          
           if(input$icc_display == "oICC_constant"){
             #legend_title <- latex2exp::TeX("$\\rho_x$")
-
+            
             oicc_unique <- sort(unique(df_precision[,"oicc"]))
             cicc_unique <- sort(unique(df_precision[,"cicc"]))
             p <- vector(mode="list", length=length(oicc_unique))
-
+            
             for(i in seq(length(oicc_unique))){
-
+              
               if(i != 3){
                 p[[i]] <- df_precision %>%
                   as.data.frame() %>%
@@ -22650,9 +22985,9 @@ shinyServer(function(input, output, session) {
                          legend=list(title=list(text="covariate ICC")),
                          margin=0.01)
               }
-
+              
             }
-
+            
             subplot(p[[1]],p[[2]],p[[3]], nrows=2,
                     margin = 0.07, titleX=T, titleY=T) %>%
               layout(title = list(
@@ -22696,15 +23031,15 @@ shinyServer(function(input, output, session) {
                           y=0.25,
                           x=0.5)
               )
-
-
+            
+            
           }else if(input$icc_display == "cICC_constant"){
             #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
             cicc_unique <- sort(unique(df_precision[,"cicc"]))
             p <- vector(mode="list", length=length(cicc_unique))
-
+            
             for(i in seq(length(cicc_unique))){
-
+              
               if(i != 3){
                 p[[i]] <- df_precision %>%
                   as.data.frame() %>%
@@ -22740,9 +23075,9 @@ shinyServer(function(input, output, session) {
                          legend=list(title=list(text="outcome ICC")),
                          margin=0.01)
               }
-
+              
             }
-
+            
             subplot(p[[1]],p[[2]],p[[3]], nrows=2,
                     margin = 0.07, titleX=T, titleY=T) %>%
               layout(title = list(
@@ -22786,107 +23121,107 @@ shinyServer(function(input, output, session) {
                           y=0.25,
                           x=0.5)
               )
-
+            
           }
-
+          
         }# end sensitivity if/else
-
+        
       }# end plot display if/else
-
+      
       #### THREE LEVEL ####
     }else if(trial_react() == "three_level"){
-
+      
       # determine effect sizes and variances depending on outcome/covariate type #
       if(outcome_type_react() =="continuous"){
         var_y <- (sd_outcome_react())^2
         d <- input$mean_diff_HTE
-
+        
         if(covar_type_react()=="continuous"){
           # continuous outcome and covar power
           var_x <- (sd_covar_react())^2
-
+          
         }else if(covar_type_react() == "binary"){
           # continuous outcome binary covar power
           var_x <- (prop_covar_react())*(1-prop_covar_react())
         }
-
+        
       }else if(outcome_type_react() == "binary"){
         var_y <- ((prop_control_react()*(1-prop_control_react())) + (prop_trt_react()*(1-prop_trt_react())))/2
         #d <- (input$prop_trt - input$prop_control)
-
+        
         if(covar_type_react() == "continuous"){
           # binary outcome continuous covar power
           var_x <-(sd_covar_react())^2
-
+          
         }else if(covar_type_react() == "binary"){
           # binary outcome and covar power #
           var_x <- (prop_covar_react())*(1-prop_covar_react())
-
+          
         }
       }
-
+      
       if(plot_display_react() == "m_v_power"){
         m_range <- seq(input$m_three_range[1],input$m_three_range[2])
         if(sensitivity_three_react() == "est_only"){
           df_precision <- expand.grid(nc=input$nc, 
                                       ns=input$ns,
                                       m=m_range,
-                                  alpha0=#c(oicc_wsub_min_three(),
-                                    oicc_wsub_est_three(),
-                                  # oicc_wsub_max_three()),
-                                  a1_a0=#c(oicc_ratio_min_three(),
-                                    oicc_ratio_est_three(),
-                                  # oicc_ratio_max_three()),
-                                  rho0=#c(cicc_wsub_min_three(),
-                                    cicc_wsub_est_three(),
-                                  # cicc_wsub_max_three()),
-                                  r1_r0=#c(cicc_ratio_min_three(),
-                                    cicc_ratio_est_three(),
-                                  # cicc_ratio_max_three()),
-                                  var_y=var_y, #(input$sd_outcome)^2,
-                                  var_x=var_x,#(input$sd_covar)^2,
-                                  pw=input$w,
-                                  #d=input$mean_diff_HTE, a=input$sig,
-                                  rand=input$randomization_three)
+                                      alpha0=#c(oicc_wsub_min_three(),
+                                        oicc_wsub_est_three(),
+                                      # oicc_wsub_max_three()),
+                                      a1_a0=#c(oicc_ratio_min_three(),
+                                        oicc_ratio_est_three(),
+                                      # oicc_ratio_max_three()),
+                                      rho0=#c(cicc_wsub_min_three(),
+                                        cicc_wsub_est_three(),
+                                      # cicc_wsub_max_three()),
+                                      r1_r0=#c(cicc_ratio_min_three(),
+                                        cicc_ratio_est_three(),
+                                      # cicc_ratio_max_three()),
+                                      var_y=var_y, #(input$sd_outcome)^2,
+                                      var_x=var_x,#(input$sd_covar)^2,
+                                      pw=input$w,
+                                      #d=input$mean_diff_HTE, a=input$sig,
+                                      rand=input$randomization_three)
         }else{
           df_precision <- expand.grid(nc=input$nc, 
                                       ns=input$ns, m=m_range,
-                                  alpha0=c(oicc_wsub_min_three(),
-                                           oicc_wsub_est_three(),
-                                           oicc_wsub_max_three()),
-                                  a1_a0=c(oicc_ratio_min_three(),
-                                          oicc_ratio_est_three(),
-                                          oicc_ratio_max_three()),
-                                  rho0=c(cicc_wsub_min_three(),
-                                         cicc_wsub_est_three(),
-                                         cicc_wsub_max_three()),
-                                  r1_r0=c(cicc_ratio_min_three(),
-                                          cicc_ratio_est_three(),
-                                          cicc_ratio_max_three()),
-                                  var_y=var_y, #(input$sd_outcome)^2,
-                                  var_x=var_x,#(input$sd_covar)^2,
-                                  pw=input$w,
-                                  #d=input$mean_diff_HTE, a=input$sig,
-                                  rand=input$randomization_three)
+                                      alpha0=c(oicc_wsub_min_three(),
+                                               oicc_wsub_est_three(),
+                                               oicc_wsub_max_three()),
+                                      a1_a0=c(oicc_ratio_min_three(),
+                                              oicc_ratio_est_three(),
+                                              oicc_ratio_max_three()),
+                                      rho0=c(cicc_wsub_min_three(),
+                                             cicc_wsub_est_three(),
+                                             cicc_wsub_max_three()),
+                                      r1_r0=c(cicc_ratio_min_three(),
+                                              cicc_ratio_est_three(),
+                                              cicc_ratio_max_three()),
+                                      var_y=var_y, #(input$sd_outcome)^2,
+                                      var_x=var_x,#(input$sd_covar)^2,
+                                      pw=input$w,
+                                      #d=input$mean_diff_HTE, a=input$sig,
+                                      rand=input$randomization_three)
         }
-
-
+        
+        
         precision_hte_col <- rep(NA, nrow(df_precision))
         for(i in seq(nrow(df_precision))){
           precision_hte_col[i] <- precision_hte_three(nc=df_precision[i,"nc"],
-                                                  ns=df_precision[i,"ns"],
-                                              m=df_precision[i,"m"],
-                                              pw=df_precision[i,"pw"],
-                                              var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
-                                              alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
-                                              rho0=df_precision[i,"rho0"], r1_r0=df_precision[i,"r1_r0"],
-                                              rand=df_precision[i,"rand"]
-                                              #d=df_precision[i,"d"], a=df_precision[i,"a"]
-                                              )
+                                                      ns=df_precision[i,"ns"],
+                                                      m=df_precision[i,"m"],
+                                                      pw=df_precision[i,"pw"],
+                                                      var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
+                                                      alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
+                                                      rho0=df_precision[i,"rho0"], r1_r0=df_precision[i,"r1_r0"],
+                                                      rand=df_precision[i,"rand"]
+                                                      #d=df_precision[i,"d"], a=df_precision[i,"a"]
+          )
         }
-
+        
         df_precision <- cbind(df_precision, precision_hte_col)
-
+        
         if(sensitivity_three_react() == "est_only"){
           p_est <- df_precision %>%
             as.data.frame() %>%
@@ -22911,7 +23246,7 @@ shinyServer(function(input, output, session) {
                    yaxis=list(title="HTE Precision"),
                    legend=list(title=list(text="covariate ICC ratio")),
                    margin=0.001)
-
+          
           subplot(p_est,# nrows=2, widths = c(0.5,0.5),
                   margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
             layout(title = list(
@@ -22939,15 +23274,15 @@ shinyServer(function(input, output, session) {
         }else if(sensitivity_three_react() == "sensitivity"){
           if(input$icc_display_three == "oICC_constant"){
             #legend_title <- latex2exp::TeX("$\\rho_x$")
-
+            
             a0_unique <- sort(unique(df_precision[,"alpha0"]))
             a1_a0_unique <- sort(unique(df_precision[,"a1_a0"]))
             r0_unique <- sort(unique(df_precision[,"rho0"]))
             r1_r0_unique <- sort(unique(df_precision[,"r1_r0"]))
             p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+            
             for(i in seq(length(r0_unique))){
-
+              
               if(i != 3){
                 # outcome ICCs #
                 p_o[[i]] <- df_precision %>%
@@ -22972,7 +23307,7 @@ shinyServer(function(input, output, session) {
                          yaxis=list(title="HTE Precision"),
                          legend=list(title=list(text="covariate CAC")),
                          margin=0.01)
-
+                
               }else{
                 p_o[[i]] <- df_precision %>%
                   as.data.frame() %>%
@@ -22997,9 +23332,9 @@ shinyServer(function(input, output, session) {
                          legend=list(title=list(text="covariate CAC")),
                          margin=0.01)
               }
-
+              
             }
-
+            
             subplot(p_o[[1]], p_o[[2]],p_o[[3]], nrows=2, widths = c(0.5,0.5),
                     margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
               layout(title = list(
@@ -23046,7 +23381,7 @@ shinyServer(function(input, output, session) {
                           y=0.25,
                           x=0.5)
               )
-
+            
           }else if(input$icc_display_three == "cICC_constant"){
             #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
             a0_unique <- sort(unique(df_precision[,"alpha0"]))
@@ -23054,9 +23389,9 @@ shinyServer(function(input, output, session) {
             r0_unique <- sort(unique(df_precision[,"rho0"]))
             r1_r0_unique <- sort(unique(df_precision[,"r1_r0"]))
             p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+            
             for(i in seq(length(a0_unique))){
-
+              
               if(i != 3){
                 # outcome ICCs #
                 p_c[[i]] <- df_precision %>%
@@ -23081,7 +23416,7 @@ shinyServer(function(input, output, session) {
                          yaxis=list(title="HTE Precision"),
                          legend=list(title=list(text="outcome CAC")),
                          margin=0.01)
-
+                
               }else{
                 p_c[[i]] <- df_precision %>%
                   as.data.frame() %>%
@@ -23106,9 +23441,9 @@ shinyServer(function(input, output, session) {
                          legend=list(title=list(text="outcome CAC")),
                          margin=0.01)
               }
-
+              
             }
-
+            
             subplot(p_c[[1]], p_c[[2]],p_c[[3]], nrows=2, widths = c(0.5,0.5),
                     margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
               layout(title = list(
@@ -23155,67 +23490,67 @@ shinyServer(function(input, output, session) {
                           y=0.25,
                           x=0.5)
               )
-
+            
           }
-
+          
         }# end sensitivity if/else
-
-
+        
+        
       }else if(plot_display_react() == "nc_v_power"){
-
+        
         nc_range <- seq(input$nc_range[1],input$nc_range[2])
         if(sensitivity_three_react() == "est_only"){
           df_precision <- expand.grid(nc=nc_range, ns=input$ns, m=input$m_three,
-                                  alpha0=#c(oicc_wsub_min_three(),
-                                    oicc_wsub_est_three(),
-                                  # oicc_wsub_max_three()),
-                                  a1_a0=#c(oicc_ratio_min_three(),
-                                    oicc_ratio_est_three(),
-                                  # oicc_ratio_max_three()),
-                                  rho0=#c(cicc_wsub_min_three(),
-                                    cicc_wsub_est_three(),
-                                  # cicc_wsub_max_three()),
-                                  r1_r0=#c(cicc_ratio_min_three(),
-                                    cicc_ratio_est_three(),
-                                  # cicc_ratio_max_three()),
-                                  var_y=var_y, #(input$sd_outcome)^2,
-                                  var_x=var_x,#(input$sd_covar)^2,
-                                  pw=input$w,
-                                  d=input$mean_diff_HTE, a=input$sig,
-                                  rand=input$randomization_three)
+                                      alpha0=#c(oicc_wsub_min_three(),
+                                        oicc_wsub_est_three(),
+                                      # oicc_wsub_max_three()),
+                                      a1_a0=#c(oicc_ratio_min_three(),
+                                        oicc_ratio_est_three(),
+                                      # oicc_ratio_max_three()),
+                                      rho0=#c(cicc_wsub_min_three(),
+                                        cicc_wsub_est_three(),
+                                      # cicc_wsub_max_three()),
+                                      r1_r0=#c(cicc_ratio_min_three(),
+                                        cicc_ratio_est_three(),
+                                      # cicc_ratio_max_three()),
+                                      var_y=var_y, #(input$sd_outcome)^2,
+                                      var_x=var_x,#(input$sd_covar)^2,
+                                      pw=input$w,
+                                      d=input$mean_diff_HTE, a=input$sig,
+                                      rand=input$randomization_three)
         }else{
           df_precision <- expand.grid(nc=nc_range, ns=input$ns, m=input$m_three,
-                                  alpha0=c(oicc_wsub_min_three(),
-                                           oicc_wsub_est_three(),
-                                           oicc_wsub_max_three()),
-                                  a1_a0=c(oicc_ratio_min_three(),
-                                          oicc_ratio_est_three(),
-                                          oicc_ratio_max_three()),
-                                  rho0=c(cicc_wsub_min_three(),
-                                         cicc_wsub_est_three(),
-                                         cicc_wsub_max_three()),
-                                  r1_r0=c(cicc_ratio_min_three(),
-                                          cicc_ratio_est_three(),
-                                          cicc_ratio_max_three()),
-                                  var_y=var_y, #(input$sd_outcome)^2,
-                                  var_x=var_x,#(input$sd_covar)^2,
-                                  pw=input$w,
-                                  d=input$mean_diff_HTE, a=input$sig,
-                                  rand=input$randomization_three)
+                                      alpha0=c(oicc_wsub_min_three(),
+                                               oicc_wsub_est_three(),
+                                               oicc_wsub_max_three()),
+                                      a1_a0=c(oicc_ratio_min_three(),
+                                              oicc_ratio_est_three(),
+                                              oicc_ratio_max_three()),
+                                      rho0=c(cicc_wsub_min_three(),
+                                             cicc_wsub_est_three(),
+                                             cicc_wsub_max_three()),
+                                      r1_r0=c(cicc_ratio_min_three(),
+                                              cicc_ratio_est_three(),
+                                              cicc_ratio_max_three()),
+                                      var_y=var_y, #(input$sd_outcome)^2,
+                                      var_x=var_x,#(input$sd_covar)^2,
+                                      pw=input$w,
+                                      d=input$mean_diff_HTE, a=input$sig,
+                                      rand=input$randomization_three)
         }
         
         
         precision_hte_col <- rep(NA, nrow(df_precision))
         for(i in seq(nrow(df_precision))){
           precision_hte_col[i] <- precision_hte_three(nc=df_precision[i,"nc"], ns=df_precision[i,"ns"],
-                                              m=df_precision[i,"m"],
-                                              pw=df_precision[i,"pw"],
-                                              var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
-                                              alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
-                                              rho0=df_precision[i,"rho0"], r1_r0=df_precision[i,"r1_r0"],
-                                              rand=df_precision[i,"rand"]
-                                              #d=df_precision[i,"d"], a=df_precision[i,"a"]
-                                              )
+                                                      m=df_precision[i,"m"],
+                                                      pw=df_precision[i,"pw"],
+                                                      var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
+                                                      alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
+                                                      rho0=df_precision[i,"rho0"], r1_r0=df_precision[i,"r1_r0"],
+                                                      rand=df_precision[i,"rand"]
+                                                      #d=df_precision[i,"d"], a=df_precision[i,"a"]
+          )
         }
         
         df_precision <- cbind(df_precision, precision_hte_col)
@@ -23243,7 +23578,7 @@ shinyServer(function(input, output, session) {
                    yaxis=list(title="HTE Precision"),
                    legend=list(title=list(text="covariate ICC ratio")),
                    margin=0.001)
-        
+          
           subplot(p_est,# nrows=2, widths = c(0.5,0.5),
                   margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
             layout(title = list(
@@ -23271,15 +23606,15 @@ shinyServer(function(input, output, session) {
         }else if(sensitivity_three_react() == "sensitivity"){
           if(input$icc_display_three == "oICC_constant"){
             #legend_title <- latex2exp::TeX("$\\rho_x$")
-        
+            
             a0_unique <- sort(unique(df_precision[,"alpha0"]))
             a1_a0_unique <- sort(unique(df_precision[,"a1_a0"]))
             r0_unique <- sort(unique(df_precision[,"rho0"]))
             r1_r0_unique <- sort(unique(df_precision[,"r1_r0"]))
             p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-        
+            
             for(i in seq(length(r0_unique))){
-        
+              
               if(i != 3){
                 # outcome ICCs #
                 p_o[[i]] <- df_precision %>%
@@ -23303,7 +23638,7 @@ shinyServer(function(input, output, session) {
                          yaxis=list(title="HTE Precision"),
                          legend=list(title=list(text="covariate CAC")),
                          margin=0.01)
-        
+                
               }else{
                 p_o[[i]] <- df_precision %>%
                   as.data.frame() %>%
@@ -23327,9 +23662,9 @@ shinyServer(function(input, output, session) {
                          legend=list(title=list(text="covariate CAC")),
                          margin=0.01)
               }
-        
+              
             }
-        
+            
             subplot(p_o[[1]], p_o[[2]],p_o[[3]], nrows=2, widths = c(0.5,0.5),
                     margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
               layout(title = list(
@@ -23376,7 +23711,7 @@ shinyServer(function(input, output, session) {
                           y=0.25,
                           x=0.5)
               )
-        
+            
           }else if(input$icc_display_three == "cICC_constant"){
             #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
             a0_unique <- sort(unique(df_precision[,"alpha0"]))
@@ -23384,9 +23719,9 @@ shinyServer(function(input, output, session) {
             r0_unique <- sort(unique(df_precision[,"rho0"]))
             r1_r0_unique <- sort(unique(df_precision[,"r1_r0"]))
             p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-        
+            
             for(i in seq(length(a0_unique))){
-        
+              
               if(i != 3){
                 # outcome ICCs #
                 p_c[[i]] <- df_precision %>%
@@ -23410,7 +23745,7 @@ shinyServer(function(input, output, session) {
                          yaxis=list(title="HTE Precision"),
                          legend=list(title=list(text="outcome CAC")),
                          margin=0.01)
-        
+                
               }else{
                 p_c[[i]] <- df_precision %>%
                   as.data.frame() %>%
@@ -23434,9 +23769,9 @@ shinyServer(function(input, output, session) {
                          legend=list(title=list(text="outcome CAC")),
                          margin=0.01)
               }
-        
+              
             }
-        
+            
             subplot(p_c[[1]], p_c[[2]],p_c[[3]], nrows=2, widths = c(0.5,0.5),
                     margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
               layout(title = list(
@@ -23483,104 +23818,104 @@ shinyServer(function(input, output, session) {
                           y=0.25,
                           x=0.5)
               )
-        
+            
           }
-
+          
         }# end sensitivity if/else
-
+        
       }# end plot display if/else
-
+      
       #### SWD ####
     }else if(trial_react() == "SWD"){
       # determine effect sizes and variances depending on outcome/covariate type #
       if(outcome_type_react() =="continuous"){
         var_y <- (sd_outcome_react())^2
         d <- input$mean_diff_HTE
-
+        
         if(covar_type_react()=="continuous"){
           # continuous outcome and covar power
           var_x <- (sd_covar_react())^2
-
+          
         }else if(covar_type_react() == "binary"){
           # continuous outcome binary covar power
           var_x <- (prop_covar_react())*(1-prop_covar_react())
         }
-
+        
       }else if(outcome_type_react() == "binary"){
         var_y <- ((prop_control_react()*(1-prop_control_react())) + (prop_trt_react()*(1-prop_trt_react())))/2
         #d <- (input$prop_trt - input$prop_control)
-
+        
         if(covar_type_react() == "continuous"){
           # binary outcome continuous covar power
           var_x <-(sd_covar_react())^2
-
+          
         }else if(covar_type_react() == "binary"){
           # binary outcome and covar power #
           var_x <- (prop_covar_react())*(1-prop_covar_react())
-
+          
         }
       }
-
+      
       if(plot_display_react() == "m_v_power"){
         m_range <- seq(input$m_swd_range[1],input$m_swd_range[2])
         J <- input$J_1 + 1
         n <- input$ns_swd*input$J_1
-
+        
         if(cohort()=="cross"){
-
+          
           if(sensitivity_swd_react() == "est_only"){
             df_precision <- expand.grid(n=n, m=m_range, J=J,
-                                    alpha0=#c(oicc_wperiod_min_swd(),
-                                      oicc_wperiod_est_swd(),
-                                    #oicc_wperiod_max_swd()),
-                                    a1_a0=#c(oicc_ratio_min_swd(),
-                                      oicc_ratio_est_swd(),
-                                    # oicc_ratio_max_swd()),
-                                    rho0=#c(cicc_wperiod_min_swd(),
-                                      cicc_wperiod_est_swd(),
-                                    # cicc_wperiod_max_swd()),
-                                    r1_r0=#c(cicc_ratio_min_swd(),
-                                      cicc_ratio_est_swd(),
-                                    # cicc_ratio_max_swd()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort(),
-                                    d=input$mean_diff_HTE, a=input$sig)
+                                        alpha0=#c(oicc_wperiod_min_swd(),
+                                          oicc_wperiod_est_swd(),
+                                        #oicc_wperiod_max_swd()),
+                                        a1_a0=#c(oicc_ratio_min_swd(),
+                                          oicc_ratio_est_swd(),
+                                        # oicc_ratio_max_swd()),
+                                        rho0=#c(cicc_wperiod_min_swd(),
+                                          cicc_wperiod_est_swd(),
+                                        # cicc_wperiod_max_swd()),
+                                        r1_r0=#c(cicc_ratio_min_swd(),
+                                          cicc_ratio_est_swd(),
+                                        # cicc_ratio_max_swd()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort(),
+                                        d=input$mean_diff_HTE, a=input$sig)
           }else{
             df_precision <- expand.grid(n=n, m=m_range, J=J,
-                                    alpha0=c(oicc_wperiod_min_swd(),
-                                             oicc_wperiod_est_swd(),
-                                             oicc_wperiod_max_swd()),
-                                    a1_a0=c(oicc_ratio_min_swd(),
-                                            oicc_ratio_est_swd(),
-                                            oicc_ratio_max_swd()),
-                                    rho0=c(cicc_wperiod_min_swd(),
-                                           cicc_wperiod_est_swd(),
-                                           cicc_wperiod_max_swd()),
-                                    r1_r0=c(cicc_ratio_min_swd(),
-                                            cicc_ratio_est_swd(),
-                                            cicc_ratio_max_swd()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort(),
-                                    d=input$mean_diff_HTE, a=input$sig)
+                                        alpha0=c(oicc_wperiod_min_swd(),
+                                                 oicc_wperiod_est_swd(),
+                                                 oicc_wperiod_max_swd()),
+                                        a1_a0=c(oicc_ratio_min_swd(),
+                                                oicc_ratio_est_swd(),
+                                                oicc_ratio_max_swd()),
+                                        rho0=c(cicc_wperiod_min_swd(),
+                                               cicc_wperiod_est_swd(),
+                                               cicc_wperiod_max_swd()),
+                                        r1_r0=c(cicc_ratio_min_swd(),
+                                                cicc_ratio_est_swd(),
+                                                cicc_ratio_max_swd()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort(),
+                                        d=input$mean_diff_HTE, a=input$sig)
           }
-
-
+          
+          
           precision_hte_col <- rep(NA, nrow(df_precision))
           for(i in seq(nrow(df_precision))){
             precision_hte_col[i] <- precision_hte_swd(n=df_precision[i,"n"],
-                                              m=df_precision[i,"m"], J=df_precision[i,"J"],
-                                              var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
-                                              alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
-                                              rho0=df_precision[i,"rho0"], r1_r0=df_precision[i,"r1_r0"],
-                                              cohort=df_precision[i,"cohort"]
-                                              #d=df_precision[i,"d"], a=df_precision[i,"a"]
-                                              )
+                                                      m=df_precision[i,"m"], J=df_precision[i,"J"],
+                                                      var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
+                                                      alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
+                                                      rho0=df_precision[i,"rho0"], r1_r0=df_precision[i,"r1_r0"],
+                                                      cohort=df_precision[i,"cohort"]
+                                                      #d=df_precision[i,"d"], a=df_precision[i,"a"]
+            )
           }
-
+          
           df_precision <- cbind(df_precision, precision_hte_col)
-
+          
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_precision %>%
               as.data.frame() %>%
@@ -23605,7 +23940,7 @@ shinyServer(function(input, output, session) {
                      yaxis=list(title="HTE Precision"),
                      legend=list(title=list(text="covariate ICC ratio")),
                      margin=0.001)
-
+            
             subplot(p_est,# nrows=2, widths = c(0.5,0.5),
                     margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
               layout(title = list(
@@ -23633,16 +23968,16 @@ shinyServer(function(input, output, session) {
           }else if(sensitivity_swd_react() == "sensitivity"){
             if(input$icc_display_swd == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
-
+              
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_precision[,"a1_a0"]))
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               r1_r0_unique <- sort(unique(df_precision[,"r1_r0"]))
-
+              
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(r0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_o[[i]] <- df_precision %>%
@@ -23667,7 +24002,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_o[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -23692,9 +24027,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_o[[1]], p_o[[2]],p_o[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -23741,7 +24076,7 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
@@ -23749,9 +24084,9 @@ shinyServer(function(input, output, session) {
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               r1_r0_unique <- sort(unique(df_precision[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(a0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_c[[i]] <- df_precision %>%
@@ -23776,7 +24111,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_c[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -23801,9 +24136,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_c[[1]], p_c[[2]],p_c[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -23850,67 +24185,67 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }
           }# end sensitivity if/else
-
-
+          
+          
         }else if(cohort() == "closed"){
           if(sensitivity_swd_react() == "est_only"){
             df_precision <- expand.grid(n=n, m=m_range, J=J,
-                                    alpha0=#c(oicc_wperiod_min_swd_cc(),
-                                      oicc_wperiod_est_swd_cc(),
-                                    # oicc_wperiod_max_swd_cc()),
-                                    a1_a0=#c(oicc_ratio_min_swd_cc(),
-                                      oicc_ratio_est_swd_cc(),
-                                    # oicc_ratio_max_swd_cc()),
-                                    a2=#c(oicc_windiv_min_swd_cc(),
-                                      oicc_windiv_est_swd_cc(),
-                                    # oicc_windiv_max_swd_cc()),
-                                    rho0=#c(cicc_wperiod_min_swd_cc(),
-                                      cicc_wperiod_est_swd_cc(),
-                                    # cicc_wperiod_max_swd_cc()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort(),
-                                    d=input$mean_diff_HTE, a=input$sig)
+                                        alpha0=#c(oicc_wperiod_min_swd_cc(),
+                                          oicc_wperiod_est_swd_cc(),
+                                        # oicc_wperiod_max_swd_cc()),
+                                        a1_a0=#c(oicc_ratio_min_swd_cc(),
+                                          oicc_ratio_est_swd_cc(),
+                                        # oicc_ratio_max_swd_cc()),
+                                        a2=#c(oicc_windiv_min_swd_cc(),
+                                          oicc_windiv_est_swd_cc(),
+                                        # oicc_windiv_max_swd_cc()),
+                                        rho0=#c(cicc_wperiod_min_swd_cc(),
+                                          cicc_wperiod_est_swd_cc(),
+                                        # cicc_wperiod_max_swd_cc()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort(),
+                                        d=input$mean_diff_HTE, a=input$sig)
           }else{
             df_precision <- expand.grid(n=n, m=m_range, J=J,
-                                    alpha0=c(oicc_wperiod_min_swd_cc(),
-                                             oicc_wperiod_est_swd_cc(),
-                                             oicc_wperiod_max_swd_cc()),
-                                    a1_a0=c(oicc_ratio_min_swd_cc(),
-                                            oicc_ratio_est_swd_cc(),
-                                            oicc_ratio_max_swd_cc()),
-                                    a2=c(oicc_windiv_min_swd_cc(),
-                                         oicc_windiv_est_swd_cc(),
-                                         oicc_windiv_max_swd_cc()),
-                                    rho0=c(cicc_wperiod_min_swd_cc(),
-                                           cicc_wperiod_est_swd_cc(),
-                                           cicc_wperiod_max_swd_cc()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort(),
-                                    d=input$mean_diff_HTE, a=input$sig)
+                                        alpha0=c(oicc_wperiod_min_swd_cc(),
+                                                 oicc_wperiod_est_swd_cc(),
+                                                 oicc_wperiod_max_swd_cc()),
+                                        a1_a0=c(oicc_ratio_min_swd_cc(),
+                                                oicc_ratio_est_swd_cc(),
+                                                oicc_ratio_max_swd_cc()),
+                                        a2=c(oicc_windiv_min_swd_cc(),
+                                             oicc_windiv_est_swd_cc(),
+                                             oicc_windiv_max_swd_cc()),
+                                        rho0=c(cicc_wperiod_min_swd_cc(),
+                                               cicc_wperiod_est_swd_cc(),
+                                               cicc_wperiod_max_swd_cc()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort(),
+                                        d=input$mean_diff_HTE, a=input$sig)
           }
-
-
+          
+          
           precision_hte_col <- rep(NA, nrow(df_precision))
           for(i in seq(nrow(df_precision))){
             precision_hte_col[i] <- precision_hte_swd(n=df_precision[i,"n"],
-                                              m=df_precision[i,"m"], J=df_precision[i,"J"],
-                                              var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
-                                              alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
-                                              a2=df_precision[i,"a2"],
-                                              rho0=df_precision[i,"rho0"],
-                                              cohort=df_precision[i,"cohort"]
-                                              #d=df_precision[i,"d"], a=df_precision[i,"a"]
-                                              )
+                                                      m=df_precision[i,"m"], J=df_precision[i,"J"],
+                                                      var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
+                                                      alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
+                                                      a2=df_precision[i,"a2"],
+                                                      rho0=df_precision[i,"rho0"],
+                                                      cohort=df_precision[i,"cohort"]
+                                                      #d=df_precision[i,"d"], a=df_precision[i,"a"]
+            )
             #if(is.nan(precision_hte_col[i])) print(i)
           }
-
+          
           df_precision <- cbind(df_precision, precision_hte_col)
-
+          
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_precision %>%
               as.data.frame() %>%
@@ -23935,7 +24270,7 @@ shinyServer(function(input, output, session) {
                      yaxis=list(title="HTE Precision"),
                      legend=list(title=list(text="covariate ICC")),
                      margin=0.001)
-
+            
             subplot(p_est,# nrows=2, widths = c(0.5,0.5),
                     margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
               layout(title = list(
@@ -23966,11 +24301,11 @@ shinyServer(function(input, output, session) {
               a1_a0_unique <- sort(unique(df_precision[,"a1_a0"]))
               a2_unique <- sort(unique(df_precision[,"a2"]))
               r0_unique <- sort(unique(df_precision[,"rho0"]))
-
+              
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(r0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_o[[i]] <- df_precision %>%
@@ -23995,7 +24330,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="covariate ICC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_o[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -24020,9 +24355,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="covariate ICC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_o[[1]], p_o[[2]],p_o[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -24069,7 +24404,7 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
@@ -24077,9 +24412,9 @@ shinyServer(function(input, output, session) {
               a2_unique <- sort(unique(df_precision[,"a2"]))
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(a0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_c[[i]] <- df_precision %>%
@@ -24104,7 +24439,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_c[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -24129,9 +24464,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_c[[1]], p_c[[2]],p_c[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -24178,77 +24513,77 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }
           }# end sensitivity if/else
-
-
+          
+          
         }#end cross/closed if/else
-
-       }else if(plot_display_react() == "n_v_power"){
-
+        
+      }else if(plot_display_react() == "n_v_power"){
+        
         ns_range <- seq(input$ns_swd_range[1],input$ns_swd_range[2])
         J <- input$J_1 + 1
         n_range <- ns_range*input$J_1
-
+        
         if(cohort() == "cross"){
-
+          
           if(sensitivity_swd_react() == "est_only"){
             df_precision <- expand.grid(n=n_range, m=input$m_swd,J=J,
-                                    alpha0=#c(oicc_wperiod_min_swd(),
-                                      oicc_wperiod_est_swd(),
-                                    # oicc_wperiod_max_swd()),
-                                    a1_a0=#c(oicc_ratio_min_swd(),
-                                      oicc_ratio_est_swd(),
-                                    #  oicc_ratio_max_swd()),
-                                    rho0=#c(cicc_wperiod_min_swd(),
-                                      cicc_wperiod_est_swd(),
-                                    # cicc_wperiod_max_swd()),
-                                    r1_r0=#c(cicc_ratio_min_swd(),
-                                      cicc_ratio_est_swd(),
-                                    # cicc_ratio_max_swd()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort()
-                                    #d=input$mean_diff_HTE, a=input$sig
-                                    )
-
+                                        alpha0=#c(oicc_wperiod_min_swd(),
+                                          oicc_wperiod_est_swd(),
+                                        # oicc_wperiod_max_swd()),
+                                        a1_a0=#c(oicc_ratio_min_swd(),
+                                          oicc_ratio_est_swd(),
+                                        #  oicc_ratio_max_swd()),
+                                        rho0=#c(cicc_wperiod_min_swd(),
+                                          cicc_wperiod_est_swd(),
+                                        # cicc_wperiod_max_swd()),
+                                        r1_r0=#c(cicc_ratio_min_swd(),
+                                          cicc_ratio_est_swd(),
+                                        # cicc_ratio_max_swd()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort()
+                                        #d=input$mean_diff_HTE, a=input$sig
+            )
+            
           }else{
             df_precision <- expand.grid(n=n_range, m=input$m_swd,J=J,
-                                    alpha0=c(oicc_wperiod_min_swd(),
-                                             oicc_wperiod_est_swd(),
-                                             oicc_wperiod_max_swd()),
-                                    a1_a0=c(oicc_ratio_min_swd(),
-                                            oicc_ratio_est_swd(),
-                                            oicc_ratio_max_swd()),
-                                    rho0=c(cicc_wperiod_min_swd(),
-                                           cicc_wperiod_est_swd(),
-                                           cicc_wperiod_max_swd()),
-                                    r1_r0=c(cicc_ratio_min_swd(),
-                                            cicc_ratio_est_swd(),
-                                            cicc_ratio_max_swd()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort()
-                                    #d=input$mean_diff_HTE, a=input$sig
-                                    )
-
+                                        alpha0=c(oicc_wperiod_min_swd(),
+                                                 oicc_wperiod_est_swd(),
+                                                 oicc_wperiod_max_swd()),
+                                        a1_a0=c(oicc_ratio_min_swd(),
+                                                oicc_ratio_est_swd(),
+                                                oicc_ratio_max_swd()),
+                                        rho0=c(cicc_wperiod_min_swd(),
+                                               cicc_wperiod_est_swd(),
+                                               cicc_wperiod_max_swd()),
+                                        r1_r0=c(cicc_ratio_min_swd(),
+                                                cicc_ratio_est_swd(),
+                                                cicc_ratio_max_swd()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort()
+                                        #d=input$mean_diff_HTE, a=input$sig
+            )
+            
           }
-
+          
           precision_hte_col <- rep(NA, nrow(df_precision))
           for(i in seq(nrow(df_precision))){
             precision_hte_col[i] <- precision_hte_swd(n=df_precision[i,"n"],
-                                              m=df_precision[i,"m"], J=df_precision[i,"J"],
-                                              var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
-                                              alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
-                                              rho0=df_precision[i,"rho0"], r1_r0=df_precision[i,"r1_r0"],
-                                              cohort=df_precision[i,"cohort"]
-                                              #d=df_precision[i,"d"], a=df_precision[i,"a"]
-                                              )
+                                                      m=df_precision[i,"m"], J=df_precision[i,"J"],
+                                                      var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
+                                                      alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
+                                                      rho0=df_precision[i,"rho0"], r1_r0=df_precision[i,"r1_r0"],
+                                                      cohort=df_precision[i,"cohort"]
+                                                      #d=df_precision[i,"d"], a=df_precision[i,"a"]
+            )
           }
-
+          
           df_precision <- cbind(df_precision, precision_hte_col)
-
+          
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_precision %>%
               as.data.frame() %>%
@@ -24274,7 +24609,7 @@ shinyServer(function(input, output, session) {
                      yaxis=list(title="HTE Precision"),
                      legend=list(title=list(text="covariate ICC ratio")),
                      margin=0.001)
-
+            
             subplot(p_est,# nrows=2, widths = c(0.5,0.5),
                     margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
               layout(title = list(
@@ -24302,15 +24637,15 @@ shinyServer(function(input, output, session) {
           }else if(sensitivity_swd_react() == "sensitivity"){
             if(input$icc_display_three == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
-
+              
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_precision[,"a1_a0"]))
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               r1_r0_unique <- sort(unique(df_precision[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(r0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_o[[i]] <- df_precision %>%
@@ -24336,7 +24671,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_o[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -24362,9 +24697,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_o[[1]], p_o[[2]],p_o[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -24411,7 +24746,7 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
@@ -24419,9 +24754,9 @@ shinyServer(function(input, output, session) {
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               r1_r0_unique <- sort(unique(df_precision[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(a0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_c[[i]] <- df_precision %>%
@@ -24447,7 +24782,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_c[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -24473,9 +24808,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_c[[1]], p_c[[2]],p_c[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -24522,70 +24857,70 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }
           }# end sensitivity if/else
-
-
+          
+          
         }else if (cohort()== "closed"){
-
+          
           if(sensitivity_swd_react() == "est_only"){
             df_precision <- expand.grid(n=n_range, m=input$m_swd,J=J,
-                                    alpha0=#c(oicc_wperiod_min_swd(),
-                                      oicc_wperiod_est_swd_cc(),
-                                    # oicc_wperiod_max_swd()),
-                                    a1_a0=#c(oicc_ratio_min_swd(),
-                                      oicc_ratio_est_swd_cc(),
-                                    #  oicc_ratio_max_swd()),
-                                    a2=#c(oicc_windiv_min_swd_cc(),
-                                      oicc_windiv_est_swd_cc(),
-                                    # oicc_windiv_max_swd_cc()),
-                                    rho0=#c(cicc_wperiod_min_swd_cc(),
-                                      cicc_wperiod_est_swd_cc(),
-                                    # cicc_wperiod_max_swd_cc()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort(),
-                                    d=input$mean_diff_HTE, a=input$sig)
-
+                                        alpha0=#c(oicc_wperiod_min_swd(),
+                                          oicc_wperiod_est_swd_cc(),
+                                        # oicc_wperiod_max_swd()),
+                                        a1_a0=#c(oicc_ratio_min_swd(),
+                                          oicc_ratio_est_swd_cc(),
+                                        #  oicc_ratio_max_swd()),
+                                        a2=#c(oicc_windiv_min_swd_cc(),
+                                          oicc_windiv_est_swd_cc(),
+                                        # oicc_windiv_max_swd_cc()),
+                                        rho0=#c(cicc_wperiod_min_swd_cc(),
+                                          cicc_wperiod_est_swd_cc(),
+                                        # cicc_wperiod_max_swd_cc()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort(),
+                                        d=input$mean_diff_HTE, a=input$sig)
+            
           }else{
             df_precision <- expand.grid(n=n_range, m=input$m_swd,J=J,
-                                    alpha0=c(oicc_wperiod_min_swd_cc(),
-                                             oicc_wperiod_est_swd_cc(),
-                                             oicc_wperiod_max_swd_cc()),
-                                    a1_a0=c(oicc_ratio_min_swd_cc(),
-                                            oicc_ratio_est_swd_cc(),
-                                            oicc_ratio_max_swd_cc()),
-                                    a2=c(oicc_windiv_min_swd_cc(),
-                                         oicc_windiv_est_swd_cc(),
-                                         oicc_windiv_max_swd_cc()),
-                                    rho0=c(cicc_wperiod_min_swd_cc(),
-                                           cicc_wperiod_est_swd_cc(),
-                                           cicc_wperiod_max_swd_cc()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort(),
-                                    d=input$mean_diff_HTE, a=input$sig)
-
+                                        alpha0=c(oicc_wperiod_min_swd_cc(),
+                                                 oicc_wperiod_est_swd_cc(),
+                                                 oicc_wperiod_max_swd_cc()),
+                                        a1_a0=c(oicc_ratio_min_swd_cc(),
+                                                oicc_ratio_est_swd_cc(),
+                                                oicc_ratio_max_swd_cc()),
+                                        a2=c(oicc_windiv_min_swd_cc(),
+                                             oicc_windiv_est_swd_cc(),
+                                             oicc_windiv_max_swd_cc()),
+                                        rho0=c(cicc_wperiod_min_swd_cc(),
+                                               cicc_wperiod_est_swd_cc(),
+                                               cicc_wperiod_max_swd_cc()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort(),
+                                        d=input$mean_diff_HTE, a=input$sig)
+            
           }
-
+          
           # df_precision <- df_precision <- cbind(df_precision, alpha1=df_precision$alpha0*df_precision$a1_a0)
           # df_precision <- df_precision[which(df_precision$alpha1 <=  df_precision$alpha0),]
-
+          
           precision_hte_col <- rep(NA, nrow(df_precision))
           for(i in seq(nrow(df_precision))){
             precision_hte_col[i] <- precision_hte_swd(n=df_precision[i,"n"],
-                                              m=df_precision[i,"m"], J=df_precision[i,"J"],
-                                              var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
-                                              alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
-                                              a2=df_precision[i,"a2"], rho0=df_precision[i,"rho0"],
-                                              cohort=df_precision[i,"cohort"]
-                                              #d=df_precision[i,"d"], a=df_precision[i,"a"]
-                                              )
+                                                      m=df_precision[i,"m"], J=df_precision[i,"J"],
+                                                      var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
+                                                      alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
+                                                      a2=df_precision[i,"a2"], rho0=df_precision[i,"rho0"],
+                                                      cohort=df_precision[i,"cohort"]
+                                                      #d=df_precision[i,"d"], a=df_precision[i,"a"]
+            )
           }
-
+          
           df_precision <- cbind(df_precision, precision_hte_col)
-
+          
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_precision %>%
               as.data.frame() %>%
@@ -24611,7 +24946,7 @@ shinyServer(function(input, output, session) {
                      yaxis=list(title="HTE Precision"),
                      legend=list(title=list(text="covariate ICC ratio")),
                      margin=0.001)
-
+            
             subplot(p_est,# nrows=2, widths = c(0.5,0.5),
                     margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
               layout(title = list(
@@ -24639,15 +24974,15 @@ shinyServer(function(input, output, session) {
           }else if(sensitivity_swd_react() == "sensitivity"){
             if(input$icc_display_three == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
-
+              
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_precision[,"a1_a0"]))
               a2_unique <- sort(unique(df_precision[,"a2"]))
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(r0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_o[[i]] <- df_precision %>%
@@ -24673,7 +25008,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_o[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -24699,9 +25034,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_o[[1]], p_o[[2]],p_o[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -24748,7 +25083,7 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
@@ -24756,9 +25091,9 @@ shinyServer(function(input, output, session) {
               a2_unique <- sort(unique(df_precision[,"a2"]))
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(a0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_c[[i]] <- df_precision %>%
@@ -24784,7 +25119,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_c[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -24810,9 +25145,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_c[[1]], p_c[[2]],p_c[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -24859,113 +25194,113 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }
           }# end sensitivity if/else
-
+          
         }#end cross/closed
-
+        
       }# end display if/else
-
+      
       #### multi-period parallel ####
     }else if(trial_react() == 'parallel_m'){
       desmat <- designMatrix(design = trial_react(), periods = input$J)
-
+      
       # determine effect sizes and variances depending on outcome/covariate type #
       if(outcome_type_react() =="continuous"){
         var_y <- (sd_outcome_react())^2
         d <- input$mean_diff_HTE
-
+        
         if(covar_type_react()=="continuous"){
           # continuous outcome and covar power
           var_x <- (sd_covar_react())^2
-
+          
         }else if(covar_type_react() == "binary"){
           # continuous outcome binary covar power
           var_x <- (prop_covar_react())*(1-prop_covar_react())
         }
-
+        
       }else if(outcome_type_react() == "binary"){
         var_y <- ((prop_control_react()*(1-prop_control_react())) + (prop_trt_react()*(1-prop_trt_react())))/2
         #d <- (input$prop_trt - input$prop_control)
-
+        
         if(covar_type_react() == "continuous"){
           # binary outcome continuous covar power
           var_x <-(sd_covar_react())^2
-
+          
         }else if(covar_type_react() == "binary"){
           # binary outcome and covar power #
           var_x <- (prop_covar_react())*(1-prop_covar_react())
-
+          
         }
       }
-
+      
       J <- ncol(desmat)
-
+      
       if(plot_display_react() == "m_v_power"){
         m_range <- seq(input$m_swd_range[1],input$m_swd_range[2])
         n <- input$ns_parallel_m
         #J <- input$J_1 + 1
         #n <- input$ns_swd*input$J_1
-
+        
         if(cohort()=="cross"){
-
+          
           if(sensitivity_swd_react() == "est_only"){
             df_precision <- expand.grid(n=n, m=m_range, J=J,
-                                    alpha0=#c(oicc_wperiod_min_swd(),
-                                      oicc_wperiod_est_swd(),
-                                    #oicc_wperiod_max_swd()),
-                                    a1_a0=#c(oicc_ratio_min_swd(),
-                                      oicc_ratio_est_swd(),
-                                    # oicc_ratio_max_swd()),
-                                    rho0=#c(cicc_wperiod_min_swd(),
-                                      cicc_wperiod_est_swd(),
-                                    # cicc_wperiod_max_swd()),
-                                    r1_r0=#c(cicc_ratio_min_swd(),
-                                      cicc_ratio_est_swd(),
-                                    # cicc_ratio_max_swd()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    w=input$w,
-                                    cohort=cohort(),
-                                    #d=input$mean_diff_HTE, a=input$sig
-                                    )
+                                        alpha0=#c(oicc_wperiod_min_swd(),
+                                          oicc_wperiod_est_swd(),
+                                        #oicc_wperiod_max_swd()),
+                                        a1_a0=#c(oicc_ratio_min_swd(),
+                                          oicc_ratio_est_swd(),
+                                        # oicc_ratio_max_swd()),
+                                        rho0=#c(cicc_wperiod_min_swd(),
+                                          cicc_wperiod_est_swd(),
+                                        # cicc_wperiod_max_swd()),
+                                        r1_r0=#c(cicc_ratio_min_swd(),
+                                          cicc_ratio_est_swd(),
+                                        # cicc_ratio_max_swd()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        w=input$w,
+                                        cohort=cohort(),
+                                        #d=input$mean_diff_HTE, a=input$sig
+            )
           }else{
             df_precision <- expand.grid(n=n, m=m_range, J=J,
-                                    alpha0=c(oicc_wperiod_min_swd(),
-                                             oicc_wperiod_est_swd(),
-                                             oicc_wperiod_max_swd()),
-                                    a1_a0=c(oicc_ratio_min_swd(),
-                                            oicc_ratio_est_swd(),
-                                            oicc_ratio_max_swd()),
-                                    rho0=c(cicc_wperiod_min_swd(),
-                                           cicc_wperiod_est_swd(),
-                                           cicc_wperiod_max_swd()),
-                                    r1_r0=c(cicc_ratio_min_swd(),
-                                            cicc_ratio_est_swd(),
-                                            cicc_ratio_max_swd()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    w=input$w,
-                                    cohort=cohort(),
-                                    #d=input$mean_diff_HTE, a=input$sig
-                                    )
+                                        alpha0=c(oicc_wperiod_min_swd(),
+                                                 oicc_wperiod_est_swd(),
+                                                 oicc_wperiod_max_swd()),
+                                        a1_a0=c(oicc_ratio_min_swd(),
+                                                oicc_ratio_est_swd(),
+                                                oicc_ratio_max_swd()),
+                                        rho0=c(cicc_wperiod_min_swd(),
+                                               cicc_wperiod_est_swd(),
+                                               cicc_wperiod_max_swd()),
+                                        r1_r0=c(cicc_ratio_min_swd(),
+                                                cicc_ratio_est_swd(),
+                                                cicc_ratio_max_swd()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        w=input$w,
+                                        cohort=cohort(),
+                                        #d=input$mean_diff_HTE, a=input$sig
+            )
           }
-
-
+          
+          
           precision_hte_col <- rep(NA, nrow(df_precision))
           for(i in seq(nrow(df_precision))){
             precision_hte_col[i] <- precision_hte_parallel_m(desmat, n=df_precision[i,"n"],
-                                                     m=df_precision[i,"m"],# J=df_precision[i,"J"],
-                                                     var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],w=df_precision[i,"w"],
-                                                     alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
-                                                     rho0=df_precision[i,"rho0"], r1_r0=df_precision[i,"r1_r0"],
-                                                     cohort=df_precision[i,"cohort"]
-                                                     )
+                                                             m=df_precision[i,"m"],# J=df_precision[i,"J"],
+                                                             var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],w=df_precision[i,"w"],
+                                                             alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
+                                                             rho0=df_precision[i,"rho0"], r1_r0=df_precision[i,"r1_r0"],
+                                                             cohort=df_precision[i,"cohort"]
+            )
           }
-
+          
           df_precision <- cbind(df_precision, precision_hte_col)
-
+          
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_precision %>%
               as.data.frame() %>%
@@ -24992,7 +25327,7 @@ shinyServer(function(input, output, session) {
                      yaxis=list(title="HTE Precision"),
                      legend=list(title=list(text="covariate ICC ratio")),
                      margin=0.001)
-
+            
             subplot(p_est,# nrows=2, widths = c(0.5,0.5),
                     margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
               layout(title = list(
@@ -25020,16 +25355,16 @@ shinyServer(function(input, output, session) {
           }else if(sensitivity_swd_react() == "sensitivity"){
             if(input$icc_display_swd == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
-
+              
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_precision[,"a1_a0"]))
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               r1_r0_unique <- sort(unique(df_precision[,"r1_r0"]))
-
+              
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(r0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_o[[i]] <- df_precision %>%
@@ -25056,7 +25391,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_o[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -25083,9 +25418,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_o[[1]], p_o[[2]],p_o[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -25132,7 +25467,7 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
@@ -25140,9 +25475,9 @@ shinyServer(function(input, output, session) {
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               r1_r0_unique <- sort(unique(df_precision[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(a0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_c[[i]] <- df_precision %>%
@@ -25169,7 +25504,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_c[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -25196,9 +25531,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_c[[1]], p_c[[2]],p_c[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -25245,69 +25580,69 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }
           }# end sensitivity if/else
-
-
+          
+          
         }else if(cohort() == "closed"){
           if(sensitivity_swd_react() == "est_only"){
             df_precision <- expand.grid(n=n, m=m_range, J=J,
-                                    alpha0=#c(oicc_wperiod_min_swd_cc(),
-                                      oicc_wperiod_est_swd_cc(),
-                                    # oicc_wperiod_max_swd_cc()),
-                                    a1_a0=#c(oicc_ratio_min_swd_cc(),
-                                      oicc_ratio_est_swd_cc(),
-                                    # oicc_ratio_max_swd_cc()),
-                                    a2=#c(oicc_windiv_min_swd_cc(),
-                                      oicc_windiv_est_swd_cc(),
-                                    # oicc_windiv_max_swd_cc()),
-                                    rho0=#c(cicc_wperiod_min_swd_cc(),
-                                      cicc_wperiod_est_swd_cc(),
-                                    # cicc_wperiod_max_swd_cc()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    w=input$w,
-                                    cohort=cohort()
-                                    #d=input$mean_diff_HTE, a=input$sig
-                                    )
+                                        alpha0=#c(oicc_wperiod_min_swd_cc(),
+                                          oicc_wperiod_est_swd_cc(),
+                                        # oicc_wperiod_max_swd_cc()),
+                                        a1_a0=#c(oicc_ratio_min_swd_cc(),
+                                          oicc_ratio_est_swd_cc(),
+                                        # oicc_ratio_max_swd_cc()),
+                                        a2=#c(oicc_windiv_min_swd_cc(),
+                                          oicc_windiv_est_swd_cc(),
+                                        # oicc_windiv_max_swd_cc()),
+                                        rho0=#c(cicc_wperiod_min_swd_cc(),
+                                          cicc_wperiod_est_swd_cc(),
+                                        # cicc_wperiod_max_swd_cc()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        w=input$w,
+                                        cohort=cohort()
+                                        #d=input$mean_diff_HTE, a=input$sig
+            )
           }else{
             df_precision <- expand.grid(n=n, m=m_range, J=J,
-                                    alpha0=c(oicc_wperiod_min_swd_cc(),
-                                             oicc_wperiod_est_swd_cc(),
-                                             oicc_wperiod_max_swd_cc()),
-                                    a1_a0=c(oicc_ratio_min_swd_cc(),
-                                            oicc_ratio_est_swd_cc(),
-                                            oicc_ratio_max_swd_cc()),
-                                    a2=c(oicc_windiv_min_swd_cc(),
-                                         oicc_windiv_est_swd_cc(),
-                                         oicc_windiv_max_swd_cc()),
-                                    rho0=c(cicc_wperiod_min_swd_cc(),
-                                           cicc_wperiod_est_swd_cc(),
-                                           cicc_wperiod_max_swd_cc()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    w=input$w,
-                                    cohort=cohort()
-                                    #d=input$mean_diff_HTE, a=input$sig
-                                    )
+                                        alpha0=c(oicc_wperiod_min_swd_cc(),
+                                                 oicc_wperiod_est_swd_cc(),
+                                                 oicc_wperiod_max_swd_cc()),
+                                        a1_a0=c(oicc_ratio_min_swd_cc(),
+                                                oicc_ratio_est_swd_cc(),
+                                                oicc_ratio_max_swd_cc()),
+                                        a2=c(oicc_windiv_min_swd_cc(),
+                                             oicc_windiv_est_swd_cc(),
+                                             oicc_windiv_max_swd_cc()),
+                                        rho0=c(cicc_wperiod_min_swd_cc(),
+                                               cicc_wperiod_est_swd_cc(),
+                                               cicc_wperiod_max_swd_cc()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        w=input$w,
+                                        cohort=cohort()
+                                        #d=input$mean_diff_HTE, a=input$sig
+            )
           }
-
-
+          
+          
           precision_hte_col <- rep(NA, nrow(df_precision))
           for(i in seq(nrow(df_precision))){
             precision_hte_col[i] <- precision_hte_parallel_m(desmat,n=df_precision[i,"n"],
-                                                     m=df_precision[i,"m"],# J=df_precision[i,"J"],
-                                                     var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],w=df_precision[i,"w"],
-                                                     alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
-                                                     a2=df_precision[i,"a2"],
-                                                     rho0=df_precision[i,"rho0"],
-                                                     cohort=df_precision[i,"cohort"])
+                                                             m=df_precision[i,"m"],# J=df_precision[i,"J"],
+                                                             var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],w=df_precision[i,"w"],
+                                                             alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
+                                                             a2=df_precision[i,"a2"],
+                                                             rho0=df_precision[i,"rho0"],
+                                                             cohort=df_precision[i,"cohort"])
             # if(is.nan(precision_hte_col[i])) print(i)
           }
-
+          
           df_precision <- cbind(df_precision, precision_hte_col)
-
+          
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_precision %>%
               as.data.frame() %>%
@@ -25334,7 +25669,7 @@ shinyServer(function(input, output, session) {
                      yaxis=list(title="HTE Precision"),
                      legend=list(title=list(text="covariate ICC")),
                      margin=0.001)
-
+            
             subplot(p_est,# nrows=2, widths = c(0.5,0.5),
                     margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
               layout(title = list(
@@ -25365,11 +25700,11 @@ shinyServer(function(input, output, session) {
               a1_a0_unique <- sort(unique(df_precision[,"a1_a0"]))
               a2_unique <- sort(unique(df_precision[,"a2"]))
               r0_unique <- sort(unique(df_precision[,"rho0"]))
-
+              
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(r0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_o[[i]] <- df_precision %>%
@@ -25396,7 +25731,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="covariate ICC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_o[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -25423,7 +25758,7 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="covariate ICC")),
                            margin=0.01)
                 }
-
+                
               }
               subplot(p_o[[1]], p_o[[2]],p_o[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
@@ -25471,7 +25806,7 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
@@ -25479,9 +25814,9 @@ shinyServer(function(input, output, session) {
               a2_unique <- sort(unique(df_precision[,"a2"]))
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(a0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_c[[i]] <- df_precision %>%
@@ -25508,7 +25843,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_c[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -25535,9 +25870,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_c[[1]], p_c[[2]],p_c[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -25584,77 +25919,77 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }
           }# end sensitivity if/else
-
-
+          
+          
         }#end cross/closed if/else
-
+        
       }else if(plot_display_react() == "n_v_power"){
-
+        
         ns_range <- seq(input$ns_parallel_m_range[1],input$ns_parallel_m_range[2])
         #J <- input$J_1 + 1
         #n_range <- ns_range*input$J_1
-
+        
         if(cohort() == "cross"){
-
+          
           if(sensitivity_swd_react() == "est_only"){
             df_precision <- expand.grid(n=ns_range, m=input$m_swd,J=J,
-                                    alpha0=#c(oicc_wperiod_min_swd(),
-                                      oicc_wperiod_est_swd(),
-                                    # oicc_wperiod_max_swd()),
-                                    a1_a0=#c(oicc_ratio_min_swd(),
-                                      oicc_ratio_est_swd(),
-                                    #  oicc_ratio_max_swd()),
-                                    rho0=#c(cicc_wperiod_min_swd(),
-                                      cicc_wperiod_est_swd(),
-                                    # cicc_wperiod_max_swd()),
-                                    r1_r0=#c(cicc_ratio_min_swd(),
-                                      cicc_ratio_est_swd(),
-                                    # cicc_ratio_max_swd()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    w=input$w,
-                                    cohort=cohort()
-                                    #d=input$mean_diff_HTE, a=input$sig
-                                    )
-
+                                        alpha0=#c(oicc_wperiod_min_swd(),
+                                          oicc_wperiod_est_swd(),
+                                        # oicc_wperiod_max_swd()),
+                                        a1_a0=#c(oicc_ratio_min_swd(),
+                                          oicc_ratio_est_swd(),
+                                        #  oicc_ratio_max_swd()),
+                                        rho0=#c(cicc_wperiod_min_swd(),
+                                          cicc_wperiod_est_swd(),
+                                        # cicc_wperiod_max_swd()),
+                                        r1_r0=#c(cicc_ratio_min_swd(),
+                                          cicc_ratio_est_swd(),
+                                        # cicc_ratio_max_swd()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        w=input$w,
+                                        cohort=cohort()
+                                        #d=input$mean_diff_HTE, a=input$sig
+            )
+            
           }else{
             df_precision <- expand.grid(n=ns_range, m=input$m_swd,J=J,
-                                    alpha0=c(oicc_wperiod_min_swd(),
-                                             oicc_wperiod_est_swd(),
-                                             oicc_wperiod_max_swd()),
-                                    a1_a0=c(oicc_ratio_min_swd(),
-                                            oicc_ratio_est_swd(),
-                                            oicc_ratio_max_swd()),
-                                    rho0=c(cicc_wperiod_min_swd(),
-                                           cicc_wperiod_est_swd(),
-                                           cicc_wperiod_max_swd()),
-                                    r1_r0=c(cicc_ratio_min_swd(),
-                                            cicc_ratio_est_swd(),
-                                            cicc_ratio_max_swd()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    w=input$w,
-                                    cohort=cohort()
-                                    #d=input$mean_diff_HTE, a=input$sig
-                                    )
-
+                                        alpha0=c(oicc_wperiod_min_swd(),
+                                                 oicc_wperiod_est_swd(),
+                                                 oicc_wperiod_max_swd()),
+                                        a1_a0=c(oicc_ratio_min_swd(),
+                                                oicc_ratio_est_swd(),
+                                                oicc_ratio_max_swd()),
+                                        rho0=c(cicc_wperiod_min_swd(),
+                                               cicc_wperiod_est_swd(),
+                                               cicc_wperiod_max_swd()),
+                                        r1_r0=c(cicc_ratio_min_swd(),
+                                                cicc_ratio_est_swd(),
+                                                cicc_ratio_max_swd()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        w=input$w,
+                                        cohort=cohort()
+                                        #d=input$mean_diff_HTE, a=input$sig
+            )
+            
           }
-
+          
           precision_hte_col <- rep(NA, nrow(df_precision))
           for(i in seq(nrow(df_precision))){
             precision_hte_col[i] <- precision_hte_parallel_m(desmat,n=df_precision[i,"n"],
-                                                     m=df_precision[i,"m"],# J=df_precision[i,"J"],
-                                                     var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],w=df_precision[i,"w"],
-                                                     alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
-                                                     rho0=df_precision[i,"rho0"], r1_r0=df_precision[i,"r1_r0"],
-                                                     cohort=df_precision[i,"cohort"], range=T)
+                                                             m=df_precision[i,"m"],# J=df_precision[i,"J"],
+                                                             var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],w=df_precision[i,"w"],
+                                                             alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
+                                                             rho0=df_precision[i,"rho0"], r1_r0=df_precision[i,"r1_r0"],
+                                                             cohort=df_precision[i,"cohort"], range=T)
           }
-
+          
           df_precision <- cbind(df_precision, precision_hte_col)
-
+          
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_precision %>%
               as.data.frame() %>%
@@ -25681,7 +26016,7 @@ shinyServer(function(input, output, session) {
                      yaxis=list(title="HTE Precision"),
                      legend=list(title=list(text="covariate ICC ratio")),
                      margin=0.001)
-
+            
             subplot(p_est,# nrows=2, widths = c(0.5,0.5),
                     margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
               layout(title = list(
@@ -25709,15 +26044,15 @@ shinyServer(function(input, output, session) {
           }else if(sensitivity_swd_react() == "sensitivity"){
             if(input$icc_display_three == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
-
+              
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_precision[,"a1_a0"]))
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               r1_r0_unique <- sort(unique(df_precision[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(r0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_o[[i]] <- df_precision %>%
@@ -25744,7 +26079,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_o[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -25771,9 +26106,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_o[[1]], p_o[[2]],p_o[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -25820,7 +26155,7 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
@@ -25828,9 +26163,9 @@ shinyServer(function(input, output, session) {
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               r1_r0_unique <- sort(unique(df_precision[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(a0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_c[[i]] <- df_precision %>%
@@ -25857,7 +26192,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_c[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -25884,9 +26219,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_c[[1]], p_c[[2]],p_c[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -25933,72 +26268,72 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }
           }# end sensitivity if/else
-
-
+          
+          
         }else if (cohort()== "closed"){
-
+          
           if(sensitivity_swd_react() == "est_only"){
             df_precision <- expand.grid(n=ns_range, m=input$m_swd,J=J,
-                                    alpha0=#c(oicc_wperiod_min_swd(),
-                                      oicc_wperiod_est_swd_cc(),
-                                    # oicc_wperiod_max_swd()),
-                                    a1_a0=#c(oicc_ratio_min_swd(),
-                                      oicc_ratio_est_swd_cc(),
-                                    #  oicc_ratio_max_swd()),
-                                    a2=#c(oicc_windiv_min_swd_cc(),
-                                      oicc_windiv_est_swd_cc(),
-                                    # oicc_windiv_max_swd_cc()),
-                                    rho0=#c(cicc_wperiod_min_swd_cc(),
-                                      cicc_wperiod_est_swd_cc(),
-                                    # cicc_wperiod_max_swd_cc()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    w=input$w,
-                                    cohort=cohort()
-                                    #d=input$mean_diff_HTE, a=input$sig
-                                    )
-
+                                        alpha0=#c(oicc_wperiod_min_swd(),
+                                          oicc_wperiod_est_swd_cc(),
+                                        # oicc_wperiod_max_swd()),
+                                        a1_a0=#c(oicc_ratio_min_swd(),
+                                          oicc_ratio_est_swd_cc(),
+                                        #  oicc_ratio_max_swd()),
+                                        a2=#c(oicc_windiv_min_swd_cc(),
+                                          oicc_windiv_est_swd_cc(),
+                                        # oicc_windiv_max_swd_cc()),
+                                        rho0=#c(cicc_wperiod_min_swd_cc(),
+                                          cicc_wperiod_est_swd_cc(),
+                                        # cicc_wperiod_max_swd_cc()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        w=input$w,
+                                        cohort=cohort()
+                                        #d=input$mean_diff_HTE, a=input$sig
+            )
+            
           }else{
             df_precision <- expand.grid(n=ns_range, m=input$m_swd,J=J,
-                                    alpha0=c(oicc_wperiod_min_swd_cc(),
-                                             oicc_wperiod_est_swd_cc(),
-                                             oicc_wperiod_max_swd_cc()),
-                                    a1_a0=c(oicc_ratio_min_swd_cc(),
-                                            oicc_ratio_est_swd_cc(),
-                                            oicc_ratio_max_swd_cc()),
-                                    a2=c(oicc_windiv_min_swd_cc(),
-                                         oicc_windiv_est_swd_cc(),
-                                         oicc_windiv_max_swd_cc()),
-                                    rho0=c(cicc_wperiod_min_swd_cc(),
-                                           cicc_wperiod_est_swd_cc(),
-                                           cicc_wperiod_max_swd_cc()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    w=input$w,
-                                    cohort=cohort()
-                                    #d=input$mean_diff_HTE, a=input$sig
-                                    )
-
+                                        alpha0=c(oicc_wperiod_min_swd_cc(),
+                                                 oicc_wperiod_est_swd_cc(),
+                                                 oicc_wperiod_max_swd_cc()),
+                                        a1_a0=c(oicc_ratio_min_swd_cc(),
+                                                oicc_ratio_est_swd_cc(),
+                                                oicc_ratio_max_swd_cc()),
+                                        a2=c(oicc_windiv_min_swd_cc(),
+                                             oicc_windiv_est_swd_cc(),
+                                             oicc_windiv_max_swd_cc()),
+                                        rho0=c(cicc_wperiod_min_swd_cc(),
+                                               cicc_wperiod_est_swd_cc(),
+                                               cicc_wperiod_max_swd_cc()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        w=input$w,
+                                        cohort=cohort()
+                                        #d=input$mean_diff_HTE, a=input$sig
+            )
+            
           }
-
+          
           # df_precision <- df_precision <- cbind(df_precision, alpha1=df_precision$alpha0*df_precision$a1_a0)
           # df_precision <- df_precision[which(df_precision$alpha1 <=  df_precision$alpha0),]
-
+          
           precision_hte_col <- rep(NA, nrow(df_precision))
           for(i in seq(nrow(df_precision))){
             precision_hte_col[i] <- precision_hte_parallel_m(desmat,n=df_precision[i,"n"],
-                                                     m=df_precision[i,"m"], #J=df_precision[i,"J"],
-                                                     var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],w=df_precision[i,"w"],
-                                                     alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
-                                                     a2=df_precision[i,"a2"], rho0=df_precision[i,"rho0"],
-                                                     cohort=df_precision[i,"cohort"],range=T)
+                                                             m=df_precision[i,"m"], #J=df_precision[i,"J"],
+                                                             var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],w=df_precision[i,"w"],
+                                                             alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
+                                                             a2=df_precision[i,"a2"], rho0=df_precision[i,"rho0"],
+                                                             cohort=df_precision[i,"cohort"],range=T)
           }
-
+          
           df_precision <- cbind(df_precision, precision_hte_col)
-
+          
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_precision %>%
               as.data.frame() %>%
@@ -26025,7 +26360,7 @@ shinyServer(function(input, output, session) {
                      yaxis=list(title="HTE Precision"),
                      legend=list(title=list(text="covariate ICC ratio")),
                      margin=0.001)
-
+            
             subplot(p_est,# nrows=2, widths = c(0.5,0.5),
                     margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
               layout(title = list(
@@ -26053,15 +26388,15 @@ shinyServer(function(input, output, session) {
           }else if(sensitivity_swd_react() == "sensitivity"){
             if(input$icc_display_three == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
-
+              
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_precision[,"a1_a0"]))
               a2_unique <- sort(unique(df_precision[,"a2"]))
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(r0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_o[[i]] <- df_precision %>%
@@ -26088,7 +26423,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_o[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -26115,9 +26450,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_o[[1]], p_o[[2]],p_o[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -26164,7 +26499,7 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
@@ -26172,9 +26507,9 @@ shinyServer(function(input, output, session) {
               a2_unique <- sort(unique(df_precision[,"a2"]))
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(a0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_c[[i]] <- df_precision %>%
@@ -26201,7 +26536,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_c[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -26228,9 +26563,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_c[[1]], p_c[[2]],p_c[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -26277,111 +26612,111 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }
           }# end sensitivity if/else
-
-
+          
+          
         }#end cross/closed
-
+        
       }#end display
-
+      
       #### UPLOAD OWN DESIGN ####
     }else if( trial_react() == "upload"){
-
+      
       if( is.null(file1()) ) stop("User needs to upload design matrix before the function can continue")
-
+      
       desmat <- read.csv(file1()$datapath, header=FALSE)
-
+      
       # determine effect sizes and variances depending on outcome/covariate type #
       if(outcome_type_react() =="continuous"){
         var_y <- (sd_outcome_react())^2
         d <- input$mean_diff_HTE
-
+        
         if(covar_type_react()=="continuous"){
           # continuous outcome and covar precision
           var_x <- (sd_covar_react())^2
-
+          
         }else if(covar_type_react() == "binary"){
           # continuous outcome binary covar precision
           var_x <- (prop_covar_react())*(1-prop_covar_react())
         }
-
+        
       }else if(outcome_type_react() == "binary"){
         var_y <- ((prop_control_react()*(1-prop_control_react())) + (prop_trt_react()*(1-prop_trt_react())))/2
         #d <- (input$prop_trt - input$prop_control)
-
+        
         if(covar_type_react() == "continuous"){
           # binary outcome continuous covar precision
           var_x <-(sd_covar_react())^2
-
+          
         }else if(covar_type_react() == "binary"){
           # binary outcome and covar precision #
           var_x <- (prop_covar_react())*(1-prop_covar_react())
-
+          
         }
       }
-
+      
       J <- ncol(desmat)
       seqs <- nrow(desmat)
-
+      
       if(plot_display_react() == "m_v_power"){
         m_range <- seq(input$m_swd_range[1],input$m_swd_range[2])
         n_seq <- input$ns_swd
         #J <- input$J_1 + 1
         #n <- input$ns_swd*input$J_1
-
+        
         if(cohort()=="cross"){
-
+          
           if(sensitivity_swd_react() == "est_only"){
             df_precision <- expand.grid(n_seq=n_seq, m=m_range, J=J,seqs=seqs,
-                                    alpha0=#c(oicc_wperiod_min_swd(),
-                                      oicc_wperiod_est_swd(),
-                                    #oicc_wperiod_max_swd()),
-                                    a1_a0=#c(oicc_ratio_min_swd(),
-                                      oicc_ratio_est_swd(),
-                                    # oicc_ratio_max_swd()),
-                                    rho0=#c(cicc_wperiod_min_swd(),
-                                      cicc_wperiod_est_swd(),
-                                    # cicc_wperiod_max_swd()),
-                                    r1_r0=#c(cicc_ratio_min_swd(),
-                                      cicc_ratio_est_swd(),
-                                    # cicc_ratio_max_swd()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort())
+                                        alpha0=#c(oicc_wperiod_min_swd(),
+                                          oicc_wperiod_est_swd(),
+                                        #oicc_wperiod_max_swd()),
+                                        a1_a0=#c(oicc_ratio_min_swd(),
+                                          oicc_ratio_est_swd(),
+                                        # oicc_ratio_max_swd()),
+                                        rho0=#c(cicc_wperiod_min_swd(),
+                                          cicc_wperiod_est_swd(),
+                                        # cicc_wperiod_max_swd()),
+                                        r1_r0=#c(cicc_ratio_min_swd(),
+                                          cicc_ratio_est_swd(),
+                                        # cicc_ratio_max_swd()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort())
           }else{
             df_precision <- expand.grid(n_seq=n_seq, m=m_range, J=J,seqs=seqs,
-                                    alpha0=c(oicc_wperiod_min_swd(),
-                                             oicc_wperiod_est_swd(),
-                                             oicc_wperiod_max_swd()),
-                                    a1_a0=c(oicc_ratio_min_swd(),
-                                            oicc_ratio_est_swd(),
-                                            oicc_ratio_max_swd()),
-                                    rho0=c(cicc_wperiod_min_swd(),
-                                           cicc_wperiod_est_swd(),
-                                           cicc_wperiod_max_swd()),
-                                    r1_r0=c(cicc_ratio_min_swd(),
-                                            cicc_ratio_est_swd(),
-                                            cicc_ratio_max_swd()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort())
+                                        alpha0=c(oicc_wperiod_min_swd(),
+                                                 oicc_wperiod_est_swd(),
+                                                 oicc_wperiod_max_swd()),
+                                        a1_a0=c(oicc_ratio_min_swd(),
+                                                oicc_ratio_est_swd(),
+                                                oicc_ratio_max_swd()),
+                                        rho0=c(cicc_wperiod_min_swd(),
+                                               cicc_wperiod_est_swd(),
+                                               cicc_wperiod_max_swd()),
+                                        r1_r0=c(cicc_ratio_min_swd(),
+                                                cicc_ratio_est_swd(),
+                                                cicc_ratio_max_swd()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort())
           }
-
-
+          
+          
           precision_hte_col <- rep(NA, nrow(df_precision))
           for(i in seq(nrow(df_precision))){
             precision_hte_col[i] <- precision_hte_ownDes(desmat, n_seq=df_precision[i,"n_seq"],
-                                                 m=df_precision[i,"m"],# J=df_precision[i,"J"],
-                                                 var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
-                                                 alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
-                                                 rho0=df_precision[i,"rho0"], r1_r0=df_precision[i,"r1_r0"],
-                                                 cohort=df_precision[i,"cohort"])
+                                                         m=df_precision[i,"m"],# J=df_precision[i,"J"],
+                                                         var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
+                                                         alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
+                                                         rho0=df_precision[i,"rho0"], r1_r0=df_precision[i,"r1_r0"],
+                                                         cohort=df_precision[i,"cohort"])
           }
-
+          
           df_precision <- cbind(df_precision, precision_hte_col)
-
+          
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_precision %>%
               as.data.frame() %>%
@@ -26406,7 +26741,7 @@ shinyServer(function(input, output, session) {
                      yaxis=list(title="HTE Precision"),
                      legend=list(title=list(text="covariate ICC ratio")),
                      margin=0.001)
-
+            
             subplot(p_est,# nrows=2, widths = c(0.5,0.5),
                     margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
               layout(title = list(
@@ -26434,16 +26769,16 @@ shinyServer(function(input, output, session) {
           }else if(sensitivity_swd_react() == "sensitivity"){
             if(input$icc_display_swd == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
-
+              
               a0_unique <- sort(unique(df_precision[,"\U1D6FC<sub>0</sub>"]))
               a1_a0_unique <- sort(unique(df_precision[,"a1_a0"]))
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               r1_r0_unique <- sort(unique(df_precision[,"r1_r0"]))
-
+              
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(r0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_o[[i]] <- df_precision %>%
@@ -26468,7 +26803,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_o[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -26493,9 +26828,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_o[[1]], p_o[[2]],p_o[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -26542,7 +26877,7 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
@@ -26550,9 +26885,9 @@ shinyServer(function(input, output, session) {
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               r1_r0_unique <- sort(unique(df_precision[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(a0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_c[[i]] <- df_precision %>%
@@ -26577,7 +26912,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_c[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -26602,9 +26937,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_c[[1]], p_c[[2]],p_c[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -26651,63 +26986,63 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }
           }# end sensitivity if/else
-
-
+          
+          
         }else if(cohort() == "closed"){
           if(sensitivity_swd_react() == "est_only"){
             df_precision <- expand.grid(n_seq=n_seq, m=m_range, J=J,seqs=seqs,
-                                    alpha0=#c(oicc_wperiod_min_swd_cc(),
-                                      oicc_wperiod_est_swd_cc(),
-                                    # oicc_wperiod_max_swd_cc()),
-                                    a1_a0=#c(oicc_ratio_min_swd_cc(),
-                                      oicc_ratio_est_swd_cc(),
-                                    # oicc_ratio_max_swd_cc()),
-                                    a2=#c(oicc_windiv_min_swd_cc(),
-                                      oicc_windiv_est_swd_cc(),
-                                    # oicc_windiv_max_swd_cc()),
-                                    rho0=#c(cicc_wperiod_min_swd_cc(),
-                                      cicc_wperiod_est_swd_cc(),
-                                    # cicc_wperiod_max_swd_cc()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort())
+                                        alpha0=#c(oicc_wperiod_min_swd_cc(),
+                                          oicc_wperiod_est_swd_cc(),
+                                        # oicc_wperiod_max_swd_cc()),
+                                        a1_a0=#c(oicc_ratio_min_swd_cc(),
+                                          oicc_ratio_est_swd_cc(),
+                                        # oicc_ratio_max_swd_cc()),
+                                        a2=#c(oicc_windiv_min_swd_cc(),
+                                          oicc_windiv_est_swd_cc(),
+                                        # oicc_windiv_max_swd_cc()),
+                                        rho0=#c(cicc_wperiod_min_swd_cc(),
+                                          cicc_wperiod_est_swd_cc(),
+                                        # cicc_wperiod_max_swd_cc()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort())
           }else{
             df_precision <- expand.grid(n_seq=n_seq, m=m_range, J=J,seqs=seqs,
-                                    alpha0=c(oicc_wperiod_min_swd_cc(),
-                                             oicc_wperiod_est_swd_cc(),
-                                             oicc_wperiod_max_swd_cc()),
-                                    a1_a0=c(oicc_ratio_min_swd_cc(),
-                                            oicc_ratio_est_swd_cc(),
-                                            oicc_ratio_max_swd_cc()),
-                                    a2=c(oicc_windiv_min_swd_cc(),
-                                         oicc_windiv_est_swd_cc(),
-                                         oicc_windiv_max_swd_cc()),
-                                    rho0=c(cicc_wperiod_min_swd_cc(),
-                                           cicc_wperiod_est_swd_cc(),
-                                           cicc_wperiod_max_swd_cc()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort())
+                                        alpha0=c(oicc_wperiod_min_swd_cc(),
+                                                 oicc_wperiod_est_swd_cc(),
+                                                 oicc_wperiod_max_swd_cc()),
+                                        a1_a0=c(oicc_ratio_min_swd_cc(),
+                                                oicc_ratio_est_swd_cc(),
+                                                oicc_ratio_max_swd_cc()),
+                                        a2=c(oicc_windiv_min_swd_cc(),
+                                             oicc_windiv_est_swd_cc(),
+                                             oicc_windiv_max_swd_cc()),
+                                        rho0=c(cicc_wperiod_min_swd_cc(),
+                                               cicc_wperiod_est_swd_cc(),
+                                               cicc_wperiod_max_swd_cc()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort())
           }
-
-
+          
+          
           precision_hte_col <- rep(NA, nrow(df_precision))
           for(i in seq(nrow(df_precision))){
             precision_hte_col[i] <- precision_hte_ownDes(desmat,n_seq=df_precision[i,"n_seq"],
-                                                 m=df_precision[i,"m"],# J=df_precision[i,"J"],
-                                                 var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
-                                                 alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
-                                                 a2=df_precision[i,"a2"],
-                                                 rho0=df_precision[i,"rho0"],
-                                                 cohort=df_precision[i,"cohort"])
+                                                         m=df_precision[i,"m"],# J=df_precision[i,"J"],
+                                                         var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
+                                                         alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
+                                                         a2=df_precision[i,"a2"],
+                                                         rho0=df_precision[i,"rho0"],
+                                                         cohort=df_precision[i,"cohort"])
             # if(is.nan(precision_hte_col[i])) print(i)
           }
-
+          
           df_precision <- cbind(df_precision, precision_hte_col)
-
+          
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_precision %>%
               as.data.frame() %>%
@@ -26732,7 +27067,7 @@ shinyServer(function(input, output, session) {
                      yaxis=list(title="HTE Precision"),
                      legend=list(title=list(text="covariate ICC")),
                      margin=0.001)
-
+            
             subplot(p_est,# nrows=2, widths = c(0.5,0.5),
                     margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
               layout(title = list(
@@ -26763,11 +27098,11 @@ shinyServer(function(input, output, session) {
               a1_a0_unique <- sort(unique(df_precision[,"a1_a0"]))
               a2_unique <- sort(unique(df_precision[,"a2"]))
               r0_unique <- sort(unique(df_precision[,"rho0"]))
-
+              
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(r0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_o[[i]] <- df_precision %>%
@@ -26792,7 +27127,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="covariate ICC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_o[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -26817,7 +27152,7 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="covariate ICC")),
                            margin=0.01)
                 }
-
+                
               }
               subplot(p_o[[1]], p_o[[2]],p_o[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
@@ -26865,7 +27200,7 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
@@ -26873,9 +27208,9 @@ shinyServer(function(input, output, session) {
               a2_unique <- sort(unique(df_precision[,"a2"]))
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(a0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_c[[i]] <- df_precision %>%
@@ -26900,7 +27235,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_c[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -26925,9 +27260,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_c[[1]], p_c[[2]],p_c[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -26974,71 +27309,71 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }
           }# end sensitivity if/else
-
-
+          
+          
         }#end cross/closed if/else
-
+        
       }else if(plot_display_react() == "n_v_power"){
-
+        
         ns_range <- seq(input$ns_swd_range[1],input$ns_swd_range[2])
         #J <- input$J_1 + 1
         #n_range <- ns_range*input$J_1
-
+        
         if(cohort() == "cross"){
-
+          
           if(sensitivity_swd_react() == "est_only"){
             df_precision <- expand.grid(n_seq=ns_range, m=input$m_swd,J=J,seqs=seqs,
-                                    alpha0=#c(oicc_wperiod_min_swd(),
-                                      oicc_wperiod_est_swd(),
-                                    # oicc_wperiod_max_swd()),
-                                    a1_a0=#c(oicc_ratio_min_swd(),
-                                      oicc_ratio_est_swd(),
-                                    #  oicc_ratio_max_swd()),
-                                    rho0=#c(cicc_wperiod_min_swd(),
-                                      cicc_wperiod_est_swd(),
-                                    # cicc_wperiod_max_swd()),
-                                    r1_r0=#c(cicc_ratio_min_swd(),
-                                      cicc_ratio_est_swd(),
-                                    # cicc_ratio_max_swd()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort())
-
+                                        alpha0=#c(oicc_wperiod_min_swd(),
+                                          oicc_wperiod_est_swd(),
+                                        # oicc_wperiod_max_swd()),
+                                        a1_a0=#c(oicc_ratio_min_swd(),
+                                          oicc_ratio_est_swd(),
+                                        #  oicc_ratio_max_swd()),
+                                        rho0=#c(cicc_wperiod_min_swd(),
+                                          cicc_wperiod_est_swd(),
+                                        # cicc_wperiod_max_swd()),
+                                        r1_r0=#c(cicc_ratio_min_swd(),
+                                          cicc_ratio_est_swd(),
+                                        # cicc_ratio_max_swd()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort())
+            
           }else{
             df_precision <- expand.grid(n_seq=ns_range, m=input$m_swd,J=J,seqs=seqs,
-                                    alpha0=c(oicc_wperiod_min_swd(),
-                                             oicc_wperiod_est_swd(),
-                                             oicc_wperiod_max_swd()),
-                                    a1_a0=c(oicc_ratio_min_swd(),
-                                            oicc_ratio_est_swd(),
-                                            oicc_ratio_max_swd()),
-                                    rho0=c(cicc_wperiod_min_swd(),
-                                           cicc_wperiod_est_swd(),
-                                           cicc_wperiod_max_swd()),
-                                    r1_r0=c(cicc_ratio_min_swd(),
-                                            cicc_ratio_est_swd(),
-                                            cicc_ratio_max_swd()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort())
-
+                                        alpha0=c(oicc_wperiod_min_swd(),
+                                                 oicc_wperiod_est_swd(),
+                                                 oicc_wperiod_max_swd()),
+                                        a1_a0=c(oicc_ratio_min_swd(),
+                                                oicc_ratio_est_swd(),
+                                                oicc_ratio_max_swd()),
+                                        rho0=c(cicc_wperiod_min_swd(),
+                                               cicc_wperiod_est_swd(),
+                                               cicc_wperiod_max_swd()),
+                                        r1_r0=c(cicc_ratio_min_swd(),
+                                                cicc_ratio_est_swd(),
+                                                cicc_ratio_max_swd()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort())
+            
           }
-
+          
           precision_hte_col <- rep(NA, nrow(df_precision))
           for(i in seq(nrow(df_precision))){
             precision_hte_col[i] <- precision_hte_ownDes(desmat,n_seq=df_precision[i,"n_seq"],
-                                                 m=df_precision[i,"m"],# J=df_precision[i,"J"],
-                                                 var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
-                                                 alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
-                                                 rho0=df_precision[i,"rho0"], r1_r0=df_precision[i,"r1_r0"],
-                                                 cohort=df_precision[i,"cohort"])
+                                                         m=df_precision[i,"m"],# J=df_precision[i,"J"],
+                                                         var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
+                                                         alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
+                                                         rho0=df_precision[i,"rho0"], r1_r0=df_precision[i,"r1_r0"],
+                                                         cohort=df_precision[i,"cohort"])
           }
-
+          
           df_precision <- cbind(df_precision, precision_hte_col)
-
+          
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_precision %>%
               as.data.frame() %>%
@@ -27063,7 +27398,7 @@ shinyServer(function(input, output, session) {
                      yaxis=list(title="HTE Precision"),
                      legend=list(title=list(text="covariate ICC ratio")),
                      margin=0.001)
-
+            
             subplot(p_est,# nrows=2, widths = c(0.5,0.5),
                     margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
               layout(title = list(
@@ -27091,15 +27426,15 @@ shinyServer(function(input, output, session) {
           }else if(sensitivity_swd_react() == "sensitivity"){
             if(input$icc_display_three == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
-
+              
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_precision[,"a1_a0"]))
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               r1_r0_unique <- sort(unique(df_precision[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(r0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_o[[i]] <- df_precision %>%
@@ -27124,7 +27459,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_o[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -27149,9 +27484,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_o[[1]], p_o[[2]],p_o[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -27198,7 +27533,7 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
@@ -27206,9 +27541,9 @@ shinyServer(function(input, output, session) {
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               r1_r0_unique <- sort(unique(df_precision[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(a0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_c[[i]] <- df_precision %>%
@@ -27233,7 +27568,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_c[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -27258,9 +27593,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_c[[1]], p_c[[2]],p_c[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -27307,66 +27642,66 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }
           }# end sensitivity if/else
-
-
+          
+          
         }else if (cohort()== "closed"){
-
+          
           if(sensitivity_swd_react() == "est_only"){
             df_precision <- expand.grid(n_seq=ns_range, m=input$m_swd,J=J,seqs=seqs,
-                                    alpha0=#c(oicc_wperiod_min_swd(),
-                                      oicc_wperiod_est_swd_cc(),
-                                    # oicc_wperiod_max_swd()),
-                                    a1_a0=#c(oicc_ratio_min_swd(),
-                                      oicc_ratio_est_swd_cc(),
-                                    #  oicc_ratio_max_swd()),
-                                    a2=#c(oicc_windiv_min_swd_cc(),
-                                      oicc_windiv_est_swd_cc(),
-                                    # oicc_windiv_max_swd_cc()),
-                                    rho0=#c(cicc_wperiod_min_swd_cc(),
-                                      cicc_wperiod_est_swd_cc(),
-                                    # cicc_wperiod_max_swd_cc()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort())
-
+                                        alpha0=#c(oicc_wperiod_min_swd(),
+                                          oicc_wperiod_est_swd_cc(),
+                                        # oicc_wperiod_max_swd()),
+                                        a1_a0=#c(oicc_ratio_min_swd(),
+                                          oicc_ratio_est_swd_cc(),
+                                        #  oicc_ratio_max_swd()),
+                                        a2=#c(oicc_windiv_min_swd_cc(),
+                                          oicc_windiv_est_swd_cc(),
+                                        # oicc_windiv_max_swd_cc()),
+                                        rho0=#c(cicc_wperiod_min_swd_cc(),
+                                          cicc_wperiod_est_swd_cc(),
+                                        # cicc_wperiod_max_swd_cc()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort())
+            
           }else{
             df_precision <- expand.grid(n_seq=ns_range, m=input$m_swd,J=J,seqs=seqs,
-                                    alpha0=c(oicc_wperiod_min_swd_cc(),
-                                             oicc_wperiod_est_swd_cc(),
-                                             oicc_wperiod_max_swd_cc()),
-                                    a1_a0=c(oicc_ratio_min_swd_cc(),
-                                            oicc_ratio_est_swd_cc(),
-                                            oicc_ratio_max_swd_cc()),
-                                    a2=c(oicc_windiv_min_swd_cc(),
-                                         oicc_windiv_est_swd_cc(),
-                                         oicc_windiv_max_swd_cc()),
-                                    rho0=c(cicc_wperiod_min_swd_cc(),
-                                           cicc_wperiod_est_swd_cc(),
-                                           cicc_wperiod_max_swd_cc()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort())
-
+                                        alpha0=c(oicc_wperiod_min_swd_cc(),
+                                                 oicc_wperiod_est_swd_cc(),
+                                                 oicc_wperiod_max_swd_cc()),
+                                        a1_a0=c(oicc_ratio_min_swd_cc(),
+                                                oicc_ratio_est_swd_cc(),
+                                                oicc_ratio_max_swd_cc()),
+                                        a2=c(oicc_windiv_min_swd_cc(),
+                                             oicc_windiv_est_swd_cc(),
+                                             oicc_windiv_max_swd_cc()),
+                                        rho0=c(cicc_wperiod_min_swd_cc(),
+                                               cicc_wperiod_est_swd_cc(),
+                                               cicc_wperiod_max_swd_cc()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort())
+            
           }
-
+          
           # df_precision <- df_precision <- cbind(df_precision, alpha1=df_precision$alpha0*df_precision$a1_a0)
           # df_precision <- df_precision[which(df_precision$alpha1 <=  df_precision$alpha0),]
-
+          
           precision_hte_col <- rep(NA, nrow(df_precision))
           for(i in seq(nrow(df_precision))){
             precision_hte_col[i] <- precision_hte_ownDes(desmat,n_seq=df_precision[i,"n_seq"],
-                                                 m=df_precision[i,"m"], #J=df_precision[i,"J"],
-                                                 var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
-                                                 alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
-                                                 a2=df_precision[i,"a2"], rho0=df_precision[i,"rho0"],
-                                                 cohort=df_precision[i,"cohort"])
+                                                         m=df_precision[i,"m"], #J=df_precision[i,"J"],
+                                                         var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
+                                                         alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
+                                                         a2=df_precision[i,"a2"], rho0=df_precision[i,"rho0"],
+                                                         cohort=df_precision[i,"cohort"])
           }
-
+          
           df_precision <- cbind(df_precision, precision_hte_col)
-
+          
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_precision %>%
               as.data.frame() %>%
@@ -27391,7 +27726,7 @@ shinyServer(function(input, output, session) {
                      yaxis=list(title="HTE Precision"),
                      legend=list(title=list(text="covariate ICC ratio")),
                      margin=0.001)
-
+            
             subplot(p_est,# nrows=2, widths = c(0.5,0.5),
                     margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
               layout(title = list(
@@ -27419,15 +27754,15 @@ shinyServer(function(input, output, session) {
           }else if(sensitivity_swd_react() == "sensitivity"){
             if(input$icc_display_three == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
-
+              
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_precision[,"a1_a0"]))
               a2_unique <- sort(unique(df_precision[,"a2"]))
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(r0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_o[[i]] <- df_precision %>%
@@ -27452,7 +27787,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_o[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -27477,9 +27812,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_o[[1]], p_o[[2]],p_o[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -27526,7 +27861,7 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
@@ -27534,9 +27869,9 @@ shinyServer(function(input, output, session) {
               a2_unique <- sort(unique(df_precision[,"a2"]))
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(a0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_c[[i]] <- df_precision %>%
@@ -27561,7 +27896,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_c[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -27586,9 +27921,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_c[[1]], p_c[[2]],p_c[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -27635,109 +27970,109 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }
           }# end sensitivity if/else
-
-
+          
+          
         }#end cross/closed
-
+        
       }#end plot display
-
+      
       #### TWO-PERIOD AND MULTI-PERIOD CROSSOVERS ####
     }else if(trial_react() == "crossover_2" | trial_react() == "crossover_m"){
       # determine effect sizes and variances depending on outcome/covariate type #
       if(outcome_type_react() =="continuous"){
         var_y <- (sd_outcome_react())^2
         d <- input$mean_diff_HTE
-
+        
         if(covar_type_react()=="continuous"){
           # continuous outcome and covar power
           var_x <- (sd_covar_react())^2
-
+          
         }else if(covar_type_react() == "binary"){
           # continuous outcome binary covar power
           var_x <- (prop_covar_react())*(1-prop_covar_react())
         }
-
+        
       }else if(outcome_type_react() == "binary"){
         var_y <- ((prop_control_react()*(1-prop_control_react())) + (prop_trt_react()*(1-prop_trt_react())))/2
         #d <- (input$prop_trt - input$prop_control)
-
+        
         if(covar_type_react() == "continuous"){
           # binary outcome continuous covar power
           var_x <-(sd_covar_react())^2
-
+          
         }else if(covar_type_react() == "binary"){
           # binary outcome and covar power #
           var_x <- (prop_covar_react())*(1-prop_covar_react())
-
+          
         }
       }
-
+      
       if(trial_react() == "crossover_2"){
         J <- 2
       }else if(trial_react() == "crossover_m"){
         J <- input$J
       }
-
+      
       if(plot_display_react() == "m_v_power"){
         m_range <- seq(input$m_swd_range[1],input$m_swd_range[2])
         n_seq <- input$ns_swd
         #J <- input$J_1 + 1
         #n <- input$ns_swd*input$J_1
-
+        
         if(cohort()=="cross"){
-
+          
           if(sensitivity_swd_react() == "est_only"){
             df_precision <- expand.grid(n_seq=n_seq, m=m_range, J=J,
-                                    alpha0=#c(oicc_wperiod_min_swd(),
-                                      oicc_wperiod_est_swd(),
-                                    #oicc_wperiod_max_swd()),
-                                    a1_a0=#c(oicc_ratio_min_swd(),
-                                      oicc_ratio_est_swd(),
-                                    # oicc_ratio_max_swd()),
-                                    rho0=#c(cicc_wperiod_min_swd(),
-                                      cicc_wperiod_est_swd(),
-                                    # cicc_wperiod_max_swd()),
-                                    r1_r0=#c(cicc_ratio_min_swd(),
-                                      cicc_ratio_est_swd(),
-                                    # cicc_ratio_max_swd()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort())
+                                        alpha0=#c(oicc_wperiod_min_swd(),
+                                          oicc_wperiod_est_swd(),
+                                        #oicc_wperiod_max_swd()),
+                                        a1_a0=#c(oicc_ratio_min_swd(),
+                                          oicc_ratio_est_swd(),
+                                        # oicc_ratio_max_swd()),
+                                        rho0=#c(cicc_wperiod_min_swd(),
+                                          cicc_wperiod_est_swd(),
+                                        # cicc_wperiod_max_swd()),
+                                        r1_r0=#c(cicc_ratio_min_swd(),
+                                          cicc_ratio_est_swd(),
+                                        # cicc_ratio_max_swd()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort())
           }else{
             df_precision <- expand.grid(n_seq=n_seq, m=m_range, J=J,
-                                    alpha0=c(oicc_wperiod_min_swd(),
-                                             oicc_wperiod_est_swd(),
-                                             oicc_wperiod_max_swd()),
-                                    a1_a0=c(oicc_ratio_min_swd(),
-                                            oicc_ratio_est_swd(),
-                                            oicc_ratio_max_swd()),
-                                    rho0=c(cicc_wperiod_min_swd(),
-                                           cicc_wperiod_est_swd(),
-                                           cicc_wperiod_max_swd()),
-                                    r1_r0=c(cicc_ratio_min_swd(),
-                                            cicc_ratio_est_swd(),
-                                            cicc_ratio_max_swd()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort())
+                                        alpha0=c(oicc_wperiod_min_swd(),
+                                                 oicc_wperiod_est_swd(),
+                                                 oicc_wperiod_max_swd()),
+                                        a1_a0=c(oicc_ratio_min_swd(),
+                                                oicc_ratio_est_swd(),
+                                                oicc_ratio_max_swd()),
+                                        rho0=c(cicc_wperiod_min_swd(),
+                                               cicc_wperiod_est_swd(),
+                                               cicc_wperiod_max_swd()),
+                                        r1_r0=c(cicc_ratio_min_swd(),
+                                                cicc_ratio_est_swd(),
+                                                cicc_ratio_max_swd()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort())
           }
-
-
+          
+          
           precision_hte_col <- rep(NA, nrow(df_precision))
           for(i in seq(nrow(df_precision))){
             precision_hte_col[i] <- precision_hte_crossover(n_seq=df_precision[i,"n_seq"],
-                                                    m=df_precision[i,"m"], J=df_precision[i,"J"],
-                                                    var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
-                                                    alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
-                                                    rho0=df_precision[i,"rho0"], r1_r0=df_precision[i,"r1_r0"],
-                                                    cohort=df_precision[i,"cohort"])
+                                                            m=df_precision[i,"m"], J=df_precision[i,"J"],
+                                                            var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
+                                                            alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
+                                                            rho0=df_precision[i,"rho0"], r1_r0=df_precision[i,"r1_r0"],
+                                                            cohort=df_precision[i,"cohort"])
           }
-
+          
           df_precision <- cbind(df_precision, precision_hte_col)
-
+          
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_precision %>%
               as.data.frame() %>%
@@ -27762,7 +28097,7 @@ shinyServer(function(input, output, session) {
                      yaxis=list(title="HTE Precision"),
                      legend=list(title=list(text="covariate ICC ratio")),
                      margin=0.001)
-
+            
             subplot(p_est,# nrows=2, widths = c(0.5,0.5),
                     margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
               layout(title = list(
@@ -27790,16 +28125,16 @@ shinyServer(function(input, output, session) {
           }else if(sensitivity_swd_react() == "sensitivity"){
             if(input$icc_display_swd == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
-
+              
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_precision[,"a1_a0"]))
               r0_unique <- sort(unique(df_precision[,"\U1D70C<sub>0</sub>"]))
               r1_r0_unique <- sort(unique(df_precision[,"r1_r0"]))
-
+              
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(r0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_o[[i]] <- df_precision %>%
@@ -27824,7 +28159,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_o[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -27849,9 +28184,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_o[[1]], p_o[[2]],p_o[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -27898,7 +28233,7 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
@@ -27906,9 +28241,9 @@ shinyServer(function(input, output, session) {
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               r1_r0_unique <- sort(unique(df_precision[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(a0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_c[[i]] <- df_precision %>%
@@ -27933,7 +28268,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_c[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -27958,9 +28293,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_c[[1]], p_c[[2]],p_c[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -28007,63 +28342,63 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }
           }# end sensitivity if/else
-
-
+          
+          
         }else if(cohort() == "closed"){
           if(sensitivity_swd_react() == "est_only"){
             df_precision <- expand.grid(n_seq=n_seq, m=m_range, J=J,
-                                    alpha0=#c(oicc_wperiod_min_swd_cc(),
-                                      oicc_wperiod_est_swd_cc(),
-                                    # oicc_wperiod_max_swd_cc()),
-                                    a1_a0=#c(oicc_ratio_min_swd_cc(),
-                                      oicc_ratio_est_swd_cc(),
-                                    # oicc_ratio_max_swd_cc()),
-                                    a2=#c(oicc_windiv_min_swd_cc(),
-                                      oicc_windiv_est_swd_cc(),
-                                    # oicc_windiv_max_swd_cc()),
-                                    rho0=#c(cicc_wperiod_min_swd_cc(),
-                                      cicc_wperiod_est_swd_cc(),
-                                    # cicc_wperiod_max_swd_cc()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort())
+                                        alpha0=#c(oicc_wperiod_min_swd_cc(),
+                                          oicc_wperiod_est_swd_cc(),
+                                        # oicc_wperiod_max_swd_cc()),
+                                        a1_a0=#c(oicc_ratio_min_swd_cc(),
+                                          oicc_ratio_est_swd_cc(),
+                                        # oicc_ratio_max_swd_cc()),
+                                        a2=#c(oicc_windiv_min_swd_cc(),
+                                          oicc_windiv_est_swd_cc(),
+                                        # oicc_windiv_max_swd_cc()),
+                                        rho0=#c(cicc_wperiod_min_swd_cc(),
+                                          cicc_wperiod_est_swd_cc(),
+                                        # cicc_wperiod_max_swd_cc()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort())
           }else{
             df_precision <- expand.grid(n_seq=n_seq, m=m_range, J=J,
-                                    alpha0=c(oicc_wperiod_min_swd_cc(),
-                                             oicc_wperiod_est_swd_cc(),
-                                             oicc_wperiod_max_swd_cc()),
-                                    a1_a0=c(oicc_ratio_min_swd_cc(),
-                                            oicc_ratio_est_swd_cc(),
-                                            oicc_ratio_max_swd_cc()),
-                                    a2=c(oicc_windiv_min_swd_cc(),
-                                         oicc_windiv_est_swd_cc(),
-                                         oicc_windiv_max_swd_cc()),
-                                    rho0=c(cicc_wperiod_min_swd_cc(),
-                                           cicc_wperiod_est_swd_cc(),
-                                           cicc_wperiod_max_swd_cc()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort())
+                                        alpha0=c(oicc_wperiod_min_swd_cc(),
+                                                 oicc_wperiod_est_swd_cc(),
+                                                 oicc_wperiod_max_swd_cc()),
+                                        a1_a0=c(oicc_ratio_min_swd_cc(),
+                                                oicc_ratio_est_swd_cc(),
+                                                oicc_ratio_max_swd_cc()),
+                                        a2=c(oicc_windiv_min_swd_cc(),
+                                             oicc_windiv_est_swd_cc(),
+                                             oicc_windiv_max_swd_cc()),
+                                        rho0=c(cicc_wperiod_min_swd_cc(),
+                                               cicc_wperiod_est_swd_cc(),
+                                               cicc_wperiod_max_swd_cc()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort())
           }
-
-
+          
+          
           precision_hte_col <- rep(NA, nrow(df_precision))
           for(i in seq(nrow(df_precision))){
             precision_hte_col[i] <- precision_hte_crossover(n_seq=df_precision[i,"n_seq"],
-                                                    m=df_precision[i,"m"], J=df_precision[i,"J"],
-                                                    var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
-                                                    alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
-                                                    a2=df_precision[i,"a2"],
-                                                    rho0=df_precision[i,"rho0"],
-                                                    cohort=df_precision[i,"cohort"])
+                                                            m=df_precision[i,"m"], J=df_precision[i,"J"],
+                                                            var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
+                                                            alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
+                                                            a2=df_precision[i,"a2"],
+                                                            rho0=df_precision[i,"rho0"],
+                                                            cohort=df_precision[i,"cohort"])
             # if(is.nan(precision_hte_col[i])) print(i)
           }
-
+          
           df_precision <- cbind(df_precision, precision_hte_col)
-
+          
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_precision %>%
               as.data.frame() %>%
@@ -28088,7 +28423,7 @@ shinyServer(function(input, output, session) {
                      yaxis=list(title="HTE Precision"),
                      legend=list(title=list(text="covariate ICC")),
                      margin=0.001)
-
+            
             subplot(p_est,# nrows=2, widths = c(0.5,0.5),
                     margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
               layout(title = list(
@@ -28119,11 +28454,11 @@ shinyServer(function(input, output, session) {
               a1_a0_unique <- sort(unique(df_precision[,"a1_a0"]))
               a2_unique <- sort(unique(df_precision[,"a2"]))
               r0_unique <- sort(unique(df_precision[,"rho0"]))
-
+              
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(r0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_o[[i]] <- df_precision %>%
@@ -28148,7 +28483,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="covariate ICC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_o[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -28173,9 +28508,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="covariate ICC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_o[[1]], p_o[[2]],p_o[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -28222,7 +28557,7 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
@@ -28230,9 +28565,9 @@ shinyServer(function(input, output, session) {
               a2_unique <- sort(unique(df_precision[,"a2"]))
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(a0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_c[[i]] <- df_precision %>%
@@ -28257,7 +28592,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_c[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -28282,9 +28617,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_c[[1]], p_c[[2]],p_c[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -28331,70 +28666,70 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }
           }# end sensitivity if/else
-
+          
         }#end cross/closed if/else
-
+        
       }else if(plot_display_react() == "n_v_power"){
-
+        
         ns_range <- seq(input$ns_swd_range[1],input$ns_swd_range[2])
         #J <- input$J_1 + 1
         #n_range <- ns_range*input$J_1
-
+        
         if(cohort() == "cross"){
-
+          
           if(sensitivity_swd_react() == "est_only"){
             df_precision <- expand.grid(n_seq=ns_range, m=input$m_swd,J=J,
-                                    alpha0=#c(oicc_wperiod_min_swd(),
-                                      oicc_wperiod_est_swd(),
-                                    # oicc_wperiod_max_swd()),
-                                    a1_a0=#c(oicc_ratio_min_swd(),
-                                      oicc_ratio_est_swd(),
-                                    #  oicc_ratio_max_swd()),
-                                    rho0=#c(cicc_wperiod_min_swd(),
-                                      cicc_wperiod_est_swd(),
-                                    # cicc_wperiod_max_swd()),
-                                    r1_r0=#c(cicc_ratio_min_swd(),
-                                      cicc_ratio_est_swd(),
-                                    # cicc_ratio_max_swd()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort())
-
+                                        alpha0=#c(oicc_wperiod_min_swd(),
+                                          oicc_wperiod_est_swd(),
+                                        # oicc_wperiod_max_swd()),
+                                        a1_a0=#c(oicc_ratio_min_swd(),
+                                          oicc_ratio_est_swd(),
+                                        #  oicc_ratio_max_swd()),
+                                        rho0=#c(cicc_wperiod_min_swd(),
+                                          cicc_wperiod_est_swd(),
+                                        # cicc_wperiod_max_swd()),
+                                        r1_r0=#c(cicc_ratio_min_swd(),
+                                          cicc_ratio_est_swd(),
+                                        # cicc_ratio_max_swd()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort())
+            
           }else{
             df_precision <- expand.grid(n_seq=ns_range, m=input$m_swd,J=J,
-                                    alpha0=c(oicc_wperiod_min_swd(),
-                                             oicc_wperiod_est_swd(),
-                                             oicc_wperiod_max_swd()),
-                                    a1_a0=c(oicc_ratio_min_swd(),
-                                            oicc_ratio_est_swd(),
-                                            oicc_ratio_max_swd()),
-                                    rho0=c(cicc_wperiod_min_swd(),
-                                           cicc_wperiod_est_swd(),
-                                           cicc_wperiod_max_swd()),
-                                    r1_r0=c(cicc_ratio_min_swd(),
-                                            cicc_ratio_est_swd(),
-                                            cicc_ratio_max_swd()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort())
-
+                                        alpha0=c(oicc_wperiod_min_swd(),
+                                                 oicc_wperiod_est_swd(),
+                                                 oicc_wperiod_max_swd()),
+                                        a1_a0=c(oicc_ratio_min_swd(),
+                                                oicc_ratio_est_swd(),
+                                                oicc_ratio_max_swd()),
+                                        rho0=c(cicc_wperiod_min_swd(),
+                                               cicc_wperiod_est_swd(),
+                                               cicc_wperiod_max_swd()),
+                                        r1_r0=c(cicc_ratio_min_swd(),
+                                                cicc_ratio_est_swd(),
+                                                cicc_ratio_max_swd()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort())
+            
           }
-
+          
           precision_hte_col <- rep(NA, nrow(df_precision))
           for(i in seq(nrow(df_precision))){
             precision_hte_col[i] <- precision_hte_crossover(n_seq=df_precision[i,"n_seq"],
-                                                    m=df_precision[i,"m"], J=df_precision[i,"J"],
-                                                    var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
-                                                    alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
-                                                    rho0=df_precision[i,"rho0"], r1_r0=df_precision[i,"r1_r0"],
-                                                    cohort=df_precision[i,"cohort"])
+                                                            m=df_precision[i,"m"], J=df_precision[i,"J"],
+                                                            var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
+                                                            alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
+                                                            rho0=df_precision[i,"rho0"], r1_r0=df_precision[i,"r1_r0"],
+                                                            cohort=df_precision[i,"cohort"])
           }
-
+          
           df_precision <- cbind(df_precision, precision_hte_col)
-
+          
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_precision %>%
               as.data.frame() %>%
@@ -28419,7 +28754,7 @@ shinyServer(function(input, output, session) {
                      yaxis=list(title="HTE Precision"),
                      legend=list(title=list(text="covariate ICC ratio")),
                      margin=0.001)
-
+            
             subplot(p_est,# nrows=2, widths = c(0.5,0.5),
                     margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
               layout(title = list(
@@ -28447,15 +28782,15 @@ shinyServer(function(input, output, session) {
           }else if(sensitivity_swd_react() == "sensitivity"){
             if(input$icc_display_three == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
-
+              
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_precision[,"a1_a0"]))
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               r1_r0_unique <- sort(unique(df_precision[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(r0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_o[[i]] <- df_precision %>%
@@ -28480,7 +28815,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_o[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -28505,9 +28840,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_o[[1]], p_o[[2]],p_o[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -28554,7 +28889,7 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
@@ -28562,9 +28897,9 @@ shinyServer(function(input, output, session) {
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               r1_r0_unique <- sort(unique(df_precision[,"r1_r0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(a0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_c[[i]] <- df_precision %>%
@@ -28589,7 +28924,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_c[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -28614,9 +28949,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_c[[1]], p_c[[2]],p_c[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -28663,66 +28998,66 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }
           }# end sensitivity if/else
-
-
+          
+          
         }else if (cohort()== "closed"){
-
+          
           if(sensitivity_swd_react() == "est_only"){
             df_precision <- expand.grid(n_seq=ns_range, m=input$m_swd,J=J,
-                                    alpha0=#c(oicc_wperiod_min_swd(),
-                                      oicc_wperiod_est_swd_cc(),
-                                    # oicc_wperiod_max_swd()),
-                                    a1_a0=#c(oicc_ratio_min_swd(),
-                                      oicc_ratio_est_swd_cc(),
-                                    #  oicc_ratio_max_swd()),
-                                    a2=#c(oicc_windiv_min_swd_cc(),
-                                      oicc_windiv_est_swd_cc(),
-                                    # oicc_windiv_max_swd_cc()),
-                                    rho0=#c(cicc_wperiod_min_swd_cc(),
-                                      cicc_wperiod_est_swd_cc(),
-                                    # cicc_wperiod_max_swd_cc()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort())
-
+                                        alpha0=#c(oicc_wperiod_min_swd(),
+                                          oicc_wperiod_est_swd_cc(),
+                                        # oicc_wperiod_max_swd()),
+                                        a1_a0=#c(oicc_ratio_min_swd(),
+                                          oicc_ratio_est_swd_cc(),
+                                        #  oicc_ratio_max_swd()),
+                                        a2=#c(oicc_windiv_min_swd_cc(),
+                                          oicc_windiv_est_swd_cc(),
+                                        # oicc_windiv_max_swd_cc()),
+                                        rho0=#c(cicc_wperiod_min_swd_cc(),
+                                          cicc_wperiod_est_swd_cc(),
+                                        # cicc_wperiod_max_swd_cc()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort())
+            
           }else{
             df_precision <- expand.grid(n_seq=ns_range, m=input$m_swd,J=J,
-                                    alpha0=c(oicc_wperiod_min_swd_cc(),
-                                             oicc_wperiod_est_swd_cc(),
-                                             oicc_wperiod_max_swd_cc()),
-                                    a1_a0=c(oicc_ratio_min_swd_cc(),
-                                            oicc_ratio_est_swd_cc(),
-                                            oicc_ratio_max_swd_cc()),
-                                    a2=c(oicc_windiv_min_swd_cc(),
-                                         oicc_windiv_est_swd_cc(),
-                                         oicc_windiv_max_swd_cc()),
-                                    rho0=c(cicc_wperiod_min_swd_cc(),
-                                           cicc_wperiod_est_swd_cc(),
-                                           cicc_wperiod_max_swd_cc()),
-                                    var_y=var_y, #(input$sd_outcome)^2,
-                                    var_x=var_x,#(input$sd_covar)^2,
-                                    cohort=cohort())
-
+                                        alpha0=c(oicc_wperiod_min_swd_cc(),
+                                                 oicc_wperiod_est_swd_cc(),
+                                                 oicc_wperiod_max_swd_cc()),
+                                        a1_a0=c(oicc_ratio_min_swd_cc(),
+                                                oicc_ratio_est_swd_cc(),
+                                                oicc_ratio_max_swd_cc()),
+                                        a2=c(oicc_windiv_min_swd_cc(),
+                                             oicc_windiv_est_swd_cc(),
+                                             oicc_windiv_max_swd_cc()),
+                                        rho0=c(cicc_wperiod_min_swd_cc(),
+                                               cicc_wperiod_est_swd_cc(),
+                                               cicc_wperiod_max_swd_cc()),
+                                        var_y=var_y, #(input$sd_outcome)^2,
+                                        var_x=var_x,#(input$sd_covar)^2,
+                                        cohort=cohort())
+            
           }
-
+          
           # df_precision <- df_precision <- cbind(df_precision, alpha1=df_precision$alpha0*df_precision$a1_a0)
           # df_precision <- df_precision[which(df_precision$alpha1 <=  df_precision$alpha0),]
-
+          
           precision_hte_col <- rep(NA, nrow(df_precision))
           for(i in seq(nrow(df_precision))){
             precision_hte_col[i] <- precision_hte_crossover(n_seq=df_precision[i,"n_seq"],
-                                                    m=df_precision[i,"m"], J=df_precision[i,"J"],
-                                                    var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
-                                                    alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
-                                                    a2=df_precision[i,"a2"], rho0=df_precision[i,"rho0"],
-                                                    cohort=df_precision[i,"cohort"])
+                                                            m=df_precision[i,"m"], J=df_precision[i,"J"],
+                                                            var_y=df_precision[i,"var_y"], var_x=df_precision[i,"var_x"],
+                                                            alpha0=df_precision[i,"alpha0"], a1_a0=df_precision[i,"a1_a0"],
+                                                            a2=df_precision[i,"a2"], rho0=df_precision[i,"rho0"],
+                                                            cohort=df_precision[i,"cohort"])
           }
-
+          
           df_precision <- cbind(df_precision, precision_hte_col)
-
+          
           if(sensitivity_swd_react() == "est_only"){
             p_est <- df_precision %>%
               as.data.frame() %>%
@@ -28747,7 +29082,7 @@ shinyServer(function(input, output, session) {
                      yaxis=list(title="HTE Precision"),
                      legend=list(title=list(text="covariate ICC ratio")),
                      margin=0.001)
-
+            
             subplot(p_est,# nrows=2, widths = c(0.5,0.5),
                     margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
               layout(title = list(
@@ -28775,15 +29110,15 @@ shinyServer(function(input, output, session) {
           }else if(sensitivity_swd_react() == "sensitivity"){
             if(input$icc_display_three == "oICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
-
+              
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
               a1_a0_unique <- sort(unique(df_precision[,"a1_a0"]))
               a2_unique <- sort(unique(df_precision[,"a2"]))
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(r0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_o[[i]] <- df_precision %>%
@@ -28808,7 +29143,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_o[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -28833,9 +29168,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="covariate CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_o[[1]], p_o[[2]],p_o[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -28882,7 +29217,7 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }else if(input$icc_display_swd == "cICC_constant"){
               #legend_title <- latex2exp::TeX("$\\rho_{y|x}$")
               a0_unique <- sort(unique(df_precision[,"alpha0"]))
@@ -28890,9 +29225,9 @@ shinyServer(function(input, output, session) {
               a2_unique <- sort(unique(df_precision[,"a2"]))
               r0_unique <- sort(unique(df_precision[,"rho0"]))
               p_o <- p_c <- vector(mode="list", length=length(a0_unique))
-
+              
               for(i in seq(length(a0_unique))){
-
+                
                 if(i != 3){
                   # outcome ICCs #
                   p_c[[i]] <- df_precision %>%
@@ -28917,7 +29252,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
-
+                  
                 }else{
                   p_c[[i]] <- df_precision %>%
                     as.data.frame() %>%
@@ -28942,9 +29277,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="outcome CAC")),
                            margin=0.01)
                 }
-
+                
               }
-
+              
               subplot(p_c[[1]], p_c[[2]],p_c[[3]], nrows=2, widths = c(0.5,0.5),
                       margin = 0.09, titleX=T, titleY=T) %>% #, list(b=50,pad=50)) %>%
                 layout(title = list(
@@ -28991,129 +29326,129 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }
           }# end sensitivity if/else
-
-
+          
+          
         }#end cross/closed
-
+        
       }#end plot display
-
+      
       #### IRGT ####
     }else if( trial_react() == "irgt"){
       if(clustering_irgt() == "indiv"){
         m0_fix <- 1
       }
-
+      
       # determine effect sizes and variances depending on outcome/covariate type #
       if(outcome_type_react() =="continuous"){
         var_y1 <- (sd_outcome1_react())^2
         var_y0 <- (sd_outcome0_react())^2
         d <- input$mean_diff_HTE
-
+        
         if(covar_type_react()=="continuous"){
           # continuous outcome and covar precision
           var_x <- (sd_covar_react())^2
-
+          
         }else if(covar_type_react() == "binary"){
           # continuous outcome binary covar precision
           var_x <- (prop_covar_react())*(1-prop_covar_react())
         }
-
+        
       }
-
+      
       if(plot_display_react() == "m_v_power"){
         m1_range <- seq(input$m1_slide[1],input$m1_slide[2])
         m1_fix <- input$m1_fix
-
+        
         if(clustering_irgt() == "cluster"){
           m0_range <- seq(input$m0_slide[1],input$m0_slide[2])
           m0_fix <- input$m0_fix
         }
-
+        
         if(sensitivity_irgt_react() == "est_only"){
           # m1 on x-axis #
           df1_precision <- expand.grid(n1=input$n1_fix, m1=m1_range,
-                                   n0=input$n0_fix, m0=m0_fix,
-                                   oicc1=oicc_trt_est_irgt(),
-                                   oicc0=oicc_ctrl_est_irgt(),
-                                   var_y1=var_y1,
-                                   var_y0=var_y0,
-                                   var_x=var_x)
+                                       n0=input$n0_fix, m0=m0_fix,
+                                       oicc1=oicc_trt_est_irgt(),
+                                       oicc0=oicc_ctrl_est_irgt(),
+                                       var_y1=var_y1,
+                                       var_y0=var_y0,
+                                       var_x=var_x)
           # print(m0_fix)
-
+          
           if(clustering_irgt() == "cluster"){
             # m0 on x-axis #
             df0_precision <- expand.grid(n1=input$n1_fix, m1=m1_fix,
-                                     n0=input$n0_fix, m0=m0_range,
-                                     oicc1=oicc_trt_est_irgt(),
-                                     oicc0=oicc_ctrl_est_irgt(),
-                                     var_y1=var_y1,
-                                     var_y0=var_y0,
-                                     var_x=var_x)
+                                         n0=input$n0_fix, m0=m0_range,
+                                         oicc1=oicc_trt_est_irgt(),
+                                         oicc0=oicc_ctrl_est_irgt(),
+                                         var_y1=var_y1,
+                                         var_y0=var_y0,
+                                         var_x=var_x)
           }
-
+          
         }else{
           # m1 on x-axis #
           df1_precision <- expand.grid(n1=input$n1_fix, m1=m1_range,
-                                   n0=input$n0_fix, m0=m0_fix,
-                                   oicc1=c(oicc_trt_min_irgt(), oicc_trt_est_irgt(),
-                                           oicc_trt_max_irgt()),
-                                   oicc0=c(oicc_ctrl_min_irgt(), oicc_ctrl_est_irgt(),
-                                           oicc_ctrl_max_irgt()),
-                                   var_y1=var_y1,
-                                   var_y0=var_y0,
-                                   var_x=var_x)
+                                       n0=input$n0_fix, m0=m0_fix,
+                                       oicc1=c(oicc_trt_min_irgt(), oicc_trt_est_irgt(),
+                                               oicc_trt_max_irgt()),
+                                       oicc0=c(oicc_ctrl_min_irgt(), oicc_ctrl_est_irgt(),
+                                               oicc_ctrl_max_irgt()),
+                                       var_y1=var_y1,
+                                       var_y0=var_y0,
+                                       var_x=var_x)
           if(clustering_irgt() == "cluster"){
             # m0 on x-axis #
             df0_precision <- expand.grid(n1=input$n1_fix, m1=m1_fix,
-                                     n0=input$n0_fix, m0=m0_range,
-                                     oicc1=c(oicc_trt_min_irgt(), oicc_trt_est_irgt(),
-                                             oicc_trt_max_irgt()),
-                                     oicc0=c(oicc_ctrl_min_irgt(), oicc_ctrl_est_irgt(),
-                                             oicc_ctrl_max_irgt()),
-                                     var_y1=var_y1,
-                                     var_y0=var_y0,
-                                     var_x=var_x)
+                                         n0=input$n0_fix, m0=m0_range,
+                                         oicc1=c(oicc_trt_min_irgt(), oicc_trt_est_irgt(),
+                                                 oicc_trt_max_irgt()),
+                                         oicc0=c(oicc_ctrl_min_irgt(), oicc_ctrl_est_irgt(),
+                                                 oicc_ctrl_max_irgt()),
+                                         var_y1=var_y1,
+                                         var_y0=var_y0,
+                                         var_x=var_x)
           }
         }
-
+        
         precision1_hte_col <- rep(NA, nrow(df1_precision))
-
+        
         for(i in seq(nrow(df1_precision))){
           precision1_hte_col[i] <- precision_irgt(m1=df1_precision[i,"m1"],
-                                          m0=df1_precision[i,"m0"],
-                                          n1=df1_precision[i,"n1"],
-                                          n0=df1_precision[i,"n0"],
-                                          oicc1=df1_precision[i,"oicc1"],
-                                          oicc0=df1_precision[i,"oicc0"],
-                                          var_y1=df1_precision[i,"var_y1"],
-                                          var_y0=df1_precision[i,"var_y0"],
-                                          var_x=df1_precision[i,"var_x"])
-
+                                                  m0=df1_precision[i,"m0"],
+                                                  n1=df1_precision[i,"n1"],
+                                                  n0=df1_precision[i,"n0"],
+                                                  oicc1=df1_precision[i,"oicc1"],
+                                                  oicc0=df1_precision[i,"oicc0"],
+                                                  var_y1=df1_precision[i,"var_y1"],
+                                                  var_y0=df1_precision[i,"var_y0"],
+                                                  var_x=df1_precision[i,"var_x"])
+          
         }
-
+        
         if(clustering_irgt() == "cluster"){
           precision0_hte_col <- rep(NA, nrow(df0_precision))
-
+          
           for(i in seq(nrow(df0_precision))){
             precision0_hte_col[i] <- precision_irgt(m1=df0_precision[i,"m1"],
-                                            m0=df0_precision[i,"m0"],
-                                            n1=df0_precision[i,"n1"],
-                                            n0=df0_precision[i,"n0"],
-                                            oicc1=df0_precision[i,"oicc1"],
-                                            oicc0=df0_precision[i,"oicc0"],
-                                            var_y1=df0_precision[i,"var_y1"],
-                                            var_y0=df0_precision[i,"var_y0"],
-                                            var_x=df0_precision[i,"var_x"])
+                                                    m0=df0_precision[i,"m0"],
+                                                    n1=df0_precision[i,"n1"],
+                                                    n0=df0_precision[i,"n0"],
+                                                    oicc1=df0_precision[i,"oicc1"],
+                                                    oicc0=df0_precision[i,"oicc0"],
+                                                    var_y1=df0_precision[i,"var_y1"],
+                                                    var_y0=df0_precision[i,"var_y0"],
+                                                    var_x=df0_precision[i,"var_x"])
           }
           df0_precision <- cbind(df0_precision, precision0_hte_col)
-
+          
         }
-
+        
         df1_precision <- cbind(df1_precision, precision1_hte_col)
-
+        
         if(sensitivity_irgt_react() == "est_only"){
           # m1 on x-axis #
           p1_est <- df1_precision %>%
@@ -29140,9 +29475,9 @@ shinyServer(function(input, output, session) {
                    yaxis=list(title="HTE Precision"),
                    legend=list(title=list(text="Control-arm outcome ICC")),
                    margin=0.001)
-
+          
           if(clustering_irgt() == "cluster"){
-
+            
             # m0 on x-axis #
             p0_est <- df0_precision %>%
               as.data.frame() %>%
@@ -29168,7 +29503,7 @@ shinyServer(function(input, output, session) {
                      yaxis=list(title="HTE Precision"),
                      legend=list(title=list(text="Control-arm outcome ICC")),
                      margin=0.001)
-
+            
             subplot(p1_est, p0_est,#nrows=1, widths = c(0.5),
                     margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
               layout(title = list(
@@ -29232,16 +29567,16 @@ shinyServer(function(input, output, session) {
                           x=0.5)
               )
           }# end clustering if/else
-
+          
         }else if(sensitivity_irgt_react() == "sensitivity"){
           if(input$icc_display_irgt == "oICC1_constant"){
             #legend_title <- latex2exp::TeX("$\\rho_x$")
             oicc1_unique <- sort(unique(df1_precision[,"oicc1"]))
             oicc0_unique <- sort(unique(df1_precision[,"oicc0"]))
             p1 <- p0 <- vector(mode="list", length=length(oicc1_unique))
-
+            
             for(i in seq(length(oicc1_unique))){
-
+              
               if(i != 3){
                 # m1 on x-axis #
                 p1[[i]] <- df1_precision %>%
@@ -29266,7 +29601,7 @@ shinyServer(function(input, output, session) {
                          yaxis=list(title="HTE Precision"),
                          legend=list(title=list(text="Control-arm outcome ICC")),
                          margin=0.01)
-
+                
                 if(clustering_irgt() == "cluster"){
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
@@ -29293,7 +29628,7 @@ shinyServer(function(input, output, session) {
                            margin=0.01)
                 }
               }else{
-
+                
                 if(clustering_irgt() == "cluster"){
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
@@ -29318,7 +29653,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Control-arm outcome ICC")),
                            margin=0.001)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -29368,13 +29703,13 @@ shinyServer(function(input, output, session) {
                            margin=0.001)
                 }
               }
-
+              
             }# end row loop
-
-
-
+            
+            
+            
             if(clustering_irgt() == "cluster"){
-
+              
               # m1 on x-axis #
               subplot(p1[[1]],p0[[1]],
                       p1[[2]],p0[[2]],
@@ -29514,16 +29849,16 @@ shinyServer(function(input, output, session) {
                             y=0.25,
                             x=0.5)
                 )
-
+              
             }# end clustering if/else
           }else if(input$icc_display_irgt == "oICC0_constant"){
             #legend_title <- latex2exp::TeX("$\\rho_x$")
             oicc1_unique <- sort(unique(df1_precision[,"oicc1"]))
             oicc0_unique <- sort(unique(df1_precision[,"oicc0"]))
             p1 <- p0 <- vector(mode="list", length=length(oicc0_unique))
-
+            
             for(i in seq(length(oicc1_unique))){
-
+              
               if(i != 3){
                 # m1 on x-axis #
                 p1[[i]] <- df1_precision %>%
@@ -29549,7 +29884,7 @@ shinyServer(function(input, output, session) {
                          legend=list(title=list(text="Treatment-arm outcome ICC")),
                          margin=0.01)
                 if(clustering_irgt() == "cluster"){
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -29575,9 +29910,9 @@ shinyServer(function(input, output, session) {
                            margin=0.01)
                 }
               }else{
-
+                
                 if(clustering_irgt() == "cluster"){
-
+                  
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
                     as.data.frame() %>%
@@ -29601,7 +29936,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Treatment-arm outcome ICC")),
                            margin=0.001)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -29651,11 +29986,11 @@ shinyServer(function(input, output, session) {
                            margin=0.001)
                 }
               }
-
+              
             }# end row loop
-
+            
             if(clustering_irgt() == "cluster"){
-
+              
               # m1 on x-axis #
               subplot(p1[[1]],p0[[1]],
                       p1[[2]],p0[[2]],
@@ -29796,93 +30131,93 @@ shinyServer(function(input, output, session) {
                             x=0.5)
                 )
             }# end clustering if/else
-
+            
           }# oicc1 constant end here
         }# end sensitivity
-
+        
       }else if(plot_display_react() == "n_v_power"){
-
+        
         n1_range <- seq(input$n1_slide[1],input$n1_slide[2])
         n1_fix <- input$n1_fix
-
+        
         n0_range <- seq(input$m0_slide[1],input$m0_slide[2])
         n0_fix <- input$m0_fix
-
+        
         if(sensitivity_irgt_react() == "est_only"){
           # n1 on x-axis #
           df1_precision <- expand.grid(n1=n1_range, m1=input$m1_fix,
-                                   n0=input$n0_fix, m0=input$m0_fix,
-                                   oicc1=oicc_trt_est_irgt(),
-                                   oicc0=oicc_ctrl_est_irgt(),
-                                   var_y1=var_y1,
-                                   var_y0=var_y0,
-                                   var_x=var_x)
-
+                                       n0=input$n0_fix, m0=input$m0_fix,
+                                       oicc1=oicc_trt_est_irgt(),
+                                       oicc0=oicc_ctrl_est_irgt(),
+                                       var_y1=var_y1,
+                                       var_y0=var_y0,
+                                       var_x=var_x)
+          
           # n0 on x-axis #
           df0_precision <- expand.grid(n1=n1_fix, m1=input$m1_fix,
-                                   n0=n0_range, m0=input$m0_fix,
-                                   oicc1=oicc_trt_est_irgt(),
-                                   oicc0=oicc_ctrl_est_irgt(),
-                                   var_y1=var_y1,
-                                   var_y0=var_y0,
-                                   var_x=var_x)
-
+                                       n0=n0_range, m0=input$m0_fix,
+                                       oicc1=oicc_trt_est_irgt(),
+                                       oicc0=oicc_ctrl_est_irgt(),
+                                       var_y1=var_y1,
+                                       var_y0=var_y0,
+                                       var_x=var_x)
+          
         }else{
           # n1 on x-axis #
           df1_precision <- expand.grid(n1=n1_range, m1=input$m1_fix,
-                                   n0=n0_fix, m0=input$m0_fix,
-                                   oicc1=c(oicc_trt_min_irgt(), oicc_trt_est_irgt(),
-                                           oicc_trt_max_irgt()),
-                                   oicc0=c(oicc_ctrl_min_irgt(), oicc_ctrl_est_irgt(),
-                                           oicc_ctrl_max_irgt()),
-                                   var_y1=var_y1,
-                                   var_y0=var_y0,
-                                   var_x=var_x)
-
+                                       n0=n0_fix, m0=input$m0_fix,
+                                       oicc1=c(oicc_trt_min_irgt(), oicc_trt_est_irgt(),
+                                               oicc_trt_max_irgt()),
+                                       oicc0=c(oicc_ctrl_min_irgt(), oicc_ctrl_est_irgt(),
+                                               oicc_ctrl_max_irgt()),
+                                       var_y1=var_y1,
+                                       var_y0=var_y0,
+                                       var_x=var_x)
+          
           # n0 on x-axis #
           df0_precision <- expand.grid(n1=n1_fix, m1=input$m1_fix,
-                                   n0=n0_range, m0=input$m0_fix,
-                                   oicc1=c(oicc_trt_min_irgt(), oicc_trt_est_irgt(),
-                                           oicc_trt_max_irgt()),
-                                   oicc0=c(oicc_ctrl_min_irgt(), oicc_ctrl_est_irgt(),
-                                           oicc_ctrl_max_irgt()),
-                                   var_y1=var_y1,
-                                   var_y0=var_y0,
-                                   var_x=var_x)
+                                       n0=n0_range, m0=input$m0_fix,
+                                       oicc1=c(oicc_trt_min_irgt(), oicc_trt_est_irgt(),
+                                               oicc_trt_max_irgt()),
+                                       oicc0=c(oicc_ctrl_min_irgt(), oicc_ctrl_est_irgt(),
+                                               oicc_ctrl_max_irgt()),
+                                       var_y1=var_y1,
+                                       var_y0=var_y0,
+                                       var_x=var_x)
         }
-
+        
         precision1_hte_col <- rep(NA, nrow(df1_precision))
-
+        
         for(i in seq(nrow(df1_precision))){
           precision1_hte_col[i] <- precision_irgt(m1=df1_precision[i,"m1"],
-                                          m0=df1_precision[i,"m0"],
-                                          n1=df1_precision[i,"n1"],
-                                          n0=df1_precision[i,"n0"],
-                                          oicc1=df1_precision[i,"oicc1"],
-                                          oicc0=df1_precision[i,"oicc0"],
-                                          var_y1=df1_precision[i,"var_y1"],
-                                          var_y0=df1_precision[i,"var_y0"],
-                                          var_x=df1_precision[i,"var_x"])
-
+                                                  m0=df1_precision[i,"m0"],
+                                                  n1=df1_precision[i,"n1"],
+                                                  n0=df1_precision[i,"n0"],
+                                                  oicc1=df1_precision[i,"oicc1"],
+                                                  oicc0=df1_precision[i,"oicc0"],
+                                                  var_y1=df1_precision[i,"var_y1"],
+                                                  var_y0=df1_precision[i,"var_y0"],
+                                                  var_x=df1_precision[i,"var_x"])
+          
         }
-
+        
         precision0_hte_col <- rep(NA, nrow(df0_precision))
-
+        
         for(i in seq(nrow(df0_precision))){
           precision0_hte_col[i] <- precision_irgt(m1=df0_precision[i,"m1"],
-                                          m0=df0_precision[i,"m0"],
-                                          n1=df0_precision[i,"n1"],
-                                          n0=df0_precision[i,"n0"],
-                                          oicc1=df0_precision[i,"oicc1"],
-                                          oicc0=df0_precision[i,"oicc0"],
-                                          var_y1=df0_precision[i,"var_y1"],
-                                          var_y0=df0_precision[i,"var_y0"],
-                                          var_x=df0_precision[i,"var_x"])
+                                                  m0=df0_precision[i,"m0"],
+                                                  n1=df0_precision[i,"n1"],
+                                                  n0=df0_precision[i,"n0"],
+                                                  oicc1=df0_precision[i,"oicc1"],
+                                                  oicc0=df0_precision[i,"oicc0"],
+                                                  var_y1=df0_precision[i,"var_y1"],
+                                                  var_y0=df0_precision[i,"var_y0"],
+                                                  var_x=df0_precision[i,"var_x"])
         }
         df0_precision <- cbind(df0_precision, precision0_hte_col)
-
+        
         df1_precision <- cbind(df1_precision, precision1_hte_col)
-
+        
         if(sensitivity_irgt_react() == "est_only"){
           # n1 on x-axis #
           p1_est <- df1_precision %>%
@@ -29909,7 +30244,7 @@ shinyServer(function(input, output, session) {
                    yaxis=list(title="HTE Precision"),
                    legend=list(title=list(text="Control-arm outcome ICC")),
                    margin=0.001)
-
+          
           # n0 on x-axis #
           p0_est <- df0_precision %>%
             as.data.frame() %>%
@@ -29935,7 +30270,7 @@ shinyServer(function(input, output, session) {
                    yaxis=list(title="HTE Precision"),
                    legend=list(title=list(text="Control-arm outcome ICC")),
                    margin=0.001)
-
+          
           subplot(p1_est, p0_est,#nrows=1, widths = c(0.5),
                   margin = 0.07, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
             layout(title = list(
@@ -29972,16 +30307,16 @@ shinyServer(function(input, output, session) {
                         y=0.25,
                         x=0.5)
             )
-
+          
         }else if(sensitivity_irgt_react() == "sensitivity"){
           if(input$icc_display_irgt == "oICC1_constant"){
             #legend_title <- latex2exp::TeX("$\\rho_x$")
             oicc1_unique <- sort(unique(df1_precision[,"oicc1"]))
             oicc0_unique <- sort(unique(df1_precision[,"oicc0"]))
             p1 <- p0 <- vector(mode="list", length=length(oicc1_unique))
-
+            
             for(i in seq(length(oicc1_unique))){
-
+              
               if(i != 3){
                 # n1 on x-axis #
                 p1[[i]] <- df1_precision %>%
@@ -30006,7 +30341,7 @@ shinyServer(function(input, output, session) {
                          yaxis=list(title="HTE Precision"),
                          legend=list(title=list(text="Control-arm outcome ICC")),
                          margin=0.01)
-
+                
                 # n0 on x-axis #
                 p0[[i]] <- df0_precision %>%
                   as.data.frame() %>%
@@ -30031,7 +30366,7 @@ shinyServer(function(input, output, session) {
                          legend=list(title=list(text="Control-arm outcome ICC")),
                          margin=0.01)
               }else{
-
+                
                 # n1 on x-axis #
                 p1[[i]] <- df1_precision %>%
                   as.data.frame() %>%
@@ -30055,7 +30390,7 @@ shinyServer(function(input, output, session) {
                          yaxis=list(title="HTE Precision"),
                          legend=list(title=list(text="Control-arm outcome ICC")),
                          margin=0.001)
-
+                
                 # n0 on x-axis #
                 p0[[i]] <- df0_precision %>%
                   as.data.frame() %>%
@@ -30079,11 +30414,11 @@ shinyServer(function(input, output, session) {
                          yaxis=list(title="HTE Precision"),
                          legend=list(title=list(text="Control-arm outcome ICC")),
                          margin=0.001)
-
+                
               }
-
+              
             }# end row loop
-
+            
             # n1 on x-axis #
             subplot(p1[[1]],p0[[1]],
                     p1[[2]],p0[[2]],
@@ -30170,15 +30505,15 @@ shinyServer(function(input, output, session) {
                           y=-0.1,
                           x=0.6)
               )
-
+            
           }else if(input$icc_display_irgt == "oICC0_constant"){
             #legend_title <- latex2exp::TeX("$\\rho_x$")
             oicc1_unique <- sort(unique(df1_precision[,"oicc1"]))
             oicc0_unique <- sort(unique(df1_precision[,"oicc0"]))
             p1 <- p0 <- vector(mode="list", length=length(oicc0_unique))
-
+            
             for(i in seq(length(oicc1_unique))){
-
+              
               if(i != 3){
                 # n1 on x-axis #
                 p1[[i]] <- df1_precision %>%
@@ -30203,7 +30538,7 @@ shinyServer(function(input, output, session) {
                          yaxis=list(title="HTE Precision"),
                          legend=list(title=list(text="Treatment-arm outcome ICC")),
                          margin=0.01)
-
+                
                 # n0 on x-axis #
                 p0[[i]] <- df0_precision %>%
                   as.data.frame() %>%
@@ -30227,9 +30562,9 @@ shinyServer(function(input, output, session) {
                          yaxis=list(title="HTE Precision"),
                          legend=list(title=list(text="Treatment-arm outcome ICC")),
                          margin=0.01)
-
+                
               }else{
-
+                
                 # n1 on x-axis #
                 p1[[i]] <- df1_precision %>%
                   as.data.frame() %>%
@@ -30253,7 +30588,7 @@ shinyServer(function(input, output, session) {
                          yaxis=list(title="HTE Precision"),
                          legend=list(title=list(text="Treatment-arm outcome ICC")),
                          margin=0.001)
-
+                
                 # n0 on x-axis #
                 p0[[i]] <- df0_precision %>%
                   as.data.frame() %>%
@@ -30278,9 +30613,9 @@ shinyServer(function(input, output, session) {
                          legend=list(title=list(text="Treatment-arm outcome ICC")),
                          margin=0.001)
               }
-
+              
             }# end row loop
-
+            
             # n1 on x-axis #
             subplot(p1[[1]],p0[[1]],
                     p1[[2]],p0[[2]],
@@ -30367,120 +30702,120 @@ shinyServer(function(input, output, session) {
                           y=-0.1,
                           x=0.6)
               )
-
+            
           }# oicc1 constant end here
         }# end sensitivity
-
+        
       }#end plot display
-
-
+      
+      
       #### HET CLUSTER ####
     }else if( trial_react() == "het_two"){
-
+      
       # determine effect sizes and variances depending on outcome/covariate type #
       if(outcome_type_react() =="continuous"){
         var_y1 <- (sd_outcome1_react())^2
         var_y0 <- (sd_outcome0_react())^2
         d <- input$mean_diff_HTE
-
+        
         if(covar_type_react()=="continuous"){
           # continuous outcome and covar power
           var_x <- (sd_covar_react())^2
-
+          
         }else if(covar_type_react() == "binary"){
           # continuous outcome binary covar power
           var_x <- (prop_covar_react())*(1-prop_covar_react())
         }
-
+        
       }
-
+      
       if(plot_display_react() == "m_v_power"){
         m1_range <- seq(input$m1_slide_het[1],input$m1_slide_het[2])
         m1_fix <- input$m1_fix_het
-
+        
         m0_range <- seq(input$m0_slide_het[1],input$m0_slide_het[2])
         m0_fix <- input$m0_fix_het
-
+        
         if(sensitivity_het_react() == "est_only"){
           # m1 on x-axis #
           df1_precision <- expand.grid(n1=input$n1_fix_het, m1=m1_range,
-                                   n0=input$n0_fix_het, m0=m0_fix,
-                                   oicc1=oicc_trt_est_het(),
-                                   oicc0=oicc_ctrl_est_het(),
-                                   cicc=cicc_est_het(),
-                                   var_y1=var_y1,
-                                   var_y0=var_y0,
-                                   var_x=var_x)
+                                       n0=input$n0_fix_het, m0=m0_fix,
+                                       oicc1=oicc_trt_est_het(),
+                                       oicc0=oicc_ctrl_est_het(),
+                                       cicc=cicc_est_het(),
+                                       var_y1=var_y1,
+                                       var_y0=var_y0,
+                                       var_x=var_x)
           # print(m0_fix)
-
+          
           # m0 on x-axis #
           df0_precision <- expand.grid(n1=input$n1_fix_het, m1=m1_fix,
-                                   n0=input$n0_fix_het, m0=m0_range,
-                                   oicc1=oicc_trt_est_het(),
-                                   oicc0=oicc_ctrl_est_het(),
-                                   cicc=cicc_est_het(),
-                                   var_y1=var_y1,
-                                   var_y0=var_y0,
-                                   var_x=var_x)
-
+                                       n0=input$n0_fix_het, m0=m0_range,
+                                       oicc1=oicc_trt_est_het(),
+                                       oicc0=oicc_ctrl_est_het(),
+                                       cicc=cicc_est_het(),
+                                       var_y1=var_y1,
+                                       var_y0=var_y0,
+                                       var_x=var_x)
+          
         }else{
           # m1 on x-axis #
           df1_precision <- expand.grid(n1=input$n1_fix_het, m1=m1_range,
-                                   n0=input$n0_fix_het, m0=m0_fix,
-                                   oicc1=c(oicc_trt_min_het(), oicc_trt_est_het(),
-                                           oicc_trt_max_het()),
-                                   oicc0=c(oicc_ctrl_min_het(), oicc_ctrl_est_het(),
-                                           oicc_ctrl_max_het()),
-                                   cicc=c(cicc_min_het(), cicc_est_het(),
-                                          cicc_max_het()),
-                                   var_y1=var_y1,
-                                   var_y0=var_y0,
-                                   var_x=var_x)
-
+                                       n0=input$n0_fix_het, m0=m0_fix,
+                                       oicc1=c(oicc_trt_min_het(), oicc_trt_est_het(),
+                                               oicc_trt_max_het()),
+                                       oicc0=c(oicc_ctrl_min_het(), oicc_ctrl_est_het(),
+                                               oicc_ctrl_max_het()),
+                                       cicc=c(cicc_min_het(), cicc_est_het(),
+                                              cicc_max_het()),
+                                       var_y1=var_y1,
+                                       var_y0=var_y0,
+                                       var_x=var_x)
+          
           # m0 on x-axis #
           df0_precision <- expand.grid(n1=input$n1_fix_het, m1=m1_fix,
-                                   n0=input$n0_fix_het, m0=m0_range,
-                                   oicc1=c(oicc_trt_min_het(), oicc_trt_est_het(),
-                                           oicc_trt_max_het()),
-                                   oicc0=c(oicc_ctrl_min_het(), oicc_ctrl_est_het(),
-                                           oicc_ctrl_max_het()),
-                                   cicc=c(cicc_min_het(), cicc_est_het(),
-                                          cicc_max_het()),
-                                   var_y1=var_y1,
-                                   var_y0=var_y0,
-                                   var_x=var_x)
+                                       n0=input$n0_fix_het, m0=m0_range,
+                                       oicc1=c(oicc_trt_min_het(), oicc_trt_est_het(),
+                                               oicc_trt_max_het()),
+                                       oicc0=c(oicc_ctrl_min_het(), oicc_ctrl_est_het(),
+                                               oicc_ctrl_max_het()),
+                                       cicc=c(cicc_min_het(), cicc_est_het(),
+                                              cicc_max_het()),
+                                       var_y1=var_y1,
+                                       var_y0=var_y0,
+                                       var_x=var_x)
         }
-
+        
         precision1_hte_col <- rep(NA, nrow(df1_precision))
         precision0_hte_col <- rep(NA, nrow(df0_precision))
-
+        
         for(i in seq(nrow(df1_precision))){
           precision1_hte_col[i] <- precision_irgt(m1=df1_precision[i,"m1"],
-                                          m0=df1_precision[i,"m0"],
-                                          n1=df1_precision[i,"n1"],
-                                          n0=df1_precision[i,"n0"],
-                                          oicc1=df1_precision[i,"oicc1"],
-                                          oicc0=df1_precision[i,"oicc0"],
-                                          cicc=df1_precision[i,"cicc"],
-                                          var_y1=df1_precision[i,"var_y1"],
-                                          var_y0=df1_precision[i,"var_y0"],
-                                          var_x=df1_precision[i,"var_x"])
+                                                  m0=df1_precision[i,"m0"],
+                                                  n1=df1_precision[i,"n1"],
+                                                  n0=df1_precision[i,"n0"],
+                                                  oicc1=df1_precision[i,"oicc1"],
+                                                  oicc0=df1_precision[i,"oicc0"],
+                                                  cicc=df1_precision[i,"cicc"],
+                                                  var_y1=df1_precision[i,"var_y1"],
+                                                  var_y0=df1_precision[i,"var_y0"],
+                                                  var_x=df1_precision[i,"var_x"])
           precision0_hte_col[i] <- precision_irgt(m1=df0_precision[i,"m1"],
-                                          m0=df0_precision[i,"m0"],
-                                          n1=df0_precision[i,"n1"],
-                                          n0=df0_precision[i,"n0"],
-                                          oicc1=df0_precision[i,"oicc1"],
-                                          oicc0=df0_precision[i,"oicc0"],
-                                          cicc=df0_precision[i,"cicc"],
-                                          var_y1=df0_precision[i,"var_y1"],
-                                          var_y0=df0_precision[i,"var_y0"],
-                                          var_x=df0_precision[i,"var_x"])
-
+                                                  m0=df0_precision[i,"m0"],
+                                                  n1=df0_precision[i,"n1"],
+                                                  n0=df0_precision[i,"n0"],
+                                                  oicc1=df0_precision[i,"oicc1"],
+                                                  oicc0=df0_precision[i,"oicc0"],
+                                                  cicc=df0_precision[i,"cicc"],
+                                                  var_y1=df0_precision[i,"var_y1"],
+                                                  var_y0=df0_precision[i,"var_y0"],
+                                                  var_x=df0_precision[i,"var_x"])
+          
         }
-
+        
         df0_precision <- cbind(df0_precision, precision0_hte_col)
         df1_precision <- cbind(df1_precision, precision1_hte_col)
-
+        
         if(sensitivity_het_react() == "est_only"){
           # m1 on x-axis #
           p1_est <- df1_precision %>%
@@ -30509,7 +30844,7 @@ shinyServer(function(input, output, session) {
                    yaxis=list(title="HTE Precision"),
                    legend=list(title=list(text="Control-arm outcome ICC")),
                    margin=0.001)
-
+          
           # m0 on x-axis #
           p0_est <- df0_precision %>%
             as.data.frame() %>%
@@ -30537,7 +30872,7 @@ shinyServer(function(input, output, session) {
                    yaxis=list(title="HTE Precision"),
                    legend=list(title=list(text="Control-arm outcome ICC")),
                    margin=0.001)
-
+          
           subplot(p1_est, p0_est,#nrows=1, widths = c(0.5),
                   margin = 0.09, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
             layout(title = list(
@@ -30574,7 +30909,7 @@ shinyServer(function(input, output, session) {
                         y=0.25,
                         x=0.5)
             )
-
+          
         }else if(sensitivity_het_react() == "sensitivity"){
           if(input$icc_constant_within == "oicc1"){
             if(input$icc_constant == "cicc"){
@@ -30582,9 +30917,9 @@ shinyServer(function(input, output, session) {
               oicc1_unique <- sort(unique(df1_precision[,"oicc1"]))
               oicc0_unique <- sort(unique(df1_precision[,"oicc0"]))
               p1 <- p0 <- vector(mode="list", length=length(oicc1_unique))
-
+              
               for(i in seq(length(oicc1_unique))){
-
+                
                 if(i != 3){
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
@@ -30611,7 +30946,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Control-arm outcome ICC")),
                            margin=0.01)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -30638,7 +30973,7 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="Control-arm outcome ICC")),
                            margin=0.01)
                 }else{
-
+                  
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
                     as.data.frame() %>%
@@ -30664,7 +30999,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Control-arm outcome ICC")),
                            margin=0.001)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -30691,9 +31026,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="Control-arm outcome ICC")),
                            margin=0.001)
                 }
-
+                
               }# end row loop
-
+              
               # m1 on x-axis #
               subplot(p1[[1]],p0[[1]],
                       p1[[2]],p0[[2]],
@@ -30785,9 +31120,9 @@ shinyServer(function(input, output, session) {
               oicc1_unique <- sort(unique(df1_precision[,"oicc1"]))
               cicc_unique <- sort(unique(df1_precision[,"cicc"]))
               p1 <- p0 <- vector(mode="list", length=length(oicc1_unique))
-
+              
               for(i in seq(length(cicc_unique))){
-
+                
                 if(i != 3){
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
@@ -30814,7 +31149,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Covariate ICC")),
                            margin=0.01)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -30841,7 +31176,7 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="Covariate ICC")),
                            margin=0.01)
                 }else{
-
+                  
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
                     as.data.frame() %>%
@@ -30867,7 +31202,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Covariate ICC")),
                            margin=0.001)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -30894,9 +31229,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="Covariate ICC")),
                            margin=0.001)
                 }
-
+                
               }# end row loop
-
+              
               # m1 on x-axis #
               subplot(p1[[1]],p0[[1]],
                       p1[[2]],p0[[2]],
@@ -30984,8 +31319,8 @@ shinyServer(function(input, output, session) {
                             x=0.6)
                 )
             }# end across plot constant
-
-
+            
+            
           }else if(input$icc_constant_within == "oicc0"){
             if(input$icc_constant == "cicc"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
@@ -30993,9 +31328,9 @@ shinyServer(function(input, output, session) {
               oicc0_unique <- sort(unique(df1_precision[,"oicc0"]))
               cicc_unique <- sort(unique(df1_precision[,"cicc"]))
               p1 <- p0 <- vector(mode="list", length=length(oicc0_unique))
-
+              
               for(i in seq(length(oicc1_unique))){
-
+                
                 if(i != 3){
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
@@ -31022,7 +31357,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Treatment-arm outcome ICC")),
                            margin=0.01)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -31049,7 +31384,7 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="Treatment-arm outcome ICC")),
                            margin=0.01)
                 }else{
-
+                  
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
                     as.data.frame() %>%
@@ -31075,7 +31410,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Treatment-arm outcome ICC")),
                            margin=0.001)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -31101,11 +31436,11 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Treatment-arm outcome ICC")),
                            margin=0.001)
-
+                  
                 }
-
+                
               }# end row loop
-
+              
               # m1 on x-axis #
               subplot(p1[[1]],p0[[1]],
                       p1[[2]],p0[[2]],
@@ -31198,9 +31533,9 @@ shinyServer(function(input, output, session) {
               oicc0_unique <- sort(unique(df1_precision[,"oicc0"]))
               cicc_unique <- sort(unique(df1_precision[,"cicc"]))
               p1 <- p0 <- vector(mode="list", length=length(oicc0_unique))
-
+              
               for(i in seq(length(cicc_unique))){
-
+                
                 if(i != 3){
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
@@ -31227,7 +31562,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Covariate ICC")),
                            margin=0.01)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -31254,7 +31589,7 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="Covariate ICC")),
                            margin=0.01)
                 }else{
-
+                  
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
                     as.data.frame() %>%
@@ -31280,7 +31615,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Covariate ICC")),
                            margin=0.001)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -31306,11 +31641,11 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Covariate ICC")),
                            margin=0.001)
-
+                  
                 }
-
+                
               }# end row loop
-
+              
               # m1 on x-axis #
               subplot(p1[[1]],p0[[1]],
                       p1[[2]],p0[[2]],
@@ -31398,8 +31733,8 @@ shinyServer(function(input, output, session) {
                             x=0.6)
                 )
             }# end across-plot constant
-
-
+            
+            
           }else if(input$icc_constant_within == "cicc"){
             if(input$icc_constant == "oicc0"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
@@ -31407,9 +31742,9 @@ shinyServer(function(input, output, session) {
               oicc0_unique <- sort(unique(df1_precision[,"oicc0"]))
               cicc_unique <- sort(unique(df1_precision[,"cicc"]))
               p1 <- p0 <- vector(mode="list", length=length(oicc0_unique))
-
+              
               for(i in seq(length(oicc1_unique))){
-
+                
                 if(i != 3){
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
@@ -31436,7 +31771,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Treatment-arm outcome ICC")),
                            margin=0.01)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -31463,7 +31798,7 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="Treatment-arm outcome ICC")),
                            margin=0.01)
                 }else{
-
+                  
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
                     as.data.frame() %>%
@@ -31489,7 +31824,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Treatment-arm outcome ICC")),
                            margin=0.001)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -31515,11 +31850,11 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Treatment-arm outcome ICC")),
                            margin=0.001)
-
+                  
                 }
-
+                
               }# end row loop
-
+              
               # m1 on x-axis #
               subplot(p1[[1]],p0[[1]],
                       p1[[2]],p0[[2]],
@@ -31612,9 +31947,9 @@ shinyServer(function(input, output, session) {
               oicc0_unique <- sort(unique(df1_precision[,"oicc0"]))
               cicc_unique <- sort(unique(df1_precision[,"cicc"]))
               p1 <- p0 <- vector(mode="list", length=length(oicc0_unique))
-
+              
               for(i in seq(length(cicc_unique))){
-
+                
                 if(i != 3){
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
@@ -31641,7 +31976,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Control-arm outcome ICC")),
                            margin=0.01)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -31668,7 +32003,7 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="Control-arm outcome ICC")),
                            margin=0.01)
                 }else{
-
+                  
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
                     as.data.frame() %>%
@@ -31694,7 +32029,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Control-arm outcome ICC")),
                            margin=0.001)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -31720,11 +32055,11 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Control-arm outcome ICC")),
                            margin=0.001)
-
+                  
                 }
-
+                
               }# end row loop
-
+              
               # m1 on x-axis #
               subplot(p1[[1]],p0[[1]],
                       p1[[2]],p0[[2]],
@@ -31812,99 +32147,99 @@ shinyServer(function(input, output, session) {
                             x=0.6)
                 )
             }# end across-plot constant
-
-
+            
+            
           }# end with-plot constant
         }# end sensitivity
-
+        
       }else if(plot_display_react() == "n_v_power"){
-
+        
         n1_range <- seq(input$n1_slide_het[1],input$n1_slide_het[2])
         n1_fix <- input$n1_fix_het
-
+        
         n0_range <- seq(input$n0_slide_het[1],input$n0_slide_het[2])
         n0_fix <- input$n0_fix_het
-
+        
         if(sensitivity_het_react() == "est_only"){
           # m1 on x-axis #
           df1_precision <- expand.grid(n1=n1_range, m1=input$m1_fix_het,
-                                   n0=n0_fix, m0=input$m0_fix_het,
-                                   oicc1=oicc_trt_est_het(),
-                                   oicc0=oicc_ctrl_est_het(),
-                                   cicc=cicc_est_het(),
-                                   var_y1=var_y1,
-                                   var_y0=var_y0,
-                                   var_x=var_x)
+                                       n0=n0_fix, m0=input$m0_fix_het,
+                                       oicc1=oicc_trt_est_het(),
+                                       oicc0=oicc_ctrl_est_het(),
+                                       cicc=cicc_est_het(),
+                                       var_y1=var_y1,
+                                       var_y0=var_y0,
+                                       var_x=var_x)
           # print(m0_fix)
-
+          
           # m0 on x-axis #
           df0_precision <- expand.grid(n1=n1_fix, m1=input$m1_fix_het,
-                                   n0=n0_range, m0=input$m0_fix_het,
-                                   oicc1=oicc_trt_est_het(),
-                                   oicc0=oicc_ctrl_est_het(),
-                                   cicc=cicc_est_het(),
-                                   var_y1=var_y1,
-                                   var_y0=var_y0,
-                                   var_x=var_x)
-
+                                       n0=n0_range, m0=input$m0_fix_het,
+                                       oicc1=oicc_trt_est_het(),
+                                       oicc0=oicc_ctrl_est_het(),
+                                       cicc=cicc_est_het(),
+                                       var_y1=var_y1,
+                                       var_y0=var_y0,
+                                       var_x=var_x)
+          
         }else{
           # m1 on x-axis #
           df1_precision <- expand.grid(n1=n1_range, m1=input$m1_fix_het,
-                                   n0=n0_fix, m0=input$m0_fix_het,
-                                   oicc1=c(oicc_trt_min_het(), oicc_trt_est_het(),
-                                           oicc_trt_max_het()),
-                                   oicc0=c(oicc_ctrl_min_het(), oicc_ctrl_est_het(),
-                                           oicc_ctrl_max_het()),
-                                   cicc=c(cicc_min_het(), cicc_est_het(),
-                                          cicc_max_het()),
-                                   var_y1=var_y1,
-                                   var_y0=var_y0,
-                                   var_x=var_x)
-
+                                       n0=n0_fix, m0=input$m0_fix_het,
+                                       oicc1=c(oicc_trt_min_het(), oicc_trt_est_het(),
+                                               oicc_trt_max_het()),
+                                       oicc0=c(oicc_ctrl_min_het(), oicc_ctrl_est_het(),
+                                               oicc_ctrl_max_het()),
+                                       cicc=c(cicc_min_het(), cicc_est_het(),
+                                              cicc_max_het()),
+                                       var_y1=var_y1,
+                                       var_y0=var_y0,
+                                       var_x=var_x)
+          
           # m0 on x-axis #
           df0_precision <- expand.grid(n1=n1_fix, m1=input$m1_fix_het,
-                                   n0=n0_range, m0=input$m0_fix_het,
-                                   oicc1=c(oicc_trt_min_het(), oicc_trt_est_het(),
-                                           oicc_trt_max_het()),
-                                   oicc0=c(oicc_ctrl_min_het(), oicc_ctrl_est_het(),
-                                           oicc_ctrl_max_het()),
-                                   cicc=c(cicc_min_het(), cicc_est_het(),
-                                          cicc_max_het()),
-                                   var_y1=var_y1,
-                                   var_y0=var_y0,
-                                   var_x=var_x)
+                                       n0=n0_range, m0=input$m0_fix_het,
+                                       oicc1=c(oicc_trt_min_het(), oicc_trt_est_het(),
+                                               oicc_trt_max_het()),
+                                       oicc0=c(oicc_ctrl_min_het(), oicc_ctrl_est_het(),
+                                               oicc_ctrl_max_het()),
+                                       cicc=c(cicc_min_het(), cicc_est_het(),
+                                              cicc_max_het()),
+                                       var_y1=var_y1,
+                                       var_y0=var_y0,
+                                       var_x=var_x)
         }
-
+        
         precision1_hte_col <- rep(NA, nrow(df1_precision))
         precision0_hte_col <- rep(NA, nrow(df0_precision))
-
+        
         for(i in seq(nrow(df1_precision))){
           precision1_hte_col[i] <- precision_irgt(m1=df1_precision[i,"m1"],
-                                          m0=df1_precision[i,"m0"],
-                                          n1=df1_precision[i,"n1"],
-                                          n0=df1_precision[i,"n0"],
-                                          oicc1=df1_precision[i,"oicc1"],
-                                          oicc0=df1_precision[i,"oicc0"],
-                                          cicc=df1_precision[i,"cicc"],
-                                          var_y1=df1_precision[i,"var_y1"],
-                                          var_y0=df1_precision[i,"var_y0"],
-                                          var_x=df1_precision[i,"var_x"])
+                                                  m0=df1_precision[i,"m0"],
+                                                  n1=df1_precision[i,"n1"],
+                                                  n0=df1_precision[i,"n0"],
+                                                  oicc1=df1_precision[i,"oicc1"],
+                                                  oicc0=df1_precision[i,"oicc0"],
+                                                  cicc=df1_precision[i,"cicc"],
+                                                  var_y1=df1_precision[i,"var_y1"],
+                                                  var_y0=df1_precision[i,"var_y0"],
+                                                  var_x=df1_precision[i,"var_x"])
           precision0_hte_col[i] <- precision_irgt(m1=df0_precision[i,"m1"],
-                                          m0=df0_precision[i,"m0"],
-                                          n1=df0_precision[i,"n1"],
-                                          n0=df0_precision[i,"n0"],
-                                          oicc1=df0_precision[i,"oicc1"],
-                                          oicc0=df0_precision[i,"oicc0"],
-                                          cicc=df0_precision[i,"cicc"],
-                                          var_y1=df0_precision[i,"var_y1"],
-                                          var_y0=df0_precision[i,"var_y0"],
-                                          var_x=df0_precision[i,"var_x"])
-
+                                                  m0=df0_precision[i,"m0"],
+                                                  n1=df0_precision[i,"n1"],
+                                                  n0=df0_precision[i,"n0"],
+                                                  oicc1=df0_precision[i,"oicc1"],
+                                                  oicc0=df0_precision[i,"oicc0"],
+                                                  cicc=df0_precision[i,"cicc"],
+                                                  var_y1=df0_precision[i,"var_y1"],
+                                                  var_y0=df0_precision[i,"var_y0"],
+                                                  var_x=df0_precision[i,"var_x"])
+          
         }
-
+        
         df0_precision <- cbind(df0_precision, precision0_hte_col)
         df1_precision <- cbind(df1_precision, precision1_hte_col)
-
+        
         if(sensitivity_het_react() == "est_only"){
           # m1 on x-axis #
           p1_est <- df1_precision %>%
@@ -31933,7 +32268,7 @@ shinyServer(function(input, output, session) {
                    yaxis=list(title="HTE Precision"),
                    legend=list(title=list(text="Control-arm outcome ICC")),
                    margin=0.001)
-
+          
           # m0 on x-axis #
           p0_est <- df0_precision %>%
             as.data.frame() %>%
@@ -31961,7 +32296,7 @@ shinyServer(function(input, output, session) {
                    yaxis=list(title="HTE Precision"),
                    legend=list(title=list(text="Control-arm outcome ICC")),
                    margin=0.001)
-
+          
           subplot(p1_est, p0_est,#nrows=1, widths = c(0.5),
                   margin = 0.09, titleX=T, titleY=T) %>% #list(t=50,b=50,pad=50)) %>%
             layout(title = list(
@@ -31998,7 +32333,7 @@ shinyServer(function(input, output, session) {
                         y=0.25,
                         x=0.5)
             )
-
+          
         }else if(sensitivity_het_react() == "sensitivity"){
           if(input$icc_constant_within == "oicc1"){
             if(input$icc_constant == "cicc"){
@@ -32006,9 +32341,9 @@ shinyServer(function(input, output, session) {
               oicc1_unique <- sort(unique(df1_precision[,"oicc1"]))
               oicc0_unique <- sort(unique(df1_precision[,"oicc0"]))
               p1 <- p0 <- vector(mode="list", length=length(oicc1_unique))
-
+              
               for(i in seq(length(oicc1_unique))){
-
+                
                 if(i != 3){
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
@@ -32035,7 +32370,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Control-arm outcome ICC")),
                            margin=0.01)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -32062,7 +32397,7 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="Control-arm outcome ICC")),
                            margin=0.01)
                 }else{
-
+                  
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
                     as.data.frame() %>%
@@ -32088,7 +32423,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Control-arm outcome ICC")),
                            margin=0.001)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -32115,9 +32450,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="Control-arm outcome ICC")),
                            margin=0.001)
                 }
-
+                
               }# end row loop
-
+              
               # m1 on x-axis #
               subplot(p1[[1]],p0[[1]],
                       p1[[2]],p0[[2]],
@@ -32209,9 +32544,9 @@ shinyServer(function(input, output, session) {
               oicc1_unique <- sort(unique(df1_precision[,"oicc1"]))
               cicc_unique <- sort(unique(df1_precision[,"cicc"]))
               p1 <- p0 <- vector(mode="list", length=length(oicc1_unique))
-
+              
               for(i in seq(length(cicc_unique))){
-
+                
                 if(i != 3){
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
@@ -32238,7 +32573,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Covariate ICC")),
                            margin=0.01)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -32265,7 +32600,7 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="Covariate ICC")),
                            margin=0.01)
                 }else{
-
+                  
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
                     as.data.frame() %>%
@@ -32291,7 +32626,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Covariate ICC")),
                            margin=0.001)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -32318,9 +32653,9 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="Covariate ICC")),
                            margin=0.001)
                 }
-
+                
               }# end row loop
-
+              
               # m1 on x-axis #
               subplot(p1[[1]],p0[[1]],
                       p1[[2]],p0[[2]],
@@ -32408,8 +32743,8 @@ shinyServer(function(input, output, session) {
                             x=0.6)
                 )
             }# end across plot constant
-
-
+            
+            
           }else if(input$icc_constant_within == "oicc0"){
             if(input$icc_constant == "cicc"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
@@ -32417,9 +32752,9 @@ shinyServer(function(input, output, session) {
               oicc0_unique <- sort(unique(df1_precision[,"oicc0"]))
               cicc_unique <- sort(unique(df1_precision[,"cicc"]))
               p1 <- p0 <- vector(mode="list", length=length(oicc0_unique))
-
+              
               for(i in seq(length(oicc1_unique))){
-
+                
                 if(i != 3){
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
@@ -32446,7 +32781,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Treatment-arm outcome ICC")),
                            margin=0.01)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -32473,7 +32808,7 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="Treatment-arm outcome ICC")),
                            margin=0.01)
                 }else{
-
+                  
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
                     as.data.frame() %>%
@@ -32499,7 +32834,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Treatment-arm outcome ICC")),
                            margin=0.001)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -32525,11 +32860,11 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Treatment-arm outcome ICC")),
                            margin=0.001)
-
+                  
                 }
-
+                
               }# end row loop
-
+              
               # m1 on x-axis #
               subplot(p1[[1]],p0[[1]],
                       p1[[2]],p0[[2]],
@@ -32622,9 +32957,9 @@ shinyServer(function(input, output, session) {
               oicc0_unique <- sort(unique(df1_precision[,"oicc0"]))
               cicc_unique <- sort(unique(df1_precision[,"cicc"]))
               p1 <- p0 <- vector(mode="list", length=length(oicc0_unique))
-
+              
               for(i in seq(length(cicc_unique))){
-
+                
                 if(i != 3){
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
@@ -32651,7 +32986,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Covariate ICC")),
                            margin=0.01)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -32678,7 +33013,7 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="Covariate ICC")),
                            margin=0.01)
                 }else{
-
+                  
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
                     as.data.frame() %>%
@@ -32704,7 +33039,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Covariate ICC")),
                            margin=0.001)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -32730,11 +33065,11 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Covariate ICC")),
                            margin=0.001)
-
+                  
                 }
-
+                
               }# end row loop
-
+              
               # m1 on x-axis #
               subplot(p1[[1]],p0[[1]],
                       p1[[2]],p0[[2]],
@@ -32822,8 +33157,8 @@ shinyServer(function(input, output, session) {
                             x=0.6)
                 )
             }# end across-plot constant
-
-
+            
+            
           }else if(input$icc_constant_within == "cicc"){
             if(input$icc_constant == "oicc0"){
               #legend_title <- latex2exp::TeX("$\\rho_x$")
@@ -32831,9 +33166,9 @@ shinyServer(function(input, output, session) {
               oicc0_unique <- sort(unique(df1_precision[,"oicc0"]))
               cicc_unique <- sort(unique(df1_precision[,"cicc"]))
               p1 <- p0 <- vector(mode="list", length=length(oicc0_unique))
-
+              
               for(i in seq(length(oicc1_unique))){
-
+                
                 if(i != 3){
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
@@ -32860,7 +33195,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Treatment-arm outcome ICC")),
                            margin=0.01)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -32887,7 +33222,7 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="Treatment-arm outcome ICC")),
                            margin=0.01)
                 }else{
-
+                  
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
                     as.data.frame() %>%
@@ -32913,7 +33248,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Treatment-arm outcome ICC")),
                            margin=0.001)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -32939,11 +33274,11 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Treatment-arm outcome ICC")),
                            margin=0.001)
-
+                  
                 }
-
+                
               }# end row loop
-
+              
               # m1 on x-axis #
               subplot(p1[[1]],p0[[1]],
                       p1[[2]],p0[[2]],
@@ -33036,9 +33371,9 @@ shinyServer(function(input, output, session) {
               oicc0_unique <- sort(unique(df1_precision[,"oicc0"]))
               cicc_unique <- sort(unique(df1_precision[,"cicc"]))
               p1 <- p0 <- vector(mode="list", length=length(oicc0_unique))
-
+              
               for(i in seq(length(cicc_unique))){
-
+                
                 if(i != 3){
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
@@ -33065,7 +33400,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Control-arm outcome ICC")),
                            margin=0.01)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -33092,7 +33427,7 @@ shinyServer(function(input, output, session) {
                            legend=list(title=list(text="Control-arm outcome ICC")),
                            margin=0.01)
                 }else{
-
+                  
                   # m1 on x-axis #
                   p1[[i]] <- df1_precision %>%
                     as.data.frame() %>%
@@ -33118,7 +33453,7 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Control-arm outcome ICC")),
                            margin=0.001)
-
+                  
                   # m0 on x-axis #
                   p0[[i]] <- df0_precision %>%
                     as.data.frame() %>%
@@ -33144,11 +33479,11 @@ shinyServer(function(input, output, session) {
                            yaxis=list(title="HTE Precision"),
                            legend=list(title=list(text="Control-arm outcome ICC")),
                            margin=0.001)
-
+                  
                 }
-
+                
               }# end row loop
-
+              
               # m1 on x-axis #
               subplot(p1[[1]],p0[[1]],
                       p1[[2]],p0[[2]],
@@ -33236,14 +33571,14 @@ shinyServer(function(input, output, session) {
                             x=0.6)
                 )
             }# end across-plot constant
-
-
+            
+            
           }# end with-plot constant
         }# end sensitivity
-
+        
       }#end plot display
-
-
+      
+      
     }# end of trial type if/else
   })# end precision plot
   

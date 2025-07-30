@@ -161,7 +161,7 @@ shinyUI(fluidPage(
           numericInput(inputId="m",
                        label="Cluster size (m)",
                        20, min=1, max=9999999999)
-          ),
+        ),
         conditionalPanel(
           condition = "input.plot_display == 'n_v_power'",
           sliderInput(inputId="n_range",
@@ -176,7 +176,7 @@ shinyUI(fluidPage(
                        label="Power",
                        0.9, min=0, max=1)
         ),
-
+        
         
         ## ICCs ##
         tags$u(h3("ICC options")),
@@ -324,7 +324,7 @@ shinyUI(fluidPage(
                      10, min=1, max=9999999999),
         #nc numeric #
         conditionalPanel(
-          condition = "input.plot_display == 'm_v_power'",
+          condition = "input.plot_display == 'm_v_power' || input.plot_display == 'hte_v_power'",
           numericInput(inputId="nc",
                        label=withMathJax("Total number of clusters (\\(n_c\\))"),
                        10, min=1, max=9999999999)
@@ -333,10 +333,13 @@ shinyUI(fluidPage(
         
         # m numeric and nc range #
         conditionalPanel(
-          condition = "input.plot_display == 'nc_v_power'",
+          condition = "input.plot_display == 'nc_v_power' || input.plot_display == 'hte_v_power'",
           numericInput(inputId="m_three",
                        label="Individuals per subcluster (m)",
-                       20, min=1, max=9999999999),
+                       20, min=1, max=9999999999)
+          ),
+        conditionalPanel(
+          condition = "input.plot_display == 'nc_v_power'",
           sliderInput(inputId="nc_range",
                       label="Plot number of clusters range",
                       min=1, max=3000,
@@ -1016,13 +1019,13 @@ shinyUI(fluidPage(
       tabsetPanel(
         tabPanel("Power",#br(),
                  plotlyOutput("powerPlot_hte")),
-          tabPanel("Precision",#br(),
-                   conditionalPanel(condition = "input.plot_display != 'fixed_power' & input.plot_display != 'm_v_nc'",
-                                    p(em("Precision is defined here as 1/variance of the HTE.")),
-                                    plotlyOutput("precisionPlot_hte")),
-                   conditionalPanel(condition = "input.plot_display == 'fixed_power' || input.plot_display == 'm_v_nc'",
-                                   h4("Precision is only available for varying power levels. Please select a difference plot display option."))
-                   ),
+        tabPanel("Precision",#br(),
+                 conditionalPanel(condition = "input.plot_display != 'fixed_power' & input.plot_display != 'm_v_nc'",
+                                  p(em("Precision is defined here as 1/variance of the HTE.")),
+                                  plotlyOutput("precisionPlot_hte")),
+                 conditionalPanel(condition = "input.plot_display == 'fixed_power' || input.plot_display == 'm_v_nc'",
+                                  h4("Precision is only available for varying power levels. Please select a difference plot display option."))
+        ),
         tabPanel("Design Matrix",#br(),
                  tableOutput("design_matrix")),
         tabPanel("References and Resources", 
