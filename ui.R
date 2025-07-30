@@ -129,9 +129,10 @@ shinyUI(fluidPage(
                    label="Plot display",
                    choiceNames = c("Cluster size vs Power",
                                    "Number of clusters vs Power",
-                                   "Cluster size vs Number of clusters"),#,
+                                   "Cluster size vs Number of clusters",
+                                   "HTE size vs Power"),#,
                    #"Number of clusters vs Cluster size (fixed power)"),
-                   choiceValues=c("m_v_power", "n_v_power", "fixed_power")),# "n_v_m"),
+                   choiceValues=c("m_v_power", "n_v_power", "fixed_power","hte_v_power")),# "n_v_m"),
       helpText("Hover over the plot lines to obtain precise design parameter information", style="margin-top:-0.5em; margin-bottom:1em;"),
       
       #### Parallel designs ####
@@ -141,7 +142,7 @@ shinyUI(fluidPage(
         ## sample size ##
         # numeric n #
         conditionalPanel(
-          condition = "input.plot_display == 'm_v_power'",
+          condition = "input.plot_display == 'm_v_power' || input.plot_display == 'hte_v_power'",
           numericInput(inputId="n",
                        label="Total number of clusters (n)",
                        10, min=1, max=9999999999)
@@ -156,10 +157,13 @@ shinyUI(fluidPage(
         ),
         #numeric m, n range #
         conditionalPanel(
-          condition = "input.plot_display == 'n_v_power'",
+          condition = "input.plot_display == 'n_v_power' || input.plot_display == 'hte_v_power'",
           numericInput(inputId="m",
                        label="Cluster size (m)",
-                       20, min=1, max=9999999999),
+                       20, min=1, max=9999999999)
+          ),
+        conditionalPanel(
+          condition = "input.plot_display == 'n_v_power'",
           sliderInput(inputId="n_range",
                       label="Plot number of clusters range",
                       min=1, max=3000,
@@ -172,6 +176,8 @@ shinyUI(fluidPage(
                        label="Power",
                        0.9, min=0, max=1)
         ),
+
+        
         ## ICCs ##
         tags$u(h3("ICC options")),
         numericInput(inputId="oicc_est",
@@ -456,7 +462,7 @@ shinyUI(fluidPage(
         tags$u(h3("Sample Size/Power options")),
         tags$i(h4("Treatment arm")),
         conditionalPanel(
-          condition = "input.plot_display == 'm_v_power' || input.plot_display == 'n_v_power' || (input.plot_display == 'fixed_power' & input.control_cluster == 'cluster')",
+          condition = "input.plot_display == 'm_v_power' || input.plot_display == 'n_v_power' || input.plot_display == 'hte_v_power' || (input.plot_display == 'fixed_power' & input.control_cluster == 'cluster')",
           numericInput(inputId="n1_fix",
                        label=withMathJax("Assumed number of clusters in treatment arm (\\(n_1\\))"),
                        10, min=1, max=9999999999),
@@ -471,14 +477,14 @@ shinyUI(fluidPage(
         ),
         # treatment cluster size #
         conditionalPanel(
-          condition = "(input.plot_display == 'm_v_power' & input.control_cluster == 'cluster') || input.plot_display == 'n_v_power' || (input.plot_display == 'fixed_power' && input.control_cluster == 'cluster')",
+          condition = "(input.plot_display == 'm_v_power' & input.control_cluster == 'cluster') || input.plot_display == 'n_v_power' || input.plot_display == 'hte_v_power' || (input.plot_display == 'fixed_power' && input.control_cluster == 'cluster')",
           numericInput(inputId="m1_fix",
                        label=withMathJax("Assumed cluster size in treatment arm (\\(m_1\\))"),
                        10, min=1, max=9999999999),
           
         ),
         conditionalPanel(
-          condition = "input.plot_display != 'n_v_power'",
+          condition = "input.plot_display != 'n_v_power' & input.plot_display != 'hte_v_power'",
           sliderInput(inputId="m1_slide",
                       label=withMathJax("Cluster size range in treatment arm (\\(m_1\\))"),
                       min=1, max=3000,
@@ -499,12 +505,12 @@ shinyUI(fluidPage(
         # control cluster size #
         # only show control cluster size when clustering in control arm #
         conditionalPanel(
-          condition = "input.control_cluster == 'cluster'",
+          condition = "input.control_cluster == 'cluster' || input.plot_display == 'hte_v_power'",
           numericInput(inputId="m0_fix",
                        label=withMathJax("Assumed cluster size in control arm (\\(m_0\\))"),
                        10, min=1, max=9999999999),
           conditionalPanel(
-            condition = "input.plot_display != 'n_v_power'",
+            condition = "input.plot_display != 'n_v_power' & input.plot_display != 'hte_v_power'",
             sliderInput(inputId="m0_slide",
                         label=withMathJax("Cluster size range in control arm (\\(m_0\\))"),
                         min=1, max=3000,
@@ -596,7 +602,7 @@ shinyUI(fluidPage(
                      label=withMathJax("Assumed cluster size in treatment arm (\\(m_1\\))"),
                      10, min=1, max=9999999999),
         conditionalPanel(
-          condition = "input.plot_display != 'n_v_power'",
+          condition = "input.plot_display != 'n_v_power' & input.plot_display != 'hte_v_power'",
           sliderInput(inputId="m1_slide_het",
                       label=withMathJax("Cluster size range in treatment arm (\\(m_1\\))"),
                       min=1, max=3000,
@@ -622,7 +628,7 @@ shinyUI(fluidPage(
                      label=withMathJax("Assumed cluster size in control arm (\\(m_0\\))"),
                      10, min=1, max=9999999999),
         conditionalPanel(
-          condition = "input.plot_display != 'n_v_power'",
+          condition = "input.plot_display != 'n_v_power' & input.plot_display != 'hte_v_power'",
           sliderInput(inputId="m0_slide_het",
                       label=withMathJax("Cluster size range in control arm (\\(m_0\\))"),
                       min=1, max=3000,
@@ -719,14 +725,14 @@ shinyUI(fluidPage(
         
         # numeric n #
         conditionalPanel(
-          condition = "input.plot_display == 'm_v_power' & input.trial != 'parallel_m'",
+          condition = "(input.plot_display == 'm_v_power' || input.plot_display == 'hte_v_power') & input.trial != 'parallel_m'",
           numericInput(inputId="ns_swd",
                        label="Number of clusters (per sequence)",
                        1, min=1, max=9999999999)
         ),
         # numeric n #
         conditionalPanel(
-          condition = "input.plot_display == 'm_v_power' & input.trial == 'parallel_m'",
+          condition = "(input.plot_display == 'm_v_power' || input.plot_display == 'hte_v_power') & input.trial == 'parallel_m'",
           numericInput(inputId="ns_parallel_m",
                        label="Total number of clusters",
                        1, min=1, max=9999999999)
@@ -739,9 +745,9 @@ shinyUI(fluidPage(
                       min=1, max=3000,
                       value=c(5,100))
         ),
-        #numeric m range #
+        #numeric m #
         conditionalPanel(
-          condition = "input.plot_display == 'n_v_power'",
+          condition = "input.plot_display == 'n_v_power' || input.plot_display == 'hte_v_power'",
           numericInput(inputId="m_swd",
                        label="Cluster size (per period)",
                        20, min=1, max=9999999999),
@@ -934,11 +940,25 @@ shinyUI(fluidPage(
                    choiceValues=c("continuous", "binary"),
                    inline=T),
       # can keep this as specifying HTE effect size since HTE for binary outcome doesn't translate directly into diff of proportions
-      numericInput(inputId="mean_diff_HTE",
-                   label="Assumed HTE",
-                   1, min=0, max=999999),
-      helpText("Specify the target effect size for the treatment effect modification/interaction, e.g., the difference in treatment effects between subgroups.",#"Specify the target effect size for the treatment effect modification, e.g., the treatment interaction.",
-               style="margin-top:-0.5em; margin-bottom:1em;"),
+      conditionalPanel(
+        condition = "input.plot_display != 'hte_v_power'",
+        numericInput(inputId="mean_diff_HTE",
+                     label="Assumed HTE",
+                     1, min=0, max=999999),
+        helpText("Specify the target effect size for the treatment effect modification/interaction, e.g., the difference in treatment effects between subgroups.",#"Specify the target effect size for the treatment effect modification, e.g., the treatment interaction.",
+                 style="margin-top:-0.5em; margin-bottom:1em;")
+      ),
+      conditionalPanel(
+        condition = "input.plot_display == 'hte_v_power'",
+        numericInput(inputId="hte_min",
+                     label="Minimum HTE size",
+                     0, min=0, max=999999, step=0.001),
+        numericInput(inputId="hte_max",
+                     label="Maximum HTE size",
+                     1, min=0, max=999999, step=0.001),
+        helpText("Specify the range of target effect size for the treatment effect modification/interaction, e.g., the difference in treatment effects between subgroups.",#"Specify the target effect size for the treatment effect modification, e.g., the treatment interaction.",
+                 style="margin-top:-0.5em; margin-bottom:1em;")
+      ),
       # covariate sd for continuous #
       conditionalPanel(
         condition = "input.covar == 'continuous'",
