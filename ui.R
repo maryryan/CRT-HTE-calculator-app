@@ -948,7 +948,7 @@ shinyUI(fluidPage(
         numericInput(inputId="mean_diff_HTE",
                      label="Assumed HTE",
                      1, min=0, max=999999),
-        helpText("Specify the target effect size for the treatment effect modification/interaction, e.g., the difference in treatment effects between subgroups.",#"Specify the target effect size for the treatment effect modification, e.g., the treatment interaction.",
+        helpText("Specify the target effect size for the treatment effect modification/interaction, e.g., treatment interaction with continuous variable, or the difference in treatment effects between subgroups (for binary variable).",#"Specify the target effect size for the treatment effect modification, e.g., the treatment interaction.",
                  style="margin-top:-0.5em; margin-bottom:1em;")
       ),
       conditionalPanel(
@@ -959,7 +959,7 @@ shinyUI(fluidPage(
         numericInput(inputId="hte_max",
                      label="Maximum HTE size",
                      1, min=0, max=999999, step=0.001),
-        helpText("Specify the range of target effect size for the treatment effect modification/interaction, e.g., the difference in treatment effects between subgroups.",#"Specify the target effect size for the treatment effect modification, e.g., the treatment interaction.",
+        helpText("Specify the range of target effect size for the treatment effect modification/interaction, e.g., treatment interaction with continuous variable, or the difference in treatment effects between subgroups (for binary variable).",#"Specify the target effect size for the treatment effect modification, e.g., the treatment interaction.",
                  style="margin-top:-0.5em; margin-bottom:1em;")
       ),
       # covariate sd for continuous #
