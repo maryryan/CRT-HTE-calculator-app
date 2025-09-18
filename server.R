@@ -25282,7 +25282,7 @@ shinyServer(function(input, output, session) {
                                         var_y=var_y, #(input$sd_outcome)^2,
                                         var_x=var_x,#(input$sd_covar)^2,
                                         w=input$w,
-                                        cohort=cohort(),
+                                        cohort=cohort()
                                         #d=input$mean_diff_HTE, a=input$sig
             )
           }else{
@@ -25302,7 +25302,7 @@ shinyServer(function(input, output, session) {
                                         var_y=var_y, #(input$sd_outcome)^2,
                                         var_x=var_x,#(input$sd_covar)^2,
                                         w=input$w,
-                                        cohort=cohort(),
+                                        cohort=cohort()
                                         #d=input$mean_diff_HTE, a=input$sig
             )
           }
