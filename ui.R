@@ -980,7 +980,7 @@ shinyUI(fluidPage(
       
       #treatment allocation #
       conditionalPanel(
-        condition = "input.trial == 'parallel' || input.trial == 'three_level' || input.trial == 'parallel_m'",
+        condition = "input.trial == 'parallel' || input.trial == 'three_level' || input.trial == 'parallel_m'", #|| input.trial == 'crossover_2' || input.trial == 'crossover_m'",
         numericInput(inputId="w",
                      label="Intervention randomization proportion",
                      0.5, min=0.000001, max=1, step=0.001),
